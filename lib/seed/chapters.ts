@@ -25,6 +25,15 @@ export const seedChapters: Chapter[] = [
   <div class="card"><div class="card-title">Contexto do cliente</div><div class="card-desc">Trabalhamos muito com setor público. Decisões sem entender o contexto do edital, do servidor e do cidadão dão errado.</div></div>
   <div class="card"><div class="card-title">Decisão com dado</div><div class="card-desc">Achismo é ponto de partida, nunca de chegada. Antes de propor solução, busque pelo menos uma evidência.</div></div>
 </div>
+<h2>Os valores oficiais — e o que querem dizer na prática</h2>
+<p>No papel, a Citiesoft tem quatro valores. Aqui é o que cada um significa na sua mesa:</p>
+<div class="cards">
+  <div class="card"><div class="card-title">Inovação</div><div class="card-desc">Propor o jeito melhor, não só o jeito conhecido.</div></div>
+  <div class="card"><div class="card-title">Transparência</div><div class="card-desc">Decisão e impedimento ditos cedo e por escrito.</div></div>
+  <div class="card"><div class="card-title">Excelência</div><div class="card-desc">Artefato que o cliente entende e o dev consegue executar.</div></div>
+  <div class="card"><div class="card-title">Compromisso</div><div class="card-desc">Sustentar o combinado — com o time e com o cidadão que usa o que entregamos.</div></div>
+</div>
+<p>A missão que orienta tudo: <em>desenvolver ferramentas digitais intuitivas que elevem a qualidade dos serviços públicos</em> — por isso o contexto do cliente público pesa tanto por aqui.</p>
 <h2>Como o time toma decisões</h2>
 <p>A maioria das decisões técnicas é tomada <strong>em par</strong> — analista + dev sênior, ou analista + PO. Decisões de escopo passam pelo gestor da conta. Decisões de processo interno são feitas em retro mensal.</p>
 <div class="callout"><div class="callout-label">Princípio</div>Discorde antes da decisão. Depois de fechada, todo mundo sustenta o combinado — mesmo quem era contra.</div>
@@ -113,6 +122,9 @@ export const seedChapters: Chapter[] = [
   <div class="glossary-item"><div class="glossary-term">LRF</div><div class="glossary-def">Lei de Responsabilidade Fiscal. Define limites de gasto público — afeta prazos de contratação e empenho.</div></div>
   <div class="glossary-item"><div class="glossary-term">Empenho</div><div class="glossary-def">Reserva orçamentária prévia ao gasto público. Sem empenho, contrato não anda — entender quando o empenho sai define cronograma.</div></div>
   <div class="glossary-item"><div class="glossary-term">TCE / TCU</div><div class="glossary-def">Tribunal de Contas Estadual / da União. Fiscalizam o gasto público. Auditam o que a gente entrega indiretamente.</div></div>
+  <div class="glossary-item"><div class="glossary-term">LGPD</div><div class="glossary-def">Lei Geral de Proteção de Dados (Lei 13.709/2018). Rege como tratamos dado pessoal de cliente, servidor e cidadão — finalidade, necessidade, segurança e transparência. Afeta discovery e armazenamento direto.</div></div>
+  <div class="glossary-item"><div class="glossary-term">CLT</div><div class="glossary-def">Consolidação das Leis do Trabalho. Base da jornada, horas extras e direitos do colaborador. Detalhes no Manual de Conduta.</div></div>
+  <div class="glossary-item"><div class="glossary-term">Propriedade Intelectual</div><div class="glossary-def">Todo código, doc ou solução feito no vínculo pertence à Citiesoft (Lei 9.609/98). Não reaproveite artefato de cliente fora do projeto.</div></div>
 </div>
 <h2>Termos técnicos / produto</h2>
 <div class="glossary">
@@ -132,8 +144,63 @@ export const seedChapters: Chapter[] = [
 `,
   },
   {
-    slug: "processo",
+    slug: "conduta",
     number: "04",
+    trail: "Contexto",
+    title: "Conduta e bem-estar",
+    description:
+      "O resumo prático de conduta, sigilo, bem-estar e direitos do dia a dia — com a fonte oficial no Manual de Conduta da Citiesoft.",
+    readTime: "5 min de leitura",
+    updatedAt: "01/06/2026",
+    bodyHtml: `
+<div class="callout"><div class="callout-label">Fonte oficial</div>Este capítulo é o <strong>resumo prático</strong> pro seu dia a dia. As regras completas, formais e com peso legal estão no <strong>Manual de Conduta Citiesoft</strong> (mantido pelo RH). Em caso de conflito, vale o Manual — e você assina o Termo de Recebimento dele no onboarding.</div>
+<h2>Como a gente espera que você se porte</h2>
+<p>Nada de surpreendente — é o que sustenta a confiança no time:</p>
+<ul>
+  <li>Trate colegas, clientes e parceiros com <strong>cordialidade e respeito</strong>.</li>
+  <li>Cumpra prazos com proatividade e <strong>comunique impedimentos cedo</strong> — não na véspera.</li>
+  <li>Conduta íntegra e transparente em toda relação profissional.</li>
+  <li>Espírito de equipe: compartilhe conhecimento, não acumule.</li>
+  <li>Represente a Citiesoft com profissionalismo em eventos e com o cliente.</li>
+</ul>
+<h2>O que não passa</h2>
+<div class="callout bad"><div class="callout-label">Conduta vedada</div>Assédio (moral ou sexual) e qualquer violência ou intimidação · linguagem ofensiva ou discriminatória · desvio ou apropriação de ativos, informações ou propriedade intelectual · divulgação não autorizada de dados de clientes ou projetos · falsificação de documentos ou relatórios · conflito de interesses não declarado. Isso pode levar a medida disciplinar, incluindo justa causa — detalhes no Manual.</div>
+<h2>Sigilo: você lida com dado público sensível</h2>
+<p>Como analista, você acessa contexto de órgãos, servidores e cidadãos. Trate tudo como confidencial:</p>
+<ul>
+  <li>Não divulgue informações de projetos, clientes ou estratégias — nem em redes sociais pessoais.</li>
+  <li>Não fale em nome da Citiesoft sem autorização formal.</li>
+  <li>Senha é sua: não compartilhe e reporte qualquer falha de segurança à TI.</li>
+</ul>
+<div class="callout"><div class="callout-label">Conecta com</div>É o mesmo cuidado de LGPD do discovery (Cap. 06): pausar gravação sensível, guardar documento só em sistema autorizado.</div>
+<h2>Trabalho remoto</h2>
+<p>A Citiesoft permite home office. O combinado é simples:</p>
+<div class="cards">
+  <div class="card"><div class="card-title">Disponível nos horários</div><div class="card-desc">Esteja acessível nas janelas combinadas com a equipe.</div></div>
+  <div class="card"><div class="card-title">Canais oficiais</div><div class="card-desc">Comunicação ativa pelo Teams e ferramentas do squad.</div></div>
+  <div class="card"><div class="card-title">Prazos valem igual</div><div class="card-desc">Entrega dentro do combinado, presencial ou não.</div></div>
+  <div class="card"><div class="card-title">Sigilo em casa</div><div class="card-desc">O ambiente doméstico não relaxa a responsabilidade sobre os dados.</div></div>
+</div>
+<h2>Vestimenta</h2>
+<p>Código <strong>casual profissional</strong> no dia a dia. Em reunião com cliente ou evento oficial, apresentação formal — ou conforme orientação do gestor.</p>
+<h2>Saúde mental e carga de trabalho</h2>
+<p>A empresa trata bem-estar como parte do trabalho, não como detalhe:</p>
+<ul>
+  <li>Passando por dificuldade? Fale com seu gestor ou com o RH — tem canal de escuta.</li>
+  <li><strong>Hora extra recorrente é sinal de processo quebrado</strong>, não de dedicação. Leve ao mentor.</li>
+  <li>A Citiesoft não tolera pressão abusiva nem metas desumanas.</li>
+  <li>Faça pausas regulares (ergonomia/LER-DORT) e peça ajustes na estação de trabalho à TI ou à infra.</li>
+</ul>
+<h2>Assédio: tolerância zero</h2>
+<div class="callout warn"><div class="callout-label">Canal de denúncia</div>Quem sofrer ou presenciar assédio deve <strong>reportar ao RH</strong>. As denúncias são tratadas com sigilo e seriedade, e <strong>retaliação contra quem denuncia é proibida</strong>. O descumprimento pode resultar em demissão por justa causa.</div>
+<h2>Horas, intervalos e direitos</h2>
+<p>Sua jornada segue a CLT (até 8h por dia). Hora extra, banco de horas, intervalos e demais direitos estão detalhados no Manual — não reproduzo as tabelas aqui pra não correr risco de ficar desatualizado.</p>
+<div class="callout good"><div class="callout-label">Onde aprofundar</div>Tudo isto em versão completa e oficial: <strong>Manual de Conduta Citiesoft</strong>, com o RH. Em dúvida sobre conduta, jornada ou direitos, o RH é o ponto certo.</div>
+`,
+  },
+  {
+    slug: "processo",
+    number: "05",
     trail: "Rotina",
     title: "Processo do time",
     description:
@@ -171,12 +238,12 @@ export const seedChapters: Chapter[] = [
 <h2>03. Escrita do artefato</h2>
 <p>Saiu do discovery, agora você produz o <strong>documento de saída</strong>. O tipo depende do que foi acordado:</p>
 <div class="cards">
-  <div class="card"><div class="card-title">PBI no Azure DevOps</div><div class="card-desc">Default pra demandas pequenas/médias. Template no Cap. 06.</div></div>
+  <div class="card"><div class="card-title">PBI no Azure DevOps</div><div class="card-desc">Default pra demandas pequenas/médias. Template no Cap. 07.</div></div>
   <div class="card"><div class="card-title">BRD curto</div><div class="card-desc">Quando o cliente precisa de doc formal pra aprovação interna.</div></div>
   <div class="card"><div class="card-title">Casos de uso</div><div class="card-desc">Sistemas com fluxos múltiplos / contratos públicos exigem.</div></div>
   <div class="card"><div class="card-title">BPMN</div><div class="card-desc">Quando o processo é o produto: discovery em órgão público sempre.</div></div>
 </div>
-<p>Use <strong>sempre</strong> os templates do Cap. 06 — não comece do zero. Eles foram validados por mais de uma entrega.</p>
+<p>Use <strong>sempre</strong> os templates do Cap. 07 — não comece do zero. Eles foram validados por mais de uma entrega.</p>
 <h2>04. Refinamento</h2>
 <p>Antes de mandar pro cliente / PO / dev: <strong>revisão própria</strong> seguida de <strong>revisão de par</strong>.</p>
 <h3>Checklist de revisão própria</h3>
@@ -208,12 +275,12 @@ export const seedChapters: Chapter[] = [
 </table>
 <h2>O que acontece quando o processo desanda</h2>
 <div class="callout bad"><div class="callout-label">Sintomas comuns</div>Cliente devolveu o artefato com mais de 3 ajustes? Provavelmente o briefing (etapa 1) foi raso. Refaça a entrevista com o decisor, não tente "consertar" o documento.</div>
-<p>Outros sintomas e diagnósticos no Cap. 09 (Erros comuns).</p>
+<p>Outros sintomas e diagnósticos no Cap. 10 (Erros comuns).</p>
 `,
   },
   {
     slug: "ferramentas",
-    number: "05",
+    number: "06",
     trail: "Rotina",
     title: "Ferramentas",
     description:
@@ -264,6 +331,15 @@ export const seedChapters: Chapter[] = [
   <li><strong>/clientes/[nome]/03-entregas</strong> — versões oficiais dos artefatos.</li>
   <li><strong>/clientes/[nome]/04-reunioes</strong> — atas e gravações autorizadas.</li>
 </ul>
+<h2>LGPD: o mínimo que todo analista respeita</h2>
+<p>Você lida com dado pessoal de cliente, servidor e cidadão. Quatro hábitos inegociáveis:</p>
+<ul>
+  <li>Não compartilhe dado pessoal de cliente ou colega sem autorização.</li>
+  <li>Guarde documento com dado pessoal só em sistema seguro e autorizado — o Sharepoint do cliente, não o seu desktop.</li>
+  <li>Suspeita de vazamento? Comunique o RH na hora.</li>
+  <li>Pause a gravação do Teams em discovery sensível e registre "pausado por LGPD".</li>
+</ul>
+<div class="callout"><div class="callout-label">Conecta com</div>Conduta, sigilo e o canal de denúncia estão no Cap. 04 (Conduta e bem-estar) e, completos, no Manual de Conduta.</div>
 <h2>Lucid / Miro</h2>
 <p>Visualização. Não documente em ferramenta visual o que cabe em texto — diagrama feio é pior que parágrafo bom.</p>
 <ul>
@@ -275,7 +351,7 @@ export const seedChapters: Chapter[] = [
   },
   {
     slug: "templates",
-    number: "06",
+    number: "07",
     trail: "Rotina",
     title: "Templates",
     description:
@@ -317,7 +393,7 @@ export const seedChapters: Chapter[] = [
   },
   {
     slug: "exemplos",
-    number: "07",
+    number: "08",
     trail: "Rotina",
     title: "Exemplos reais",
     description:
@@ -384,7 +460,7 @@ export const seedChapters: Chapter[] = [
   },
   {
     slug: "faq",
-    number: "08",
+    number: "09",
     trail: "Crescimento",
     title: "FAQ — Primeiros 30 dias",
     description: "As perguntas que todo novo analista faz, respondidas de uma vez.",
@@ -394,7 +470,7 @@ export const seedChapters: Chapter[] = [
 <div class="callout"><div class="callout-label">Esqueleto</div>Perguntas iniciais baseadas em padrões comuns. Serão complementadas com a Q5 do form (tipo de pergunta nas 2 primeiras semanas).</div>
 <h2>Trabalho diário</h2>
 <div class="faq-item"><div class="q">Onde encontro a documentação do cliente X?</div><div class="a">Sharepoint do cliente em <em>/clientes/[nome]/01-contrato</em>. Se não tem permissão, peça ao gestor da conta. Não tente conseguir por jeitinhos.</div></div>
-<div class="faq-item"><div class="q">Como eu sei quando minha entrega está "pronta"?</div><div class="a">Critério: o decisor mapeado no briefing aceita sem ajustes substantivos. Pequenos ajustes de redação são esperados. Mais de 3 ajustes substantivos = briefing falhou (Cap. 04).</div></div>
+<div class="faq-item"><div class="q">Como eu sei quando minha entrega está "pronta"?</div><div class="a">Critério: o decisor mapeado no briefing aceita sem ajustes substantivos. Pequenos ajustes de redação são esperados. Mais de 3 ajustes substantivos = briefing falhou (Cap. 05).</div></div>
 <div class="faq-item"><div class="q">Com quem falo se eu travar?</div><div class="a">Mentor pareado (primeiros 60 dias). Depois: outro analista do squad. Em último caso: PO. Veja o mapa "Pra cada coisa, fala com…" no Cap. 02.</div></div>
 <div class="faq-item"><div class="q">É normal demorar 2 semanas pra entender o que o cliente quer?</div><div class="a">Sim. Discovery bem-feita ganha tempo lá na frente. Se passar de 3 semanas sem progresso, alinhe com o mentor — pode ser briefing inicial mal feito.</div></div>
 <div class="faq-item"><div class="q">Posso fazer reunião com cliente sozinho ou preciso de par?</div><div class="a">Primeiros 30 dias: par sempre. Entre 30-90 dias: par em reuniões formais (kick-off, alinhamento de escopo). Depois: depende do cliente. Confirme com seu gestor.</div></div>
@@ -405,12 +481,13 @@ export const seedChapters: Chapter[] = [
 <h2>Cultura e pessoas</h2>
 <div class="faq-item"><div class="q">É normal eu não entender metade das siglas nas primeiras semanas?</div><div class="a">Sim. Use o Cap. 03 (Glossário) e pergunte sem culpa. Sigla que você não entendeu provavelmente outro também não — perguntar ajuda o time todo.</div></div>
 <div class="faq-item"><div class="q">Posso discordar publicamente da decisão do PO?</div><div class="a">Sim, antes da decisão estar fechada. Use o padrão do Cap. 01 (Como discordar bem). Depois de fechada, sustente o combinado.</div></div>
+<div class="faq-item"><div class="q">Qual a diferença entre este kit e o Manual de Conduta?</div><div class="a">O kit é o guia prático do seu trabalho de analista. O Manual de Conduta (RH) é a regra oficial, com peso legal, que vale pra toda a empresa. Conduta, jornada, LGPD e direitos: o resumo prático está no Cap. 04; a versão oficial, no Manual. Em conflito, vale o Manual.</div></div>
 <div class="faq-item"><div class="q">Quantas horas devo trabalhar?</div><div class="a">As do contrato. Hora extra eventual acontece, hora extra recorrente é sinal de processo quebrado — leve pro mentor. Aqui ninguém ganha ponto por queimar fim de semana.</div></div>
 `,
   },
   {
     slug: "erros",
-    number: "09",
+    number: "10",
     trail: "Crescimento",
     title: "Erros comuns",
     description:
@@ -448,7 +525,7 @@ export const seedChapters: Chapter[] = [
   },
   {
     slug: "proximos",
-    number: "10",
+    number: "11",
     trail: "Crescimento",
     title: "Próximos passos",
     description:
