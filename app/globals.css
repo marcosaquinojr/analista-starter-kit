@@ -59,7 +59,9 @@ body {
   grid-template-columns: 280px 1fr;
   grid-template-rows: auto 1fr;
   grid-template-areas: "header header" "sidebar main";
-  overflow-x: hidden;
+  /* clip (não hidden) evita transbordo horizontal SEM quebrar o
+     position:sticky do header e da sidebar */
+  overflow-x: clip;
   transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .app-shell.sidebar-collapsed {
