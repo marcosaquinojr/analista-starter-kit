@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { logout } from "@/app/admin/actions";
+import { CtMark } from "@/components/Logo";
 
 export default function AdminChrome({
   children,
@@ -10,7 +11,9 @@ export default function AdminChrome({
     <>
       <header className="admin-header">
         <Link href="/admin" className="brand">
-          <div className="brand-mark">C</div>
+          <span className="brand-mark">
+            <CtMark size={36} />
+          </span>
           <div className="brand-text">
             <span className="brand-title">Edição · Analista Starter Kit</span>
             <span className="brand-sub">Área interna</span>

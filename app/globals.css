@@ -7,13 +7,13 @@
    ============================================================ */
 
 :root {
-  --blue: #0066cc;
-  --blue-dim: #004c99;
+  --blue: #1068f8;
+  --blue-dim: #0b4fd0;
   --blue-deep: #0a2540;
-  --blue-soft: #3399ff;
-  --blue-glow: rgba(0, 102, 204, 0.12);
-  --blue-faint: rgba(0, 102, 204, 0.06);
-  --blue-50: #f0f7ff;
+  --blue-soft: #4d8bff;
+  --blue-glow: rgba(16, 104, 248, 0.12);
+  --blue-faint: rgba(16, 104, 248, 0.06);
+  --blue-50: #eef4ff;
   --bg: #ffffff;
   --bg2: #fafbfc;
   --bg3: #f4f6f9;
@@ -221,7 +221,7 @@ header.site-header {
 }
 .tag-alpha {
   background: var(--blue-faint);
-  border: 1px solid rgba(0, 102, 204, 0.2);
+  border: 1px solid rgba(16, 104, 248, 0.2);
   color: var(--blue);
   padding: 5px 12px;
   border-radius: 100px;
@@ -290,7 +290,7 @@ aside.sidebar {
 .sidebar-nav li a.active {
   background: var(--blue-50);
   color: var(--blue);
-  border-color: rgba(0, 102, 204, 0.18);
+  border-color: rgba(16, 104, 248, 0.18);
   font-weight: 500;
 }
 .sidebar-nav li a .num {
@@ -376,8 +376,8 @@ main.site-main {
 .hero-grid {
   position: absolute;
   inset: -60px -80px 0 -80px;
-  background-image: linear-gradient(rgba(0, 102, 204, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 102, 204, 0.06) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(16, 104, 248, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 104, 248, 0.06) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 70% 60% at 30% 40%, black, transparent);
   pointer-events: none;
@@ -389,7 +389,7 @@ main.site-main {
   right: -120px;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(0, 102, 204, 0.1) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(16, 104, 248, 0.1) 0%, transparent 60%);
   pointer-events: none;
   z-index: -1;
 }
@@ -398,7 +398,7 @@ main.site-main {
   align-items: center;
   gap: 8px;
   background: var(--blue-50);
-  border: 1px solid rgba(0, 102, 204, 0.2);
+  border: 1px solid rgba(16, 104, 248, 0.2);
   color: var(--blue);
   font-size: 11px;
   font-weight: 500;
@@ -613,7 +613,7 @@ main.site-main {
 .chapter-tag {
   display: inline-block;
   background: var(--blue-50);
-  border: 1px solid rgba(0, 102, 204, 0.2);
+  border: 1px solid rgba(16, 104, 248, 0.2);
   color: var(--blue);
   font-size: 10px;
   font-weight: 600;
@@ -882,7 +882,7 @@ main.site-main {
   color: var(--blue);
   font-size: 13px;
   background: var(--blue-50);
-  border: 1px solid rgba(0, 102, 204, 0.2);
+  border: 1px solid rgba(16, 104, 248, 0.2);
   width: 22px;
   height: 22px;
   display: grid;

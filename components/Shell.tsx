@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { ChapterMeta, Trail } from "@/lib/types";
 import { TRAILS } from "@/lib/types";
 import { useCompletion } from "@/components/completion";
+import { CtMark } from "@/components/Logo";
 
 const SIDEBAR_KEY = "analista-kit-sidebar-collapsed";
 
@@ -101,7 +102,9 @@ export default function Shell({
             <span />
           </button>
           <Link href="/" className="brand">
-            <div className="brand-mark">C</div>
+            <span className="brand-mark">
+              <CtMark size={36} />
+            </span>
             <div className="brand-text">
               <span className="brand-title">Analista Starter Kit</span>
               <span className="brand-sub">Onboarding · Citiesoft</span>

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { login, type ActionState } from "@/app/admin/actions";
+import { LogoLockup } from "@/components/Logo";
 
 const initial: ActionState = {};
 
@@ -11,7 +12,9 @@ export default function LoginPage() {
   return (
     <div className="admin-login">
       <div className="admin-login-card">
-        <div className="brand-mark">C</div>
+        <div style={{ marginBottom: 20 }}>
+          <LogoLockup height={26} />
+        </div>
         <h1>Área de edição</h1>
         <p className="admin-login-sub">
           Acesso interno ao Analista Starter Kit. Em breve isto vira login pela
