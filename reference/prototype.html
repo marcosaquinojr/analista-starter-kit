@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analista Starter Kit — Citiesoft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;700;800;900&family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #0066cc;
+  --blue-dim: #004c99;
+  --blue-deep: #0a2540;
+  --blue-soft: #3399ff;
+  --blue-glow: rgba(0, 102, 204, 0.12);
+  --blue-faint: rgba(0, 102, 204, 0.06);
+  --blue-50: #f0f7ff;
+  --bg: #ffffff;
+  --bg2: #fafbfc;
+  --bg3: #f4f6f9;
+  --bg4: #e9edf2;
+  --border: #e5e9ef;
+  --border2: #cdd3dc;
+  --ink: #0f172a;
+  --text: #334155;
+  --text2: #64748b;
+  --text3: #94a3b8;
+  --white: #ffffff;
+  --good: #059669;
+  --good-bg: #ecfdf5;
+  --good-glow: rgba(5, 150, 105, 0.15);
+  --warn: #b45309;
+  --warn-bg: #fef3c7;
+  --bad: #b91c1c;
+  --bad-bg: #fee2e2;
+  --font-display: 'Red Hat Display', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 40px rgba(15, 23, 42, 0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "header header" "sidebar main";
+  overflow-x: hidden;
+  transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+body.sidebar-collapsed { grid-template-columns: 0 1fr; }
+body.sidebar-collapsed aside {
+  transform: translateX(-280px);
+  opacity: 0;
+  pointer-events: none;
+}
+aside { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease; }
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+body.mobile-menu-open .sidebar-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── HEADER ── */
+header {
+  grid-area: header;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+}
+.brand-wrapper { display: flex; align-items: center; gap: 14px; }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-mark {
+  width: 36px; height: 36px;
+  background: var(--blue);
+  border-radius: var(--radius-sm);
+  display: grid; place-items: center;
+  font-family: var(--font-display);
+  font-weight: 900; font-size: 18px;
+  color: var(--white);
+  box-shadow: 0 4px 12px var(--blue-glow);
+}
+.brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+.brand-title {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 16px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.brand-sub {
+  font-size: 12px;
+  color: var(--text2);
+  letter-spacing: 0.01em;
+}
+
+/* HAMBURGER */
+.hamburger {
+  width: 38px; height: 38px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px; padding: 0;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.hamburger:hover {
+  border-color: var(--blue);
+  background: var(--blue-faint);
+}
+.hamburger span {
+  display: block;
+  width: 16px; height: 2px;
+  background: var(--ink);
+  border-radius: 1px;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+  transform-origin: center;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.header-meta { display: flex; gap: 20px; align-items: center; }
+.header-progress {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 12px; color: var(--text2);
+}
+.progress-bar {
+  width: 140px; height: 6px;
+  background: var(--bg3);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--blue-soft));
+  border-radius: 100px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0;
+}
+.progress-text { font-variant-numeric: tabular-nums; min-width: 64px; }
+.tag-alpha {
+  background: var(--blue-faint);
+  border: 1px solid rgba(0, 102, 204, 0.2);
+  color: var(--blue);
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.header-link {
+  color: var(--text2); font-size: 13px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.header-link:hover { color: var(--blue); }
+
+/* ── SIDEBAR ── */
+aside {
+  grid-area: sidebar;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  overflow-y: auto;
+  height: calc(100vh - 69px);
+  position: sticky; top: 69px;
+  z-index: 2;
+}
+.sidebar-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 0 12px;
+  margin-bottom: 8px;
+  margin-top: 24px;
+}
+.sidebar-label:first-of-type { margin-top: 0; }
+.sidebar-nav { list-style: none; margin-bottom: 4px; }
+.sidebar-nav li a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px;
+  font-size: 14px;
+  color: var(--text);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.sidebar-nav li a:hover {
+  background: var(--bg3);
+  color: var(--ink);
+}
+.sidebar-nav li a.active {
+  background: var(--blue-50);
+  color: var(--blue);
+  border-color: rgba(0, 102, 204, 0.18);
+  font-weight: 500;
+}
+.sidebar-nav li a .num {
+  font-size: 12px;
+  color: var(--text3);
+  font-variant-numeric: tabular-nums;
+  min-width: 20px;
+}
+.sidebar-nav li a.active .num { color: var(--blue); }
+.sidebar-nav li a.completed .num { color: var(--good); }
+.sidebar-nav li a .icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--text3);
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.sidebar-nav li a .icon svg { width: 17px; height: 17px; }
+.sidebar-nav li a:hover .icon { color: var(--ink); }
+.sidebar-nav li a.active .icon { color: var(--blue); }
+.sidebar-nav li a.completed .icon { color: var(--good); }
+.sidebar-nav li a .check {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--good);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.sidebar-nav li a .check svg { width: 16px; height: 16px; }
+.sidebar-nav li a.completed .check { opacity: 1; transform: scale(1); }
+.sidebar-footer {
+  margin-top: 32px;
+  padding: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+.sidebar-footer strong { color: var(--ink); }
+.sidebar-reset {
+  width: 100%;
+  margin-top: 12px;
+  padding: 9px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sidebar-reset:hover { border-color: var(--bad); color: var(--bad); }
+
+/* ── MAIN ── */
+main {
+  grid-area: main;
+  padding: 48px 64px;
+  max-width: 960px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── HERO ── */
+.welcome-hero {
+  position: relative;
+  margin-bottom: 56px;
+  padding: 32px 0 28px;
+}
+.hero-grid {
+  position: absolute;
+  inset: -60px -80px 0 -80px;
+  background-image:
+    linear-gradient(rgba(0, 102, 204, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 102, 204, 0.06) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 70% 60% at 30% 40%, black, transparent);
+  pointer-events: none;
+  z-index: -1;
+}
+.hero-glow {
+  position: absolute;
+  top: -180px; right: -120px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0, 102, 204, 0.10) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+.welcome-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--blue-50);
+  border: 1px solid rgba(0, 102, 204, 0.2);
+  color: var(--blue);
+  font-size: 11px; font-weight: 500;
+  padding: 7px 16px;
+  border-radius: 100px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  animation: fadeUp 0.6s ease both;
+}
+.welcome-tag::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--blue);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.welcome-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(36px, 5.2vw, 60px);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  margin-bottom: 24px;
+  max-width: 820px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.welcome-title .accent { color: var(--blue); }
+.welcome-sub {
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--text);
+  max-width: 600px;
+  line-height: 1.65;
+  margin-bottom: 40px;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+.welcome-sub strong { color: var(--ink); font-weight: 500; }
+.welcome-stats {
+  display: flex; gap: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.welcome-stat .num {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 32px;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.welcome-stat .lbl {
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+/* ── TRAIL SECTIONS ── */
+.trail {
+  margin-bottom: 44px;
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+.trail-header {
+  display: flex; align-items: baseline; gap: 16px;
+  margin-bottom: 18px;
+}
+.trail-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.trail-desc {
+  font-size: 13px;
+  color: var(--text3);
+  margin-left: auto;
+  font-style: italic;
+}
+
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.chapter-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.chapter-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 0%, var(--blue-50), transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.chapter-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.chapter-card:hover::before { opacity: 1; }
+.chapter-card-num {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 26px;
+  color: var(--blue);
+  line-height: 1;
+  margin-bottom: 10px;
+  display: block;
+}
+.chapter-card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 6px;
+  position: relative;
+}
+.chapter-card-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+  position: relative;
+}
+.chapter-card.completed {
+  background: var(--good-bg);
+  border-color: rgba(5, 150, 105, 0.25);
+}
+.chapter-card.completed .chapter-card-num {
+  color: var(--good);
+  opacity: 0.7;
+}
+.chapter-card.completed::after {
+  content: '';
+  position: absolute;
+  top: 16px; right: 18px;
+  width: 20px; height: 20px;
+  background-color: var(--good);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M22 11.08V12a10 10 0 1 1-5.93-9.14'/><polyline points='22 4 12 14.01 9 11.01'/></svg>") center/contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M22 11.08V12a10 10 0 1 1-5.93-9.14'/><polyline points='22 4 12 14.01 9 11.01'/></svg>") center/contain no-repeat;
+  animation: checkFadeIn 0.3s ease;
+  z-index: 1;
+}
+@keyframes checkFadeIn {
+  from { opacity: 0; transform: scale(0.5) translateY(-4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── CHAPTER HEADER ── */
+.chapter-header {
+  margin-bottom: 36px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.chapter-tag {
+  display: inline-block;
+  background: var(--blue-50);
+  border: 1px solid rgba(0, 102, 204, 0.2);
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 100px;
+  margin-bottom: 18px;
+}
+.chapter-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.chapter-desc {
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--text);
+  max-width: 660px;
+  line-height: 1.6;
+}
+.chapter-meta {
+  display: flex;
+  gap: 24px;
+  margin-top: 18px;
+  font-size: 12px;
+  color: var(--text3);
+}
+.chapter-meta span { display: flex; align-items: center; gap: 6px; }
+
+/* ── SECTIONS ── */
+section { display: none; position: relative; }
+section.active { display: block; }
+
+h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 40px 0 14px;
+}
+h2:first-of-type { margin-top: 0; }
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--ink);
+  margin: 26px 0 10px;
+}
+p { margin-bottom: 16px; color: var(--text); }
+p strong, li strong { color: var(--ink); font-weight: 600; }
+ul, ol { margin: 14px 0 20px 20px; color: var(--text); }
+li { margin-bottom: 6px; }
+em { color: var(--text2); font-style: italic; }
+
+/* ── CALLOUTS ── */
+.callout {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--blue);
+  padding: 18px 22px;
+  border-radius: var(--radius-sm);
+  margin: 24px 0;
+  font-size: 14px;
+  color: var(--text);
+}
+.callout.warn { background: var(--warn-bg); border-left-color: var(--warn); border-color: rgba(180, 83, 9, 0.15); }
+.callout.bad { background: var(--bad-bg); border-left-color: var(--bad); border-color: rgba(185, 28, 28, 0.15); }
+.callout.good { background: var(--good-bg); border-left-color: var(--good); border-color: rgba(5, 150, 105, 0.18); }
+.callout-label {
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: var(--blue);
+}
+.callout.warn .callout-label { color: var(--warn); }
+.callout.bad .callout-label { color: var(--bad); }
+.callout.good .callout-label { color: var(--good); }
+.callout a { color: var(--blue); font-weight: 500; text-decoration: none; }
+.callout a:hover { text-decoration: underline; }
+
+/* ── CARDS ── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 20px 0 24px;
+}
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  transition: all 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.card:hover {
+  border-color: var(--blue);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.card-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+/* ── TABLE ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0 24px;
+  font-size: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+th, td {
+  text-align: left;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+}
+th {
+  background: var(--bg3);
+  font-weight: 600;
+  color: var(--text);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+td { color: var(--text); }
+tr:last-child td { border-bottom: none; }
+
+/* ── PROCESS DIAGRAM ── */
+.process {
+  display: flex; align-items: center; gap: 10px;
+  margin: 24px 0 32px;
+  flex-wrap: wrap;
+}
+.process-step {
+  flex: 1; min-width: 130px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--text2);
+  transition: all 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.process-step:hover {
+  border-color: var(--blue);
+  box-shadow: var(--shadow-md);
+}
+.process-step .step-num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 10px;
+  color: var(--blue);
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+  display: block;
+}
+.process-step .step-name {
+  font-weight: 600;
+  color: var(--ink);
+}
+.process-arrow { color: var(--border2); font-size: 18px; }
+
+/* ── FAQ ── */
+.faq-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+  padding: 18px 22px;
+  transition: all 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.faq-item:hover { border-color: var(--border2); box-shadow: var(--shadow-md); }
+.faq-item .q {
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 8px;
+  display: flex; align-items: baseline; gap: 10px;
+}
+.faq-item .q::before {
+  content: 'P';
+  font-family: var(--font-display);
+  font-weight: 900;
+  color: var(--blue);
+  font-size: 13px;
+  background: var(--blue-50);
+  border: 1px solid rgba(0, 102, 204, 0.2);
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.faq-item .a {
+  font-size: 14px;
+  color: var(--text);
+  padding-left: 32px;
+}
+
+/* ── CHAPTER COMPLETE ── */
+.chapter-complete {
+  margin-top: 56px;
+  padding: 22px 24px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px;
+  transition: all 0.25s ease;
+}
+.chapter-complete.done {
+  background: var(--bg2);
+  border-color: var(--border);
+  border-left: 3px solid var(--good);
+  padding-left: 21px;
+}
+.chapter-complete-text {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.5;
+}
+.chapter-complete-text strong { color: var(--ink); }
+.chapter-complete.done .chapter-complete-text { color: var(--text2); }
+.chapter-complete.done .chapter-complete-text strong { color: var(--ink); }
+.btn-complete {
+  background: var(--blue);
+  color: var(--white);
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-complete:hover {
+  background: var(--blue-dim);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px var(--blue-glow);
+}
+.chapter-complete.done .btn-complete {
+  background: var(--bg);
+  color: var(--good);
+  border: 1px solid var(--good);
+}
+.chapter-complete.done .btn-complete:hover {
+  background: var(--good-bg);
+}
+
+/* ── DEFINITION LIST (for glossário) ── */
+.glossary {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.glossary-item {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.glossary-item:last-child { border-bottom: none; }
+.glossary-term {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.glossary-def {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 900px) {
+  body {
+    grid-template-columns: 1fr;
+    grid-template-areas: "header" "main";
+    transition: none;
+  }
+  aside {
+    position: fixed;
+    top: 69px; left: 0; bottom: 0;
+    width: 280px;
+    z-index: 95;
+    transform: translateX(-100%);
+    opacity: 1;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body.mobile-menu-open aside {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  .sidebar-backdrop { display: block; }
+  main { padding: 32px 24px; }
+  header { padding: 12px 20px; }
+  .header-progress { display: none; }
+  .welcome-title { font-size: 32px; }
+  .chapter-title { font-size: 28px; }
+  .welcome-stats { gap: 24px; flex-wrap: wrap; }
+  .trail-header { flex-wrap: wrap; }
+  .trail-desc { margin-left: 0; width: 100%; margin-top: 4px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand-wrapper">
+    <button class="hamburger" id="menu-toggle" aria-label="Mostrar/ocultar menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div class="brand-text">
+        <div class="brand-title">Analista Starter Kit</div>
+        <div class="brand-sub">Manual de onboarding · Citiesoft</div>
+      </div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="header-progress">
+      <span class="progress-text"><span id="progress-completed">0</span> de 10 concluídos</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <span class="tag-alpha">Alpha · v0.1</span>
+    <a href="#" class="header-link">Feedback</a>
+  </div>
+</header>
+
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+<aside>
+  <div class="sidebar-label">Início</div>
+  <ul class="sidebar-nav">
+    <li><a data-target="home" class="nav-link active"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="num">00</span>Bem-vindo</a></li>
+  </ul>
+
+  <div class="sidebar-label">Contexto</div>
+  <ul class="sidebar-nav">
+    <li><a data-target="cultura" class="nav-link"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg></span><span class="num">01</span>Cultura Citiesoft</a></li>
+    <li><a data-target="quem-e-quem" class="nav-link"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="num">02</span>Quem é quem</a></li>
+    <li><a data-target="glossario" class="nav-link"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span class="num">03</span>Glossário</a></li>
+  </ul>
+
+  <div class="sidebar-label">Rotina</div>
+  <ul class="sidebar-nav">
+    <li><a data-target="processo" class="nav-link"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span><span class="num">04</span>Processo do time</a></li>
+    <li><a data-target="ferramentas" class="nav-link"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><span class="num">05</span>Ferramentas</a></li>
+    <li><a data-target="templates" class="nav-link"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="7" rx="1"/><rect x="3" y="14" width="9" height="7" rx="1"/><rect x="16" y="14" width="5" height="7" rx="1"/></svg></span><span class="num">06</span>Templates</a></li>
+    <li><a data-target="exemplos" class="nav-link"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z"/></svg></span><span class="num">07</span>Exemplos reais</a></li>
+  </ul>
+
+  <div class="sidebar-label">Crescimento</div>
+  <ul class="sidebar-nav">
+    <li><a data-target="faq" class="nav-link"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="num">08</span>FAQ — Primeiros 30 dias</a></li>
+    <li><a data-target="erros" class="nav-link"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="num">09</span>Erros comuns</a></li>
+    <li><a data-target="proximos" class="nav-link"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><span class="num">10</span>Próximos passos</a></li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <strong>Alpha v0.1</strong> — conteúdo especulativo. Será refinado após respostas do form de discovery.
+    <button class="sidebar-reset" id="reset-btn">Resetar progresso</button>
+  </div>
+</aside>
+
+<main>
+
+<!-- ═══ HOME ═══ -->
+<section id="home" class="active">
+  <div class="welcome-hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <span class="welcome-tag">Bem-vindo à Citiesoft</span>
+    <h1 class="welcome-title">Você não vai precisar <span class="accent">adivinhar</span> como as coisas funcionam aqui.</h1>
+    <p class="welcome-sub">Este manual reúne o que os analistas mais experientes do time aprenderam na marra — para você chegar produzindo com qualidade <strong>desde o primeiro mês</strong>.</p>
+    <div class="welcome-stats">
+      <div class="welcome-stat"><div class="num">10</div><div class="lbl">capítulos</div></div>
+      <div class="welcome-stat"><div class="num">3</div><div class="lbl">trilhas</div></div>
+      <div class="welcome-stat"><div class="num">~45 min</div><div class="lbl">leitura total</div></div>
+      <div class="welcome-stat"><div class="num">∞</div><div class="lbl">consultas</div></div>
+    </div>
+  </div>
+
+  <div class="trail">
+    <div class="trail-header">
+      <span class="trail-title">Contexto</span>
+      <span class="trail-desc">Antes de produzir, entenda o terreno</span>
+    </div>
+    <div class="chapter-grid">
+      <a class="chapter-card" data-target="cultura">
+        <span class="chapter-card-num">01</span>
+        <div class="chapter-card-title">Cultura Citiesoft</div>
+        <div class="chapter-card-desc">O jeito do time, valores tácitos, o que a gente prioriza quando precisa escolher.</div>
+      </a>
+      <a class="chapter-card" data-target="quem-e-quem">
+        <span class="chapter-card-num">02</span>
+        <div class="chapter-card-title">Quem é quem</div>
+        <div class="chapter-card-desc">Organograma mínimo. A pessoa certa pra cada tipo de dúvida.</div>
+      </a>
+      <a class="chapter-card" data-target="glossario">
+        <span class="chapter-card-num">03</span>
+        <div class="chapter-card-title">Glossário</div>
+        <div class="chapter-card-desc">Termos do domínio, siglas, jargão do cliente, jargão Citiesoft.</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="trail">
+    <div class="trail-header">
+      <span class="trail-title">Rotina</span>
+      <span class="trail-desc">Como o trabalho do analista flui</span>
+    </div>
+    <div class="chapter-grid">
+      <a class="chapter-card" data-target="processo">
+        <span class="chapter-card-num">04</span>
+        <div class="chapter-card-title">Processo do time</div>
+        <div class="chapter-card-desc">Do início ao fim de uma demanda: o fluxo real, não o do PowerPoint.</div>
+      </a>
+      <a class="chapter-card" data-target="ferramentas">
+        <span class="chapter-card-num">05</span>
+        <div class="chapter-card-title">Ferramentas</div>
+        <div class="chapter-card-desc">Azure DevOps, Teams, Confluence — pra que serve cada uma na prática.</div>
+      </a>
+      <a class="chapter-card" data-target="templates">
+        <span class="chapter-card-num">06</span>
+        <div class="chapter-card-title">Templates</div>
+        <div class="chapter-card-desc">Os artefatos que o time produz, em padrão pronto pra usar.</div>
+      </a>
+      <a class="chapter-card" data-target="exemplos">
+        <span class="chapter-card-num">07</span>
+        <div class="chapter-card-title">Exemplos reais</div>
+        <div class="chapter-card-desc">Um artefato real (anonimizado) por template, com comentários explicando decisões.</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="trail">
+    <div class="trail-header">
+      <span class="trail-title">Crescimento</span>
+      <span class="trail-desc">Quando precisar de mais</span>
+    </div>
+    <div class="chapter-grid">
+      <a class="chapter-card" data-target="faq">
+        <span class="chapter-card-num">08</span>
+        <div class="chapter-card-title">FAQ — Primeiros 30 dias</div>
+        <div class="chapter-card-desc">As perguntas que todo novo analista faz, respondidas de uma vez.</div>
+      </a>
+      <a class="chapter-card" data-target="erros">
+        <span class="chapter-card-num">09</span>
+        <div class="chapter-card-title">Erros comuns</div>
+        <div class="chapter-card-desc">As armadilhas que pegam quase todo mundo — e como evitar.</div>
+      </a>
+      <a class="chapter-card" data-target="proximos">
+        <span class="chapter-card-num">10</span>
+        <div class="chapter-card-title">Próximos passos</div>
+        <div class="chapter-card-desc">Quando você já dominar o básico, por onde aprofundar.</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-label">Alpha</div>
+    Conteúdo especulativo enquanto o form de discovery não retorna ≥5 respostas. Capítulos podem ser fundidos, removidos ou reordenados quando os dados chegarem.
+  </div>
+</section>
+
+<!-- ═══ CULTURA ═══ -->
+<section id="cultura">
+  <div class="chapter-header">
+    <span class="chapter-tag">Contexto · Cap 01</span>
+    <h1 class="chapter-title">Cultura Citiesoft</h1>
+    <p class="chapter-desc">O jeito do time, valores tácitos, o que a gente prioriza quando precisa escolher.</p>
+    <div class="chapter-meta">
+      <span>⏱ 5 min de leitura</span>
+      <span>📌 Atualizado em 19/05/2026</span>
+    </div>
+  </div>
+
+  <h2>O que a gente prioriza</h2>
+  <p>Antes de qualquer processo ou ferramenta, três coisas guiam decisão aqui:</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Clareza &gt; volume</div>
+      <div class="card-desc">Vale mais um artefato curto e direto do que um documento de 20 páginas que ninguém lê.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Contexto do cliente</div>
+      <div class="card-desc">Trabalhamos muito com setor público. Decisões sem entender o contexto do edital, do servidor e do cidadão dão errado.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Decisão com dado</div>
+      <div class="card-desc">Achismo é ponto de partida, nunca de chegada. Antes de propor solução, busque pelo menos uma evidência.</div>
+    </div>
+  </div>
+
+  <h2>Como o time toma decisões</h2>
+  <p>A maioria das decisões técnicas é tomada <strong>em par</strong> — analista + dev sênior, ou analista + PO. Decisões de escopo passam pelo gestor da conta. Decisões de processo interno são feitas em retro mensal.</p>
+
+  <div class="callout">
+    <div class="callout-label">Princípio</div>
+    Discorde antes da decisão. Depois de fechada, todo mundo sustenta o combinado — mesmo quem era contra.
+  </div>
+
+  <h2>Como discordar bem</h2>
+  <p>Discordar é esperado. Discordar com mau jeito quebra confiança. O padrão é:</p>
+  <ol>
+    <li>Pergunte o motivo antes de criticar (<em>"O que te levou a propor isso?"</em>).</li>
+    <li>Apresente sua leitura com evidência, não com tom.</li>
+    <li>Proponha uma alternativa, não só um veto.</li>
+    <li>Se persiste o desacordo, escalonem juntos pra um terceiro.</li>
+  </ol>
+
+  <h2>O que NÃO acontece aqui</h2>
+  <p>Algumas práticas comuns em outros lugares são <strong>explicitamente evitadas</strong>:</p>
+  <ul>
+    <li>"Manda pro cliente o que eles pediram" sem questionar — analista que vira escriba é desperdício.</li>
+    <li>Reuniões longas sem agenda escrita.</li>
+    <li>Decisão por hierarquia ("o chefe disse"). Hierarquia entra só em empate técnico.</li>
+    <li>Documentação por documentação. Se não vai ser lido, não escreve.</li>
+  </ul>
+
+  <div class="callout good">
+    <div class="callout-label">Sinal de cultura saudável</div>
+    Você ouve um analista júnior discordando de um sênior numa reunião — e o sênior agradecendo. Acontece toda semana.
+  </div>
+</section>
+
+<!-- ═══ QUEM É QUEM ═══ -->
+<section id="quem-e-quem">
+  <div class="chapter-header">
+    <span class="chapter-tag">Contexto · Cap 02</span>
+    <h1 class="chapter-title">Quem é quem</h1>
+    <p class="chapter-desc">Organograma mínimo do time, papéis, e a pessoa certa pra cada tipo de dúvida.</p>
+    <div class="chapter-meta">
+      <span>⏱ 4 min de leitura</span>
+      <span>📌 Atualizado em 19/05/2026</span>
+    </div>
+  </div>
+
+  <h2>Estrutura mínima do time</h2>
+  <p>O time se organiza em <strong>squads</strong> por cliente ou contrato. Cada squad tem:</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Gestor da conta</div>
+      <div class="card-desc">Ponto único com o cliente. Decisões de escopo, prazo e financeiro.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Analista de negócio</div>
+      <div class="card-desc">Você. Descobre, escreve, valida, refina, entrega artefato.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">PO interno</div>
+      <div class="card-desc">Prioriza o backlog dentro do escopo já fechado.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Dev sênior técnico</div>
+      <div class="card-desc">Valida viabilidade técnica antes de mandar o artefato pra entrega.</div>
+    </div>
+  </div>
+
+  <h2>Pra cada coisa, fala com…</h2>
+  <table>
+    <tr><th>Pra…</th><th>Procura</th></tr>
+    <tr><td>Entender o contrato / escopo macro</td><td>Gestor da conta</td></tr>
+    <tr><td>Prioridade do que entra no sprint</td><td>PO interno</td></tr>
+    <tr><td>Viabilidade técnica da feature</td><td>Dev sênior do squad</td></tr>
+    <tr><td>Revisar artefato antes do PO ver</td><td>Outro analista do squad (par)</td></tr>
+    <tr><td>Política interna Citiesoft (férias, RH, etc.)</td><td>Gestor de pessoas</td></tr>
+    <tr><td>Histórico do cliente / contexto político</td><td>Gestor da conta</td></tr>
+    <tr><td>Dúvida sobre Azure DevOps</td><td>PO interno ou qualquer dev</td></tr>
+  </table>
+
+  <h2>Mentoria pareada</h2>
+  <p>Todo entrante novo é pareado com um <strong>analista-mentor</strong> nos primeiros 60 dias. O mentor:</p>
+  <ul>
+    <li>Faz reunião semanal de 30 min ("retrô individual")</li>
+    <li>Revisa pelo menos 1 artefato seu por semana antes do PO</li>
+    <li>Te apresenta às pessoas-chave do squad e dos clientes</li>
+    <li>Está disponível pra perguntas via Teams direto (sem cerimônia)</li>
+  </ul>
+
+  <div class="callout">
+    <div class="callout-label">Como acionar o mentor</div>
+    Manda mensagem direta no Teams. Não precisa marcar reunião pra dúvida simples — pergunta vale como ferramenta de aprendizado.
+  </div>
+
+  <h2>Como pedir ajuda sem culpa</h2>
+  <p>Aqui, pedir ajuda <strong>não é sinal de fraqueza</strong>. É sinal de que você está economizando o tempo do time evitando refação. Faça antes:</p>
+  <ol>
+    <li>Tente sozinho por uns 15-20 min.</li>
+    <li>Anote exatamente onde travou e o que já tentou.</li>
+    <li>Pergunte com contexto: "Estou tentando X, esperava Y, mas saiu Z. Já chequei A e B."</li>
+  </ol>
+  <p>Quem fica travado em silêncio por horas é mais custoso que quem pergunta cedo. Esse é o jeito da casa.</p>
+</section>
+
+<!-- ═══ GLOSSÁRIO ═══ -->
+<section id="glossario">
+  <div class="chapter-header">
+    <span class="chapter-tag">Contexto · Cap 03</span>
+    <h1 class="chapter-title">Glossário</h1>
+    <p class="chapter-desc">Termos do domínio, siglas, jargão do cliente, jargão Citiesoft. Consulta rápida.</p>
+    <div class="chapter-meta">
+      <span>⏱ Consulta livre</span>
+      <span>📌 Atualizado em 19/05/2026</span>
+    </div>
+  </div>
+
+  <h2>Termos do setor público</h2>
+  <div class="glossary">
+    <div class="glossary-item">
+      <div class="glossary-term">Edital</div>
+      <div class="glossary-def">Documento que define escopo, regras e critérios de uma licitação pública. Onde o projeto começa, formalmente.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Termo de Referência (TR)</div>
+      <div class="glossary-def">Detalhamento técnico dentro do edital. Define o "o que" da contratação. O analista lê isto antes de tudo.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Ata de Registro de Preços (ARP)</div>
+      <div class="glossary-def">Documento que vincula fornecedor e órgão a preços e serviços por um período. Define o que pode ser comprado e a que preço.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">LRF</div>
+      <div class="glossary-def">Lei de Responsabilidade Fiscal. Define limites de gasto público — afeta prazos de contratação e empenho.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Empenho</div>
+      <div class="glossary-def">Reserva orçamentária prévia ao gasto público. Sem empenho, contrato não anda — entender quando o empenho sai define cronograma.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">TCE / TCU</div>
+      <div class="glossary-def">Tribunal de Contas Estadual / da União. Fiscalizam o gasto público. Auditam o que a gente entrega indiretamente.</div>
+    </div>
+  </div>
+
+  <h2>Termos técnicos / produto</h2>
+  <div class="glossary">
+    <div class="glossary-item">
+      <div class="glossary-term">PBI (Product Backlog Item)</div>
+      <div class="glossary-def">Item do backlog no Azure DevOps. Unidade mínima de trabalho. O analista escreve, o dev implementa.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">BRD (Business Requirements Document)</div>
+      <div class="glossary-def">Documento mais formal de requisitos. Usado quando o cliente exige doc longo pra aprovação interna.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">BPMN</div>
+      <div class="glossary-def">Business Process Model and Notation. Notação padrão pra desenhar processos de negócio. Usada quando o processo É o produto.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">DoR / DoD</div>
+      <div class="glossary-def">Definition of Ready / Definition of Done. Critérios pra um PBI entrar no sprint (DoR) ou sair (DoD).</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Critério de aceite</div>
+      <div class="glossary-def">Condição mensurável que define "está pronto". Padrão: Dado X · Quando Y · Então Z.</div>
+    </div>
+  </div>
+
+  <h2>Jargão Citiesoft</h2>
+  <div class="glossary">
+    <div class="glossary-item">
+      <div class="glossary-term">Squad</div>
+      <div class="glossary-def">Time alocado a um cliente ou contrato. Pode mudar de configuração trimestralmente.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Retrô individual</div>
+      <div class="glossary-def">Reunião semanal de 30 min entre o analista e o mentor. Espaço informal pra desabafar e calibrar.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Par de revisão</div>
+      <div class="glossary-def">Outro analista que olha seu artefato antes do PO. Padrão obrigatório nos primeiros 90 dias.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Alpha de campo</div>
+      <div class="glossary-def">Quando o analista vai presencialmente ao cliente acompanhar uso da feature por 1 dia. Geralmente acontece pós-entrega de algo crítico.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROCESSO ═══ -->
+<section id="processo">
+  <div class="chapter-header">
+    <span class="chapter-tag">Rotina · Cap 04</span>
+    <h1 class="chapter-title">Processo do time</h1>
+    <p class="chapter-desc">Do início ao fim de uma demanda padrão. O que acontece de verdade — não o que está no PowerPoint da reunião kick-off.</p>
+    <div class="chapter-meta">
+      <span>⏱ 8 min de leitura</span>
+      <span>📌 Atualizado em 19/05/2026</span>
+      <span>👥 Validado por: a definir</span>
+    </div>
+  </div>
+
+  <h2>O fluxo, em uma linha</h2>
+  <div class="process">
+    <div class="process-step"><span class="step-num">01</span><div class="step-name">Briefing inicial</div></div>
+    <div class="process-arrow">→</div>
+    <div class="process-step"><span class="step-num">02</span><div class="step-name">Discovery</div></div>
+    <div class="process-arrow">→</div>
+    <div class="process-step"><span class="step-num">03</span><div class="step-name">Escrita do artefato</div></div>
+    <div class="process-arrow">→</div>
+    <div class="process-step"><span class="step-num">04</span><div class="step-name">Refinamento</div></div>
+    <div class="process-arrow">→</div>
+    <div class="process-step"><span class="step-num">05</span><div class="step-name">Entrega</div></div>
+  </div>
+
+  <h2>01. Briefing inicial</h2>
+  <p>Toda demanda começa com uma <strong>conversa</strong>, não com um documento. Pode ser uma reunião com o cliente, uma mensagem do PO, ou um e-mail. Sua primeira função é <strong>capturar</strong> e <strong>confirmar</strong> o que ouviu — não interpretar.</p>
+
+  <div class="callout warn">
+    <div class="callout-label">Armadilha clássica</div>
+    Sair direto pra solução. Se o briefing veio como "queremos uma tela X", recue até "qual problema X resolve?" antes de qualquer coisa.
+  </div>
+
+  <h3>O que você precisa sair com</h3>
+  <ul>
+    <li><strong>Quem</strong> tem o problema (persona, papel, segmento)</li>
+    <li><strong>O que</strong> é o problema, com pelo menos 1 exemplo concreto</li>
+    <li><strong>Por que agora</strong> — o que tornou isso urgente</li>
+    <li><strong>Critério de pronto</strong> mínimo — como saberemos que resolveu</li>
+    <li><strong>Quem decide</strong> se a entrega aceita — nome e papel</li>
+  </ul>
+
+  <h2>02. Discovery</h2>
+  <p>O briefing levantou hipóteses. Discovery valida quais sobrevivem ao contato com a realidade. Tipicamente: 2-5 entrevistas com usuário, 1 sessão com dados de uso (se houver), 1 olhar nos artefatos existentes.</p>
+
+  <p>Não é fase "obrigatória" — pode ser comprimida em 1 conversa de 30 min se o problema for simples e bem conhecido. Mas <strong>nunca pule</strong> em demandas novas para a Citiesoft.</p>
+
+  <div class="callout">
+    <div class="callout-label">Sinal de que pode pular</div>
+    Mesmo problema que outro cliente já trouxe, com solução validada. Ainda assim, confirme com 1 ligação rápida.
+  </div>
+
+  <h2>03. Escrita do artefato</h2>
+  <p>Saiu do discovery, agora você produz o <strong>documento de saída</strong>. O tipo depende do que foi acordado:</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">PBI no Azure DevOps</div>
+      <div class="card-desc">Default pra demandas pequenas/médias. Template no Cap. 06.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">BRD curto</div>
+      <div class="card-desc">Quando o cliente precisa de doc formal pra aprovação interna.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Casos de uso</div>
+      <div class="card-desc">Sistemas com fluxos múltiplos / contratos públicos exigem.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">BPMN</div>
+      <div class="card-desc">Quando o processo é o produto: discovery em órgão público sempre.</div>
+    </div>
+  </div>
+
+  <p>Use <strong>sempre</strong> os templates do Cap. 06 — não comece do zero. Eles foram validados por mais de uma entrega.</p>
+
+  <h2>04. Refinamento</h2>
+  <p>Antes de mandar pro cliente / PO / dev: <strong>revisão própria</strong> seguida de <strong>revisão de par</strong>.</p>
+
+  <h3>Checklist de revisão própria</h3>
+  <ul>
+    <li>Problema declarado bate com o briefing inicial?</li>
+    <li>Tem ao menos 1 critério de aceite claro?</li>
+    <li>Linguagem está no nível do leitor (cliente lê? dev lê?)?</li>
+    <li>Acrônimos e jargões estão explicados ou removidos?</li>
+    <li>Tem exemplos concretos onde a abstração pesa?</li>
+  </ul>
+
+  <h3>Revisão de par</h3>
+  <p>Mande pra <strong>outro analista</strong> antes do PO. Dois pares de olhos pegam ~80% dos erros que o cliente apontaria. Quem revisar? Ver Cap. 02 (Quem é quem).</p>
+
+  <h2>05. Entrega</h2>
+  <p>Entrega é uma <strong>conversa</strong>, não um anexo de e-mail. Sempre acompanhe o artefato de uma chamada de 15-30 min:</p>
+  <ol>
+    <li>Recap rápido do que foi solicitado</li>
+    <li>O que entrou no escopo e o que ficou fora (com justificativa)</li>
+    <li>Pontos de decisão que precisam de validação do cliente</li>
+    <li>Próximos passos com responsável e data</li>
+  </ol>
+
+  <div class="callout good">
+    <div class="callout-label">Sinal de entrega bem-feita</div>
+    O cliente sai da call sabendo o que ele precisa fazer a seguir, sem precisar reabrir o documento.
+  </div>
+
+  <h2>Variações por tipo de cliente</h2>
+  <table>
+    <tr><th>Tipo de cliente</th><th>Particularidade do processo</th></tr>
+    <tr><td>Governo municipal</td><td>Briefing tende a ser via ofício/edital. Discovery limitado por LGPD. Entrega formal em PDF + ata.</td></tr>
+    <tr><td>Governo estadual</td><td>Mais camadas de aprovação. Sempre validar com TI do órgão antes de fechar escopo.</td></tr>
+    <tr><td>Empresa privada</td><td>Mais rápido. Briefing pode ser por chat. Discovery direto com usuário final.</td></tr>
+    <tr><td>Sistema interno Citiesoft</td><td>Briefing vem do PO interno. Discovery pode ser via Teams. Entrega no próprio PBI.</td></tr>
+  </table>
+
+  <h2>O que acontece quando o processo desanda</h2>
+  <div class="callout bad">
+    <div class="callout-label">Sintomas comuns</div>
+    Cliente devolveu o artefato com mais de 3 ajustes? Provavelmente o briefing (etapa 1) foi raso. Refaça a entrevista com o decisor, não tente "consertar" o documento.
+  </div>
+
+  <p>Outros sintomas e diagnósticos no Cap. 09 (Erros comuns).</p>
+
+  <div class="callout">
+    <div class="callout-label">Próximo capítulo</div>
+    <a href="#" data-target="ferramentas">Capítulo 05 — Ferramentas →</a>
+  </div>
+</section>
+
+<!-- ═══ FERRAMENTAS ═══ -->
+<section id="ferramentas">
+  <div class="chapter-header">
+    <span class="chapter-tag">Rotina · Cap 05</span>
+    <h1 class="chapter-title">Ferramentas</h1>
+    <p class="chapter-desc">Azure DevOps, Teams, Confluence — pra que serve cada uma na prática.</p>
+    <div class="chapter-meta">
+      <span>⏱ 6 min de leitura</span>
+      <span>📌 Atualizado em 19/05/2026</span>
+    </div>
+  </div>
+
+  <h2>Stack do analista</h2>
+  <p>Você vai viver em ~4 ferramentas. Cada uma tem um propósito claro — usar a errada vira retrabalho.</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Azure DevOps</div>
+      <div class="card-desc">Onde os PBIs vivem. Onde devs lêem o que você escreve. Onde o sprint roda.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Microsoft Teams</div>
+      <div class="card-desc">Reuniões, chat de squad, comunicação rápida com cliente quando autorizado.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Sharepoint / OneDrive</div>
+      <div class="card-desc">Documentos formais. Atas, BRDs longos, materiais de cliente.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Lucid / Miro</div>
+      <div class="card-desc">Diagramas BPMN, jornadas, mapas mentais durante discovery.</div>
+    </div>
+  </div>
+
+  <h2>Azure DevOps na prática</h2>
+  <p>É o sistema operacional do squad. Você passa metade do dia aqui.</p>
+
+  <h3>Tipos de work item</h3>
+  <ul>
+    <li><strong>Feature</strong> — agrupa PBIs relacionados. Você raramente cria, mas vai usar pra organizar.</li>
+    <li><strong>Product Backlog Item (PBI)</strong> — o item que você escreve. É a unidade mínima de trabalho.</li>
+    <li><strong>Task</strong> — quebra técnica do PBI feita pelo dev. Você não escreve, mas valida no refinamento.</li>
+    <li><strong>Bug</strong> — registro de defeito. Frequentemente quem abre é o QA, mas analista também pode.</li>
+  </ul>
+
+  <h3>Quando usar cada um</h3>
+  <table>
+    <tr><th>Situação</th><th>O que criar</th></tr>
+    <tr><td>Nova feature acordada com cliente</td><td>Feature → quebra em PBIs</td></tr>
+    <tr><td>Pedido pontual do cliente ("muda esse botão")</td><td>PBI direto</td></tr>
+    <tr><td>Problema descoberto em produção</td><td>Bug</td></tr>
+    <tr><td>Refatoração técnica</td><td>PBI tipo "Technical debt"</td></tr>
+  </table>
+
+  <div class="callout warn">
+    <div class="callout-label">Atenção</div>
+    Não crie PBI sem critério de aceite, mesmo pra demandas pequenas. PBI sem critério vira retrabalho garantido.
+  </div>
+
+  <h2>Microsoft Teams</h2>
+  <p>Use Teams pra <strong>conversa</strong>, não pra <strong>documento</strong>. Mensagem do Teams some na esteira.</p>
+
+  <ul>
+    <li><strong>Chat do squad</strong>: dúvidas operacionais, alinhamentos rápidos.</li>
+    <li><strong>Canal do cliente</strong>: quando autorizado pelo gestor da conta. Comunicação formal.</li>
+    <li><strong>Reuniões</strong>: pause a gravação automática pra discovery sensível (LGPD).</li>
+  </ul>
+
+  <div class="callout">
+    <div class="callout-label">Regra de ouro</div>
+    Decisão tomada no Teams precisa virar resumo escrito no Azure DevOps ou no Sharepoint. Se não virar, é como se não existisse.
+  </div>
+
+  <h2>Sharepoint / OneDrive</h2>
+  <p>Pra documentos que precisam <strong>durar</strong>. Ata de kick-off, BRD entregue, especificações longas, materiais que o cliente precisa anexar a um processo formal.</p>
+
+  <h3>Organização padrão</h3>
+  <ul>
+    <li><strong>/clientes/[nome]/01-contrato</strong> — edital, ARP, TR.</li>
+    <li><strong>/clientes/[nome]/02-discovery</strong> — entrevistas, atas, hipóteses.</li>
+    <li><strong>/clientes/[nome]/03-entregas</strong> — versões oficiais dos artefatos.</li>
+    <li><strong>/clientes/[nome]/04-reunioes</strong> — atas e gravações autorizadas.</li>
+  </ul>
+
+  <h2>Lucid / Miro</h2>
+  <p>Visualização. Não documente em ferramenta visual o que cabe em texto — diagrama feio é pior que parágrafo bom.</p>
+
+  <ul>
+    <li><strong>BPMN</strong>: diagramas de processo no Lucid (padrão Citiesoft).</li>
+    <li><strong>Discovery</strong>: post-its, jornada, mapa de empatia no Miro.</li>
+    <li><strong>Arquitetura</strong>: você não desenha. O dev sênior faz e te explica.</li>
+  </ul>
+</section>
+
+<!-- ═══ TEMPLATES ═══ -->
+<section id="templates">
+  <div class="chapter-header">
+    <span class="chapter-tag">Rotina · Cap 06</span>
+    <h1 class="chapter-title">Templates</h1>
+    <p class="chapter-desc">Os artefatos que o time produz, em padrão pronto pra usar. Não escreva do zero.</p>
+    <div class="chapter-meta">
+      <span>⏱ 5 min de leitura + consulta</span>
+      <span>📌 Atualizado em 19/05/2026</span>
+    </div>
+  </div>
+
+  <h2>Templates disponíveis</h2>
+  <p>São 6 templates oficiais. Cada um tem um caso de uso claro — escolher o errado custa retrabalho.</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">PBI Padrão</div>
+      <div class="card-desc">Default pra demanda pequena/média. Como/Quero/Para que + Dado/Quando/Então.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">BRD curto</div>
+      <div class="card-desc">Doc formal pra cliente aprovar internamente. ~3 páginas.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Casos de uso</div>
+      <div class="card-desc">Sistema com fluxos múltiplos. Padrão UML simplificado.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">BPMN do processo</div>
+      <div class="card-desc">Quando o processo é o produto. Notação BPMN 2.0 padrão.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Matriz de stakeholders</div>
+      <div class="card-desc">Pra projetos com mais de 5 atores envolvidos. Quem decide × quem influencia.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Ata de reunião</div>
+      <div class="card-desc">Decisões + responsáveis + prazos. Curta. Vai no Sharepoint do cliente.</div>
+    </div>
+  </div>
+
+  <h2>Qual template escolher?</h2>
+  <table>
+    <tr><th>Se a demanda é…</th><th>Use…</th></tr>
+    <tr><td>Mudança pontual / feature pequena</td><td>PBI Padrão</td></tr>
+    <tr><td>Feature grande que cliente precisa aprovar</td><td>BRD curto</td></tr>
+    <tr><td>Sistema novo com várias telas</td><td>Casos de uso + BPMN</td></tr>
+    <tr><td>Mapeamento de processo existente</td><td>BPMN</td></tr>
+    <tr><td>Projeto com muitos atores políticos</td><td>Matriz de stakeholders + BRD</td></tr>
+  </table>
+
+  <h2>Como acessar os templates</h2>
+  <p>Os templates moram em <em>Sharepoint &gt; Citiesoft &gt; templates-analista</em>. Copie a versão mais recente, salve no Sharepoint do cliente, depois preencha. Não edite o template-mãe.</p>
+
+  <div class="callout">
+    <div class="callout-label">Localização exata</div>
+    A definir após resposta do form (Q3 — onde mora hoje o conhecimento). Pode ser que migremos pra Confluence se o time pedir.
+  </div>
+
+  <h2>Quando o template não cabe</h2>
+  <p>Se a demanda é tão específica que nenhum template encaixa, <strong>fale com seu mentor antes de criar do zero</strong>. Provavelmente:</p>
+  <ul>
+    <li>Existe um template que você não encontrou — ele te aponta.</li>
+    <li>A demanda é uma combinação de dois templates — ele te ajuda a combinar.</li>
+    <li>É genuinamente novo — vocês criam juntos e adicionam à pasta.</li>
+  </ul>
+
+  <div class="callout good">
+    <div class="callout-label">Contribuição</div>
+    Templates não são intocáveis. Se você usar um e perceber que falta algo, abra uma sugestão de melhoria no canal do squad. A versão evolui.
+  </div>
+</section>
+
+<!-- ═══ EXEMPLOS ═══ -->
+<section id="exemplos">
+  <div class="chapter-header">
+    <span class="chapter-tag">Rotina · Cap 07</span>
+    <h1 class="chapter-title">Exemplos reais</h1>
+    <p class="chapter-desc">Um artefato real (anonimizado) por template, com comentários explicando decisões e quase-erros.</p>
+    <div class="chapter-meta">
+      <span>⏱ 7 min de leitura</span>
+      <span>📌 Atualizado em 19/05/2026</span>
+    </div>
+  </div>
+
+  <h2>Exemplo 1 — PBI Padrão</h2>
+  <p><strong>Cliente</strong>: prefeitura municipal de [X]. <strong>Contexto</strong>: módulo de protocolo de documentos.</p>
+
+  <div class="callout">
+    <div class="callout-label">Trecho do PBI (anonimizado)</div>
+    <strong>Como</strong> servidor da Secretaria de Administração<br>
+    <strong>Quero</strong> filtrar protocolos pendentes por data de entrada<br>
+    <strong>Para que</strong> eu priorize os mais antigos no atendimento do dia<br><br>
+    <strong>Critérios de aceite:</strong><br>
+    1. <em>Dado</em> que existem protocolos pendentes, <em>quando</em> eu acesso a tela de filtros, <em>então</em> vejo o filtro "data de entrada" disponível.<br>
+    2. <em>Dado</em> que apliquei o filtro "última semana", <em>quando</em> a lista carrega, <em>então</em> só aparecem protocolos com data nos últimos 7 dias.<br>
+    3. <em>Dado</em> que o filtro está aplicado, <em>quando</em> eu volto e retorno à tela, <em>então</em> o filtro persiste (não reseta).
+  </div>
+
+  <h3>O que esse exemplo tem de bom</h3>
+  <ul>
+    <li>"Para que" é específico ("priorize os mais antigos"). Não é genérico ("ter mais agilidade").</li>
+    <li>Critério 3 cobre estado da UI — fácil de esquecer, dá retrabalho garantido se omitido.</li>
+    <li>Linguagem concreta — sem "deve permitir flexibilidade na visualização".</li>
+  </ul>
+
+  <h3>Onde quase errou</h3>
+  <p>A primeira versão tinha "permitir filtrar por vários critérios". Foi reescrita pra <strong>um critério específico</strong> (data) porque "vários critérios" gera 3-5 PBIs implícitos — o dev não saberia quando parar.</p>
+
+  <h2>Exemplo 2 — BPMN de processo</h2>
+  <p><strong>Cliente</strong>: secretaria estadual de [Y]. <strong>Contexto</strong>: solicitação de afastamento por servidor.</p>
+
+  <div class="callout">
+    <div class="callout-label">Descrição do diagrama (anonimizado)</div>
+    <strong>Atores</strong>: Servidor, Chefia imediata, RH, Sistema.<br>
+    <strong>Fluxo principal</strong>:<br>
+    1. Servidor inicia solicitação no sistema → preenche tipo, data, justificativa.<br>
+    2. Sistema valida regras automáticas (estoque de licença, conflito de calendário).<br>
+    3. Chefia recebe notificação → aprova ou rejeita com justificativa.<br>
+    4. Se aprovada → RH valida documentação anexa.<br>
+    5. Se rejeitada → servidor recebe notificação com motivo.<br>
+    6. RH emite portaria final → status muda para "deferido".<br><br>
+    <strong>Decisão crítica capturada</strong>: o que acontece se a chefia não responder em 5 dias úteis. Decisão: escalona automaticamente pra chefia da chefia.
+  </div>
+
+  <h3>O que esse exemplo tem de bom</h3>
+  <ul>
+    <li>Identifica claramente os 4 atores antes de desenhar.</li>
+    <li>Captura uma <strong>decisão crítica</strong> que ninguém tinha pensado (escalonamento automático).</li>
+    <li>Separa validação técnica (sistema) de aprovação humana (chefia / RH).</li>
+  </ul>
+
+  <h3>Onde quase errou</h3>
+  <p>A primeira versão tratava chefia e RH como "fluxo de aprovação" genérico. Ao detalhar, virou claro que são <strong>dois tipos de aprovação diferentes</strong>: chefia decide mérito, RH valida procedimento. Separar evitou refação.</p>
+
+  <h2>Exemplo 3 — Ata de reunião curta</h2>
+  <p><strong>Reunião</strong>: alinhamento mensal com cliente Z. <strong>Duração</strong>: 45 min.</p>
+
+  <div class="callout">
+    <div class="callout-label">Ata (anonimizada)</div>
+    <strong>Data</strong>: 12/05/2026 · <strong>Presentes</strong>: 3 (lado cliente) + 2 (lado Citiesoft)<br><br>
+    <strong>Decisões tomadas:</strong><br>
+    • Mudança no escopo da feature "relatórios mensais" — aceita. Inclui agora consolidação anual. Impacto de prazo: +1 sprint. Responsável: [PO]. Prazo de retorno do dev sênior: 19/05.<br>
+    • Adiamento da integração com [sistema externo] para Q4. Responsável: [gestor da conta].<br><br>
+    <strong>Pendências:</strong><br>
+    • Cliente precisa enviar layout do relatório anual até 19/05 — sem isso, o impacto de prazo aumenta.<br>
+    • Citiesoft vai validar com TI do órgão se o adiamento da integração afeta empenho. Resposta até 23/05.<br><br>
+    <strong>Próxima reunião</strong>: 09/06/2026.
+  </div>
+
+  <h3>O que essa ata tem de bom</h3>
+  <ul>
+    <li><strong>Curta</strong>. Cabe em 1 mensagem do Teams se precisar.</li>
+    <li>Cada decisão tem <strong>responsável e prazo</strong>. Sem isso, decisão vira intenção.</li>
+    <li>Pendências separadas explicitamente — qualquer leitor sabe o que falta.</li>
+  </ul>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section id="faq">
+  <div class="chapter-header">
+    <span class="chapter-tag">Crescimento · Cap 08</span>
+    <h1 class="chapter-title">FAQ — Primeiros 30 dias</h1>
+    <p class="chapter-desc">As perguntas que todo novo analista faz, respondidas de uma vez.</p>
+    <div class="chapter-meta">
+      <span>⏱ Consulta livre</span>
+      <span>📌 Atualizado em 19/05/2026</span>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-label">Esqueleto</div>
+    Perguntas iniciais baseadas em padrões comuns. Serão complementadas com a Q5 do form (tipo de pergunta nas 2 primeiras semanas).
+  </div>
+
+  <h2>Trabalho diário</h2>
+
+  <div class="faq-item">
+    <div class="q">Onde encontro a documentação do cliente X?</div>
+    <div class="a">Sharepoint do cliente em <em>/clientes/[nome]/01-contrato</em>. Se não tem permissão, peça ao gestor da conta. Não tente conseguir por jeitinhos.</div>
+  </div>
+  <div class="faq-item">
+    <div class="q">Como eu sei quando minha entrega está "pronta"?</div>
+    <div class="a">Critério: o decisor mapeado no briefing aceita sem ajustes substantivos. Pequenos ajustes de redação são esperados. Mais de 3 ajustes substantivos = briefing falhou (Cap. 04).</div>
+  </div>
+  <div class="faq-item">
+    <div class="q">Com quem falo se eu travar?</div>
+    <div class="a">Mentor pareado (primeiros 60 dias). Depois: outro analista do squad. Em último caso: PO. Veja o mapa "Pra cada coisa, fala com…" no Cap. 02.</div>
+  </div>
+  <div class="faq-item">
+    <div class="q">É normal demorar 2 semanas pra entender o que o cliente quer?</div>
+    <div class="a">Sim. Discovery bem-feita ganha tempo lá na frente. Se passar de 3 semanas sem progresso, alinhe com o mentor — pode ser briefing inicial mal feito.</div>
+  </div>
+  <div class="faq-item">
+    <div class="q">Posso fazer reunião com cliente sozinho ou preciso de par?</div>
+    <div class="a">Primeiros 30 dias: par sempre. Entre 30-90 dias: par em reuniões formais (kick-off, alinhamento de escopo). Depois: depende do cliente. Confirme com seu gestor.</div>
+  </div>
+
+  <h2>Ferramentas</h2>
+
+  <div class="faq-item">
+    <div class="q">Não tenho acesso ao Azure DevOps do cliente Y. O que faço?</div>
+    <div class="a">Peça acesso ao PO interno do squad. Demora ~2 dias úteis em média. Não é razão pra atrasar trabalho — peça acesso já no primeiro dia.</div>
+  </div>
+  <div class="faq-item">
+    <div class="q">Tenho que aceitar a gravação automática do Teams em reuniões com cliente?</div>
+    <div class="a">Não. Pause antes de discovery sensível (dados pessoais, processos internos do órgão). Anote no chat: "Gravação pausada por LGPD" pra histórico.</div>
+  </div>
+  <div class="faq-item">
+    <div class="q">Posso usar IA pra rascunhar PBIs?</div>
+    <div class="a">Sim, como ponto de partida. <strong>Nunca como entrega final</strong>. IA é pra acelerar a primeira versão; revisão crítica é humana. Verifique especialmente critérios de aceite — IA tende a inventar.</div>
+  </div>
+
+  <h2>Cultura e pessoas</h2>
+
+  <div class="faq-item">
+    <div class="q">É normal eu não entender metade das siglas nas primeiras semanas?</div>
+    <div class="a">Sim. Use o Cap. 03 (Glossário) e pergunte sem culpa. Sigla que você não entendeu provavelmente outro também não — perguntar ajuda o time todo.</div>
+  </div>
+  <div class="faq-item">
+    <div class="q">Posso discordar publicamente da decisão do PO?</div>
+    <div class="a">Sim, antes da decisão estar fechada. Use o padrão do Cap. 01 (Como discordar bem). Depois de fechada, sustente o combinado.</div>
+  </div>
+  <div class="faq-item">
+    <div class="q">Quantas horas devo trabalhar?</div>
+    <div class="a">As do contrato. Hora extra eventual acontece, hora extra recorrente é sinal de processo quebrado — leve pro mentor. Aqui ninguém ganha ponto por queimar fim de semana.</div>
+  </div>
+</section>
+
+<!-- ═══ ERROS ═══ -->
+<section id="erros">
+  <div class="chapter-header">
+    <span class="chapter-tag">Crescimento · Cap 09</span>
+    <h1 class="chapter-title">Erros comuns</h1>
+    <p class="chapter-desc">As armadilhas que pegam quase todo mundo nos primeiros 3 meses — e como evitar.</p>
+    <div class="chapter-meta">
+      <span>⏱ 6 min de leitura</span>
+      <span>📌 Atualizado em 19/05/2026</span>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-label">Esqueleto</div>
+    Lista será refinada com base na Q6 do form (erro que se repete nos 3 primeiros meses). Abaixo, as hipóteses iniciais — todas observadas em mais de um contrato.
+  </div>
+
+  <h2>1. Escopo mal entendido</h2>
+  <p><strong>Sintoma</strong>: cliente devolve o artefato com "isso não é o que pedi".</p>
+  <p><strong>Causa raiz</strong>: briefing pulou a etapa de confirmação. O analista anotou o que ouviu mas não repetiu pro cliente pra confirmar.</p>
+  <p><strong>Como evitar</strong>: ao fim do briefing, repita com suas palavras: <em>"Pra confirmar — vocês precisam de X, que vai atender Y, e o critério de sucesso é Z. Está certo?"</em> E peça confirmação por escrito (e-mail ou Teams).</p>
+
+  <h2>2. Linguagem técnica errada</h2>
+  <p><strong>Sintoma</strong>: cliente não-técnico não entende o artefato. Ou o dev entende mas perde a nuance do negócio.</p>
+  <p><strong>Causa raiz</strong>: não identificou o leitor antes de escrever.</p>
+  <p><strong>Como evitar</strong>: pergunte-se <em>"quem vai ler isto primeiro?"</em>. Cliente final → linguagem de negócio. PO interno → técnica mas com contexto. Dev → critérios de aceite testáveis, sem fluff.</p>
+
+  <h2>3. Não validou com stakeholder certo</h2>
+  <p><strong>Sintoma</strong>: artefato aprovado pelo PO, mas o "verdadeiro decisor" reabre tudo na semana seguinte.</p>
+  <p><strong>Causa raiz</strong>: o briefing não mapeou quem aprova de verdade. Frequentemente o decisor real é o secretário, não o coordenador que falou com você.</p>
+  <p><strong>Como evitar</strong>: pergunte explicitamente no briefing: <em>"Quem mais precisa aceitar isto antes da entrega? Tem alguém acima do(a) [nome] que pode reabrir essa decisão?"</em></p>
+
+  <h2>4. Critério de aceite vago</h2>
+  <p><strong>Sintoma</strong>: dev entrega algo "funcionando" mas o QA reabre como bug, ou o cliente diz "não era isso".</p>
+  <p><strong>Causa raiz</strong>: critério de aceite escrito como intenção ("deve permitir flexibilidade") em vez de comportamento ("dado X, quando Y, então Z").</p>
+  <p><strong>Como evitar</strong>: cada critério precisa ser <strong>testável</strong>. Se o QA não consegue escrever um teste a partir dele, refaça.</p>
+
+  <h2>5. Documentou o que não precisa, e não documentou o que precisa</h2>
+  <p><strong>Sintoma</strong>: artefato de 8 páginas, mas o dev ainda pergunta o que é "fluxo alternativo de erro".</p>
+  <p><strong>Causa raiz</strong>: padrão decorativo de documentação. Escreveu pra parecer profissional, não pra ser usado.</p>
+  <p><strong>Como evitar</strong>: pergunte antes de escrever cada seção: <em>"Quem vai usar isso e pra quê?"</em>. Se não tem leitor, corte. Se falta um leitor crítico (dev quer saber X mas não está no doc), escreva.</p>
+
+  <h2>6. Tratou demanda nova como demanda conhecida</h2>
+  <p><strong>Sintoma</strong>: cliente novo, problema "parecido" com outro que vocês resolveram — mas a solução não funciona porque contexto é diferente.</p>
+  <p><strong>Causa raiz</strong>: confiança excessiva em padrão anterior. Pulou discovery porque "já fizemos isso".</p>
+  <p><strong>Como evitar</strong>: mesmo em demanda familiar, faça pelo menos 1 entrevista com usuário do novo cliente. O padrão pode até confirmar — mas validar custa 30 min e evita semanas de retrabalho.</p>
+
+  <div class="callout good">
+    <div class="callout-label">Boa notícia</div>
+    Todo esse capítulo é resultado de erros que <strong>já cometemos</strong>. Você herda o aprendizado sem pagar o preço — desde que leia.
+  </div>
+</section>
+
+<!-- ═══ PRÓXIMOS PASSOS ═══ -->
+<section id="proximos">
+  <div class="chapter-header">
+    <span class="chapter-tag">Crescimento · Cap 10</span>
+    <h1 class="chapter-title">Próximos passos</h1>
+    <p class="chapter-desc">Quando você já dominar o básico, por onde aprofundar. Trilhas, recursos externos, marcos.</p>
+    <div class="chapter-meta">
+      <span>⏱ 5 min de leitura</span>
+      <span>📌 Atualizado em 19/05/2026</span>
+    </div>
+  </div>
+
+  <h2>Como você sabe que dominou o básico</h2>
+  <p>Sinais práticos:</p>
+  <ul>
+    <li>Você produz um PBI bom sem precisar do mentor revisar antes</li>
+    <li>Sabe quando comprimir e quando alongar a etapa de discovery</li>
+    <li>Identifica o decisor real sem ter que perguntar 3 vezes</li>
+    <li>Outro analista te pede ajuda — isso significa que viraste referência em algo</li>
+  </ul>
+
+  <p>Tipicamente acontece entre 4 e 8 meses de casa. Depois disso, você escolhe uma direção pra aprofundar.</p>
+
+  <h2>Trilhas de aprofundamento</h2>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Especialização por cliente</div>
+      <div class="card-desc">Vire o "analista referência" pra um tipo de cliente (gov municipal, secretaria estadual, empresa privada). Conhecimento profundo de edital, contratação, jargão do setor.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Especialização por artefato</div>
+      <div class="card-desc">Domine 1-2 artefatos a fundo (ex: BRD ou BPMN). Vira a pessoa que outros analistas consultam quando o caso é difícil.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Caminho de PM</div>
+      <div class="card-desc">Migra pra Product Owner / Product Manager. Aprende priorização, métrica de produto, gestão de roadmap.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Caminho de mentoria</div>
+      <div class="card-desc">Vira mentor de analistas iniciantes. Foco em ensinar, não em executar mais. Caminho pra líder técnico do squad.</div>
+    </div>
+  </div>
+
+  <h2>Recursos externos sugeridos</h2>
+
+  <h3>Livros</h3>
+  <ul>
+    <li><strong>Business Analysis For Dummies</strong> — leitura inicial, panorama do papel.</li>
+    <li><strong>BABOK Guide</strong> (IIBA) — referência canônica. Não leia inteiro de uma vez; consulte por área de conhecimento.</li>
+    <li><strong>Manual da Análise de Negócios</strong> (Carolina Hadad) — visão brasileira, contexto público.</li>
+    <li><strong>Inspired</strong> (Marty Cagan) — pra quem mira o caminho de PM.</li>
+  </ul>
+
+  <h3>Cursos / certificações</h3>
+  <ul>
+    <li><strong>IIBA — ECBA / CCBA / CBAP</strong>: trilha formal de certificação em análise de negócios.</li>
+    <li><strong>Cursos PM3 / Tera</strong>: foco brasileiro, bom complemento prático.</li>
+    <li><strong>BPMN 2.0 oficial (OMG)</strong>: se você for ficar no caminho de BPMN.</li>
+  </ul>
+
+  <h3>Comunidades</h3>
+  <ul>
+    <li><strong>IIBA Brasil</strong>: encontros locais e online.</li>
+    <li><strong>Slack / Discord de Analistas</strong>: comunidades informais, alta-velocidade.</li>
+  </ul>
+
+  <h2>Marcos da carreira aqui</h2>
+  <table>
+    <tr><th>Tempo</th><th>Marco</th></tr>
+    <tr><td>0-3 meses</td><td>Onboarding + primeiro PBI entregue sem ajustes substantivos</td></tr>
+    <tr><td>3-6 meses</td><td>Autonomia pra fazer briefing sozinho com cliente</td></tr>
+    <tr><td>6-12 meses</td><td>Vira "par" pra revisar artefato de analista novo</td></tr>
+    <tr><td>12-18 meses</td><td>Conduz discovery completa de feature grande, do briefing à entrega</td></tr>
+    <tr><td>18+ meses</td><td>Escolhe uma trilha de aprofundamento</td></tr>
+  </table>
+
+  <div class="callout">
+    <div class="callout-label">Conversa de carreira</div>
+    A cada 6 meses, alinhe com seu gestor onde você quer ir. A Citiesoft prefere te ver crescendo aqui — mas se o caminho é fora, ajudamos.
+  </div>
+
+  <div class="callout good">
+    <div class="callout-label">Você chegou no fim do manual</div>
+    Marca este capítulo como concluído e volta à Home pra ver seu progresso. Se algo aqui faltou, mereceu cortar ou precisa atualizar, manda no canal de feedback.
+  </div>
+</section>
+
+</main>
+
+<script>
+// ─────────── Sidebar navigation ───────────
+const navLinks = document.querySelectorAll('[data-target]');
+const sections = document.querySelectorAll('section');
+
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = link.getAttribute('data-target');
+    sections.forEach(s => s.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    const navLink = document.querySelector(`.nav-link[data-target="${target}"]`);
+    if (navLink) navLink.classList.add('active');
+    if (window.innerWidth <= 900) {
+      document.body.classList.remove('mobile-menu-open');
+      document.getElementById('menu-toggle').classList.remove('open');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+// ─────────── Hamburger toggle ───────────
+const menuToggle = document.getElementById('menu-toggle');
+const SIDEBAR_KEY = 'analista-kit-sidebar-collapsed';
+
+if (window.innerWidth > 900 && localStorage.getItem(SIDEBAR_KEY) === 'true') {
+  document.body.classList.add('sidebar-collapsed');
+  menuToggle.classList.add('open');
+}
+
+menuToggle.addEventListener('click', () => {
+  if (window.innerWidth <= 900) {
+    const isOpen = document.body.classList.toggle('mobile-menu-open');
+    menuToggle.classList.toggle('open', isOpen);
+  } else {
+    const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
+    menuToggle.classList.toggle('open', isCollapsed);
+    localStorage.setItem(SIDEBAR_KEY, isCollapsed);
+  }
+});
+
+document.getElementById('sidebar-backdrop').addEventListener('click', () => {
+  document.body.classList.remove('mobile-menu-open');
+  menuToggle.classList.remove('open');
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.body.classList.contains('mobile-menu-open')) {
+    document.body.classList.remove('mobile-menu-open');
+    menuToggle.classList.remove('open');
+  }
+});
+
+// ─────────── Completion tracking ───────────
+const COMPLETION_KEY = 'analista-kit-completion-v1';
+const CHAPTER_IDS = ['cultura','quem-e-quem','glossario','processo','ferramentas','templates','exemplos','faq','erros','proximos'];
+
+const loadState = () => {
+  try { return JSON.parse(localStorage.getItem(COMPLETION_KEY) || '{}'); }
+  catch { return {}; }
+};
+const saveState = state => localStorage.setItem(COMPLETION_KEY, JSON.stringify(state));
+
+document.querySelectorAll('.nav-link').forEach(link => {
+  const target = link.getAttribute('data-target');
+  if (CHAPTER_IDS.includes(target)) {
+    const check = document.createElement('span');
+    check.className = 'check';
+    check.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+    link.appendChild(check);
+  }
+});
+
+CHAPTER_IDS.forEach(id => {
+  const section = document.getElementById(id);
+  if (!section) return;
+  const block = document.createElement('div');
+  block.className = 'chapter-complete';
+  block.setAttribute('data-id', id);
+  block.innerHTML = `
+    <div class="chapter-complete-text">
+      <strong>Você terminou este capítulo?</strong><br>
+      Marcar ajuda a acompanhar seu progresso e dá sinal pro time sobre o que está sendo consumido.
+    </div>
+    <button class="btn-complete" data-id="${id}">Marcar como concluído</button>
+  `;
+  section.appendChild(block);
+});
+
+function updateUI() {
+  const state = loadState();
+  const completedCount = CHAPTER_IDS.filter(id => state[id]).length;
+  const total = CHAPTER_IDS.length;
+  document.getElementById('progress-completed').textContent = completedCount;
+  document.getElementById('progress-fill').style.width = `${(completedCount / total) * 100}%`;
+  CHAPTER_IDS.forEach(id => {
+    const link = document.querySelector(`.nav-link[data-target="${id}"]`);
+    if (link) link.classList.toggle('completed', !!state[id]);
+  });
+  document.querySelectorAll('.chapter-card[data-target]').forEach(card => {
+    const id = card.getAttribute('data-target');
+    card.classList.toggle('completed', !!state[id]);
+  });
+  document.querySelectorAll('.chapter-complete').forEach(block => {
+    const id = block.getAttribute('data-id');
+    const btn = block.querySelector('.btn-complete');
+    if (state[id]) {
+      block.classList.add('done');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Concluído — desfazer';
+    } else {
+      block.classList.remove('done');
+      btn.textContent = 'Marcar como concluído';
+    }
+  });
+}
+
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('btn-complete')) {
+    const id = e.target.getAttribute('data-id');
+    const state = loadState();
+    state[id] = !state[id];
+    saveState(state);
+    updateUI();
+  }
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if (confirm('Resetar todo o progresso? Não dá pra desfazer.')) {
+    localStorage.removeItem(COMPLETION_KEY);
+    updateUI();
+  }
+});
+
+updateUI();
+</script>
+
+</body>
+</html>
