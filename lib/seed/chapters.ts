@@ -153,7 +153,7 @@ export const seedChapters: Chapter[] = [
     readTime: "5 min de leitura",
     updatedAt: "01/06/2026",
     bodyHtml: `
-<div class="callout"><div class="callout-label">Fonte oficial</div>Este capítulo é o <strong>resumo prático</strong> pro seu dia a dia. As regras completas, formais e com peso legal estão no <strong>Manual de Conduta Citiesoft</strong> (mantido pelo RH). Em caso de conflito, vale o Manual — e você assina o Termo de Recebimento dele no onboarding.</div>
+<div class="callout"><div class="callout-label">Fonte oficial</div>Este capítulo é o <strong>resumo prático</strong> pro seu dia a dia. As regras completas, formais e com peso legal estão no <a href="/manual-de-conduta-citiesoft.pdf" target="_blank" rel="noopener"><strong>Manual de Conduta Citiesoft</strong></a> (mantido pelo RH). Em caso de conflito, vale o Manual — e você assina o Termo de Recebimento dele no onboarding.</div>
 <h2>Como a gente espera que você se porte</h2>
 <p>Nada de surpreendente — é o que sustenta a confiança no time:</p>
 <ul>
@@ -195,7 +195,7 @@ export const seedChapters: Chapter[] = [
 <div class="callout warn"><div class="callout-label">Canal de denúncia</div>Quem sofrer ou presenciar assédio deve <strong>reportar ao RH</strong>. As denúncias são tratadas com sigilo e seriedade, e <strong>retaliação contra quem denuncia é proibida</strong>. O descumprimento pode resultar em demissão por justa causa.</div>
 <h2>Horas, intervalos e direitos</h2>
 <p>Sua jornada segue a CLT (até 8h por dia). Hora extra, banco de horas, intervalos e demais direitos estão detalhados no Manual — não reproduzo as tabelas aqui pra não correr risco de ficar desatualizado.</p>
-<div class="callout good"><div class="callout-label">Onde aprofundar</div>Tudo isto em versão completa e oficial: <strong>Manual de Conduta Citiesoft</strong>, com o RH. Em dúvida sobre conduta, jornada ou direitos, o RH é o ponto certo.</div>
+<div class="callout good"><div class="callout-label">Onde aprofundar</div>Tudo isto em versão completa e oficial no <strong>Manual de Conduta Citiesoft</strong> (com o RH). Em dúvida sobre conduta, jornada ou direitos, o RH é o ponto certo.<br><br><a href="/manual-de-conduta-citiesoft.pdf" target="_blank" rel="noopener">→ Abrir o Manual de Conduta (PDF)</a></div>
 `,
   },
   {
