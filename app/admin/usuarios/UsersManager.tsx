@@ -6,6 +6,7 @@ import {
   createUserInvite,
   regenerateInvite,
   deleteUserAction,
+  changeUserRole,
   type ActionState,
 } from "@/app/admin/actions";
 
@@ -134,9 +135,26 @@ export default function UsersManager({
                   <span className="admin-row-desc">{u.email}</span>
                 </div>
 
-                <span className={`user-role-badge role-${u.role}`}>
-                  {ROLE_LABEL[u.role] ?? u.role}
-                </span>
+                {isSelf ? (
+                  <span className={`user-role-badge role-${u.role}`}>
+                    {ROLE_LABEL[u.role] ?? u.role}
+                  </span>
+                ) : (
+                  <form action={changeUserRole} className="role-select-form">
+                    <input type="hidden" name="id" value={u.id} />
+                    <select
+                      name="role"
+                      defaultValue={u.role}
+                      className={`role-select role-${u.role}`}
+                      title="Mudar papel"
+                      onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                    >
+                      <option value="admin">Admin</option>
+                      <option value="editor">Editor</option>
+                      <option value="leitor">Leitor</option>
+                    </select>
+                  </form>
+                )}
                 <span
                   className={`user-status ${
                     u.status === "active" ? "is-active" : "is-invited"

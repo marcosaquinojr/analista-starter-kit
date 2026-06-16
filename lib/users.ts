@@ -102,6 +102,10 @@ export async function acceptInvite(
   return row;
 }
 
+export async function setUserRole(id: string, role: Role): Promise<void> {
+  await db.update(users).set({ role }).where(eq(users.id, id));
+}
+
 export async function deleteUser(id: string): Promise<void> {
   await db.delete(users).where(eq(users.id, id));
 }

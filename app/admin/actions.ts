@@ -21,6 +21,7 @@ import {
   resetInvite,
   acceptInvite,
   deleteUser,
+  setUserRole,
   countAdmins,
 } from "@/lib/users";
 import { toggleProgress } from "@/lib/progress";
@@ -330,6 +331,27 @@ export async function regenerateInvite(
   if (!token) return { error: "Esse acesso já foi ativado ou não existe." };
   revalidatePath("/admin/usuarios");
   return { ok: true, inviteUrl: `${await origin()}/convite/${token}` };
+}
+
+export async function changeUserRole(formData: FormData) {
+  if (!(await requireRole("admin"))) return;
+  const id = String(formData.get("id") ?? "");
+  const role = String(formData.get("role") ?? "") as Role;
+  if (!id || !ROLES.includes(role)) return;
+
+  const session = await getSessionUser();
+  if (session?.uid === id) return; // não muda o próprio papel (evita lockout)
+
+  const target = await getUserById(id);
+  if (!target || target.role === role) return;
+
+  // não rebaixar o último admin
+  if (target.role === "admin" && role !== "admin" && (await countAdmins()) <= 1)
+    return;
+
+  await setUserRole(id, role);
+  revalidatePath("/admin/usuarios");
+  revalidatePath("/admin/progresso");
 }
 
 export async function deleteUserAction(formData: FormData) {
