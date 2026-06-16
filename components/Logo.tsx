@@ -1,53 +1,32 @@
 /**
- * Marca Citiesoft `<ct>` — recriada como SVG a partir do brand kit oficial
- * (Figma "Branding · Citiesoft"). Quadrado azul → chip branco → `<ct>` azul.
+ * Marca oficial Citiesoft `<ct>` — vetor exato exportado do brand kit
+ * (Figma "Branding · Citiesoft"). Logo landscape (600×375 ≈ 1.6:1), azul
+ * #146BFA sobre fundo transparente. `size` controla a ALTURA; a largura
+ * acompanha a proporção do vetor.
  */
+const CT_PATH =
+  "M230.316 175.813C230.316 135.975 259.788 107.198 302.369 107.198C316.213 107.198 329.008 110.168 339.182 116.517V147.343C329.638 140.788 318.625 137.204 306.04 137.204C279.925 137.204 263.983 151.849 263.983 175.813C263.983 199.777 279.61 214.114 306.04 214.114C318.311 214.114 329.638 210.837 339.182 204.283V234.801C329.113 241.048 316.213 244.12 302.369 244.12C259.683 244.12 230.316 215.65 230.316 175.813ZM360.053 202.439V82.0052L392.566 65.5172V110.782H430.952V137.716H392.566V195.783C392.566 208.379 398.439 214.319 410.71 214.319C417.737 214.319 423.925 212.271 430.952 208.072V237.463C423.295 241.97 414.381 244.018 403.368 244.018C374.526 244.018 360.158 229.885 360.158 202.337L360.053 202.439ZM451.089 199.367L506.465 156.56L451.089 113.752V82.9269L532.58 144.885V168.234L451.089 230.295V199.469V199.367ZM210.075 113.752L154.698 156.56L210.075 199.367V230.192L128.583 168.234V144.885L210.075 82.8245V113.65V113.752ZM60.306 7.96278L7.13184 59.475C2.51712 63.981 0 70.0232 0 76.2702V351.139C0 364.247 10.9075 374.898 24.3321 374.898H522.092C528.595 374.898 534.783 372.44 539.293 367.934L592.047 316.422C596.662 311.916 599.179 305.873 599.179 299.626V24.758C599.179 11.6495 588.272 0.998901 574.847 0.998901H77.4014C71.0037 0.998901 64.8158 3.45674 60.2011 7.86037L60.306 7.96278ZM553.137 281.295H109.075C101.524 281.295 95.3359 275.355 95.3359 267.879V45.3424C95.3359 37.9689 101.419 31.9267 109.075 31.9267H553.242C560.793 31.9267 566.981 37.8665 566.981 45.3424V267.982C566.981 275.355 560.898 281.397 553.242 281.397L553.137 281.295Z";
+
 export function CtMark({
   size = 36,
   className,
+  fill = "var(--blue, #146bfa)",
 }: {
   size?: number;
   className?: string;
+  fill?: string;
 }) {
+  const width = Math.round(size * (600 / 375));
   return (
     <svg
-      width={size}
+      width={width}
       height={size}
-      viewBox="0 0 40 40"
+      viewBox="0 0 600 375"
       className={className}
       role="img"
       aria-label="Citiesoft"
     >
-      <rect width="40" height="40" rx="9" fill="var(--blue, #1068f8)" />
-      <rect x="5" y="10.5" width="30" height="19" rx="3.5" fill="#ffffff" />
-      <path
-        d="M14 15.5 L10.3 20 L14 24.5"
-        fill="none"
-        stroke="var(--blue, #1068f8)"
-        strokeWidth="2.3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M26 15.5 L29.7 20 L26 24.5"
-        fill="none"
-        stroke="var(--blue, #1068f8)"
-        strokeWidth="2.3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <text
-        x="20"
-        y="20.5"
-        textAnchor="middle"
-        dominantBaseline="central"
-        fill="var(--blue, #1068f8)"
-        fontFamily="var(--font-display), sans-serif"
-        fontWeight="800"
-        fontSize="12"
-      >
-        ct
-      </text>
+      <path d={CT_PATH} fill={fill} />
     </svg>
   );
 }
@@ -59,10 +38,10 @@ export function LogoLockup({ height = 30 }: { height?: number }) {
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: Math.round(height * 0.34),
+        gap: Math.round(height * 0.4),
       }}
     >
-      <CtMark size={Math.round(height * 1.2)} />
+      <CtMark size={Math.round(height * 1.05)} />
       <span
         style={{
           fontFamily: "var(--font-display), sans-serif",
