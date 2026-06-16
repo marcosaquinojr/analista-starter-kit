@@ -15,8 +15,7 @@ export default async function LoginPage() {
       </div>
       <h1 className="landing-title">Citiesoft Academy</h1>
       <p className="landing-sub">
-        O onboarding da Citiesoft que vai direto ao ponto. Entre com a conta que
-        você recebeu por convite — seu progresso fica salvo na sua conta.
+        Entre com a conta que você recebeu por convite.
       </p>
       <LoginForm />
     </AuthShell>
