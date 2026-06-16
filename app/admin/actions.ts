@@ -23,6 +23,7 @@ import {
   deleteUser,
   countAdmins,
 } from "@/lib/users";
+import { toggleProgress } from "@/lib/progress";
 import { slugify } from "@/lib/slug";
 
 export type ActionState = { error?: string; ok?: boolean; inviteUrl?: string };
@@ -90,6 +91,23 @@ export async function login(
 export async function logout() {
   await clearSession();
   redirect("/admin/login");
+}
+
+/**
+ * Marca/desmarca um capítulo como concluído para a pessoa logada. Qualquer
+ * papel (leitor/editor/admin) registra o próprio progresso. Devolve o novo
+ * estado pro cliente atualizar a UI.
+ */
+export async function toggleChapterDone(
+  slug: string,
+): Promise<{ done: boolean } | null> {
+  const session = await getSessionUser();
+  if (!session || !slug) return null;
+  const done = await toggleProgress(session.uid, slug);
+  revalidatePath("/");
+  revalidatePath(`/c/${slug}`);
+  revalidatePath("/admin/progresso");
+  return { done };
 }
 
 function today(): string {

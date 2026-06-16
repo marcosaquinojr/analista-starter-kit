@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { ChapterMeta, TrailMeta } from "@/lib/types";
 import { useCompletion } from "@/components/completion";
+import { logout } from "@/app/admin/actions";
 import { CtMark } from "@/components/Logo";
 
 const SIDEBAR_KEY = "analista-kit-sidebar-collapsed";
@@ -29,14 +30,16 @@ function CheckCircle() {
 export default function Shell({
   chapters,
   trails,
+  user,
   children,
 }: {
   chapters: ChapterMeta[];
   trails: TrailMeta[];
+  user: { email: string; role: string };
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { completed, ready, isDone, reset } = useCompletion();
+  const { completed, ready, isDone } = useCompletion();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -168,10 +171,24 @@ export default function Shell({
         })}
 
         <div className="sidebar-footer">
-          <strong>Seu progresso</strong> fica salvo só neste navegador.
-          <button className="sidebar-reset" onClick={reset}>
-            Limpar progresso
-          </button>
+          <div className="sidebar-user">
+            <span className="sidebar-user-email">{user.email}</span>
+            <span className="sidebar-user-note">
+              Seu progresso fica salvo na sua conta.
+            </span>
+          </div>
+          <div className="sidebar-user-actions">
+            {(user.role === "admin" || user.role === "editor") && (
+              <Link href="/admin" className="sidebar-admin-link">
+                Área de edição →
+              </Link>
+            )}
+            <form action={logout}>
+              <button type="submit" className="sidebar-reset">
+                Sair
+              </button>
+            </form>
+          </div>
         </div>
       </aside>
 

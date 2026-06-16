@@ -1,4 +1,4 @@
-import { pgTable, text, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, primaryKey } from "drizzle-orm/pg-core";
 
 /**
  * Tabela de trilhas (as seções do menu: Contexto, Rotina, Crescimento...).
@@ -50,6 +50,25 @@ export const users = pgTable("users", {
   status: text("status").notNull(), // 'invited' | 'active'
   createdAt: text("created_at").notNull(),
 });
+
+/**
+ * Progresso de leitura por pessoa. Uma linha = um capítulo concluído por um
+ * usuário (presença da linha = concluído). Cascade: some junto com o usuário
+ * ou com o capítulo. Substitui o antigo localStorage por dado durável no banco.
+ */
+export const progress = pgTable(
+  "progress",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    chapterSlug: text("chapter_slug")
+      .notNull()
+      .references(() => chapters.slug, { onDelete: "cascade" }),
+    completedAt: text("completed_at").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.chapterSlug] })],
+);
 
 export type TrailRow = typeof trails.$inferSelect;
 export type NewTrailRow = typeof trails.$inferInsert;

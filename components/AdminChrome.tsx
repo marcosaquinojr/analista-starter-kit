@@ -37,9 +37,14 @@ export default async function AdminChrome({
         </Link>
         <div className="admin-header-actions">
           {user.role === "admin" && (
-            <Link href="/admin/usuarios" className="header-link">
-              Usuários
-            </Link>
+            <>
+              <Link href="/admin/progresso" className="header-link">
+                Progresso
+              </Link>
+              <Link href="/admin/usuarios" className="header-link">
+                Usuários
+              </Link>
+            </>
           )}
           <Link href="/" className="header-link" target="_blank">
             Ver site ↗

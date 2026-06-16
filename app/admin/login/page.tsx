@@ -15,10 +15,10 @@ export default function LoginPage() {
         <div style={{ marginBottom: 20 }}>
           <LogoLockup height={26} />
         </div>
-        <h1>Área de edição</h1>
+        <h1>Entrar</h1>
         <p className="admin-login-sub">
-          Acesso interno ao Analista Starter Kit. Entre com a conta que você
-          recebeu por convite.
+          Acesse o Analista Starter Kit com a conta que você recebeu por
+          convite. Seu progresso de leitura fica salvo na sua conta.
         </p>
         <form action={formAction}>
           <label htmlFor="email">E-mail</label>

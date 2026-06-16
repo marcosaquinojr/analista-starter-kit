@@ -4,74 +4,64 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useState,
+  useTransition,
 } from "react";
-
-const STORAGE_KEY = "analista-kit-completion-v1";
+import { toggleChapterDone } from "@/app/admin/actions";
 
 interface CompletionContextValue {
   completed: Set<string>;
   ready: boolean;
   isDone: (slug: string) => boolean;
   toggle: (slug: string) => void;
-  reset: () => void;
 }
 
 const CompletionContext = createContext<CompletionContextValue | null>(null);
 
-export function CompletionProvider({ children }: { children: React.ReactNode }) {
-  const [completed, setCompleted] = useState<Set<string>>(new Set());
-  const [ready, setReady] = useState(false);
+/**
+ * Progresso de leitura backed pelo servidor. O estado inicial vem do banco
+ * (via layout do site) e cada marcação chama uma server action — otimista, com
+ * rollback se a action falhar. Sem localStorage e sem "limpar tudo": progresso
+ * é durável e o leitor não zera o próprio histórico de uma vez.
+ */
+export function CompletionProvider({
+  initialCompleted,
+  children,
+}: {
+  initialCompleted: string[];
+  children: React.ReactNode;
+}) {
+  const [completed, setCompleted] = useState<Set<string>>(
+    () => new Set(initialCompleted),
+  );
+  const [, startTransition] = useTransition();
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const arr = JSON.parse(raw) as string[];
-        setCompleted(new Set(arr));
-      }
-    } catch {
-      // ignora storage indisponível
-    }
-    setReady(true);
-  }, []);
-
-  const persist = useCallback((next: Set<string>) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));
-    } catch {
-      // ignora
-    }
-  }, []);
-
-  const toggle = useCallback(
-    (slug: string) => {
+  const toggle = useCallback((slug: string) => {
+    // Otimista: reflete na hora.
+    setCompleted((prev) => {
+      const next = new Set(prev);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
+    // Persiste no banco; se falhar, reconcilia com o estado retornado.
+    startTransition(async () => {
+      const res = await toggleChapterDone(slug);
+      if (!res) return;
       setCompleted((prev) => {
         const next = new Set(prev);
-        if (next.has(slug)) next.delete(slug);
-        else next.add(slug);
-        persist(next);
+        if (res.done) next.add(slug);
+        else next.delete(slug);
         return next;
       });
-    },
-    [persist],
-  );
-
-  const reset = useCallback(() => {
-    setCompleted(new Set());
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // ignora
-    }
+    });
   }, []);
 
   const isDone = useCallback((slug: string) => completed.has(slug), [completed]);
 
   return (
     <CompletionContext.Provider
-      value={{ completed, ready, isDone, toggle, reset }}
+      value={{ completed, ready: true, isDone, toggle }}
     >
       {children}
     </CompletionContext.Provider>
