@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { CompletionProvider } from "@/components/completion";
 import Shell from "@/components/Shell";
 import { getSessionUser } from "@/lib/auth";
-import { getChapters } from "@/lib/chapters";
+import { getChapters, getLastUpdated } from "@/lib/chapters";
 import { getTrails } from "@/lib/trails";
 import { getUserProgress } from "@/lib/progress";
 
@@ -17,10 +17,11 @@ export default async function SiteLayout({
   const user = await getSessionUser();
   if (!user) redirect("/admin/login");
 
-  const [chapters, trails, completed] = await Promise.all([
+  const [chapters, trails, completed, lastUpdated] = await Promise.all([
     getChapters(),
     getTrails(),
     getUserProgress(user.uid),
+    getLastUpdated(),
   ]);
 
   return (
@@ -29,6 +30,7 @@ export default async function SiteLayout({
         chapters={chapters}
         trails={trails}
         user={{ email: user.email, role: user.role }}
+        lastUpdated={lastUpdated}
       >
         {children}
       </Shell>

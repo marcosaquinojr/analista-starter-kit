@@ -46,6 +46,23 @@ export async function getChapter(slug: string): Promise<Chapter | null> {
   };
 }
 
+/**
+ * Data de atualização mais recente do manual (string de exibição dd/mm/aaaa),
+ * usada no rodapé "última atualização em…". Faz parse de dd/mm/aaaa pra comparar.
+ */
+export async function getLastUpdated(): Promise<string | null> {
+  const rows = await db
+    .select({ updatedAt: chapters.updatedAt })
+    .from(chapters);
+  let best: { t: number; s: string } | null = null;
+  for (const r of rows) {
+    const m = r.updatedAt.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+    const t = m ? Date.UTC(+m[3], +m[2] - 1, +m[1]) : NaN;
+    if (!Number.isNaN(t) && (!best || t > best.t)) best = { t, s: r.updatedAt };
+  }
+  return best?.s ?? null;
+}
+
 export async function getChapterSlugs(): Promise<string[]> {
   const rows = await db
     .select({ slug: chapters.slug })

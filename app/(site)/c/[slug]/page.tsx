@@ -19,7 +19,7 @@ export async function generateMetadata({
   const chapter = await getChapter(slug);
   if (!chapter) return { title: "Capítulo não encontrado" };
   return {
-    title: `${chapter.number} ${chapter.title} — Analista Starter Kit`,
+    title: `${chapter.number} ${chapter.title} — Citiesoft Academy`,
     description: chapter.description,
   };
 }

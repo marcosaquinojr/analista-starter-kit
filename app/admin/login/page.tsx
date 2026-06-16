@@ -1,49 +1,24 @@
-"use client";
+import AuthShell from "@/components/AuthShell";
+import LoginForm from "./LoginForm";
+import { CtMark } from "@/components/Logo";
+import { getLastUpdated } from "@/lib/chapters";
 
-import { useActionState } from "react";
-import { login, type ActionState } from "@/app/admin/actions";
-import { LogoLockup } from "@/components/Logo";
+export const dynamic = "force-dynamic";
 
-const initial: ActionState = {};
-
-export default function LoginPage() {
-  const [state, formAction, pending] = useActionState(login, initial);
+export default async function LoginPage() {
+  const last = await getLastUpdated();
 
   return (
-    <div className="admin-login">
-      <div className="admin-login-card">
-        <div style={{ marginBottom: 20 }}>
-          <LogoLockup height={26} />
-        </div>
-        <h1>Entrar</h1>
-        <p className="admin-login-sub">
-          Acesse o Analista Starter Kit com a conta que você recebeu por
-          convite. Seu progresso de leitura fica salvo na sua conta.
-        </p>
-        <form action={formAction}>
-          <label htmlFor="email">E-mail</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autoFocus
-            autoComplete="email"
-            placeholder="voce@citiesoft.com"
-          />
-          <label htmlFor="password">Senha</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            placeholder="••••••••"
-          />
-          {state.error && <p className="admin-error">{state.error}</p>}
-          <button type="submit" className="btn-complete" disabled={pending}>
-            {pending ? "Entrando…" : "Entrar"}
-          </button>
-        </form>
+    <AuthShell footer={last ? `Última atualização em ${last}` : undefined}>
+      <div className="landing-logo">
+        <CtMark size={42} />
       </div>
-    </div>
+      <h1 className="landing-title">Citiesoft Academy</h1>
+      <p className="landing-sub">
+        O onboarding da Citiesoft que vai direto ao ponto. Entre com a conta que
+        você recebeu por convite — seu progresso fica salvo na sua conta.
+      </p>
+      <LoginForm />
+    </AuthShell>
   );
 }

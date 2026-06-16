@@ -12,7 +12,7 @@ export default function AcceptForm({ token }: { token: string }) {
   );
 
   return (
-    <form action={formAction}>
+    <form action={formAction} className="landing-form">
       <input type="hidden" name="token" value={token} />
       <label htmlFor="password">Senha (mín. 8 caracteres)</label>
       <input
@@ -34,8 +34,8 @@ export default function AcceptForm({ token }: { token: string }) {
         placeholder="••••••••"
         required
       />
-      {state.error && <p className="admin-error">{state.error}</p>}
-      <button type="submit" className="btn-complete" disabled={pending}>
+      {state.error && <p className="landing-error">{state.error}</p>}
+      <button type="submit" className="landing-btn" disabled={pending}>
         {pending ? "Entrando…" : "Criar senha e entrar"}
       </button>
     </form>

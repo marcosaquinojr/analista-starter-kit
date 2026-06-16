@@ -15,9 +15,9 @@ const body = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Analista Starter Kit — Citiesoft",
+  title: "Citiesoft Academy",
   description:
-    "Manual de onboarding para novos analistas de negócio da Citiesoft.",
+    "Plataforma de onboarding para novos analistas de negócio da Citiesoft.",
 };
 
 export default function RootLayout({

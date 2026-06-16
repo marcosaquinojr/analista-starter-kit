@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Design system — Analista Starter Kit (brand Citiesoft)
+   Design system — Citiesoft Academy (brand Citiesoft)
    Portado do protótipo (reference/prototype.html).
    Fontes vêm de next/font (--font-display, --font-body).
    ============================================================ */
@@ -1902,4 +1902,206 @@ main.site-main {
 }
 .sidebar-admin-link:hover {
   text-decoration: underline;
+}
+
+/* ── SITE · rodapé "última atualização" ─────────────────────────────────── */
+.site-footer {
+  margin-top: 56px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text3);
+  text-align: center;
+}
+
+/* ── LANDING (login/convite) — hero imersivo + card de vidro ─────────────── */
+.landing {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow: hidden;
+  background: #060912;
+  color: #fff;
+}
+.landing-bg {
+  position: absolute;
+  inset: -15%;
+  z-index: 0;
+}
+/* "vídeo" = mesh de gradiente animado (trocável por <video> — ver AuthShell) */
+.landing-bg .mesh {
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+.mesh-1 {
+  background: radial-gradient(circle, #146bfa, transparent 60%);
+  top: -10%;
+  left: -5%;
+  animation: meshFloat1 19s ease-in-out infinite;
+}
+.mesh-2 {
+  background: radial-gradient(circle, #0ea5e9, transparent 60%);
+  bottom: -15%;
+  right: -10%;
+  animation: meshFloat2 23s ease-in-out infinite;
+}
+.mesh-3 {
+  background: radial-gradient(circle, #6d28d9, transparent 62%);
+  top: 28%;
+  left: 42%;
+  animation: meshFloat3 27s ease-in-out infinite;
+}
+@keyframes meshFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(8vw, 6vh) scale(1.15); }
+}
+@keyframes meshFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-6vw, -8vh) scale(1.2); }
+}
+@keyframes meshFloat3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-5vw, 5vh) scale(0.9); }
+}
+.landing-grain {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 120% at 50% 35%,
+    transparent 48%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+.landing-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    160deg,
+    rgba(6, 9, 18, 0.35),
+    rgba(6, 9, 18, 0.72)
+  );
+}
+.landing-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 36px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+}
+.landing-logo {
+  margin-bottom: 22px;
+  color: #fff;
+}
+.landing-title {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+  color: #fff;
+}
+.landing-sub {
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
+  margin-bottom: 26px;
+}
+.landing-sub strong {
+  color: #fff;
+}
+.landing-form {
+  display: flex;
+  flex-direction: column;
+}
+.landing-form label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 6px;
+}
+.landing-form input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-family: var(--font-body), sans-serif;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.landing-form input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+.landing-form input:focus {
+  outline: none;
+  border-color: var(--blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(20, 107, 250, 0.3);
+}
+.landing-btn {
+  margin-top: 6px;
+  padding: 13px 18px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--font-body), sans-serif;
+  color: #fff;
+  background: var(--blue);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    filter 0.15s,
+    transform 0.05s;
+}
+.landing-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.landing-btn:active {
+  transform: translateY(1px);
+}
+.landing-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.landing-error {
+  font-size: 13px;
+  color: #fca5a5;
+  margin-bottom: 8px;
+}
+.landing-footer {
+  position: absolute;
+  z-index: 2;
+  bottom: 22px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-bg .mesh {
+    animation: none;
+  }
 }

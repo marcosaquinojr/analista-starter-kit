@@ -31,11 +31,13 @@ export default function Shell({
   chapters,
   trails,
   user,
+  lastUpdated,
   children,
 }: {
   chapters: ChapterMeta[];
   trails: TrailMeta[];
   user: { email: string; role: string };
+  lastUpdated: string | null;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -110,8 +112,8 @@ export default function Shell({
               <CtMark size={30} />
             </span>
             <div className="brand-text">
-              <span className="brand-title">Analista Starter Kit</span>
-              <span className="brand-sub">Onboarding · Citiesoft</span>
+              <span className="brand-title">Citiesoft Academy</span>
+              <span className="brand-sub">Onboarding de analistas</span>
             </div>
           </Link>
         </div>
@@ -192,7 +194,14 @@ export default function Shell({
         </div>
       </aside>
 
-      <main className="site-main">{children}</main>
+      <main className="site-main">
+        {children}
+        <footer className="site-footer">
+          {lastUpdated
+            ? `Última atualização em ${lastUpdated}`
+            : "Citiesoft Academy"}
+        </footer>
+      </main>
     </div>
   );
 }

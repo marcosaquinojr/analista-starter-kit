@@ -31,7 +31,7 @@ export default async function AdminChrome({
             <CtMark size={30} />
           </span>
           <div className="brand-text">
-            <span className="brand-title">Edição · Analista Starter Kit</span>
+            <span className="brand-title">Edição · Citiesoft Academy</span>
             <span className="brand-sub">Área interna</span>
           </div>
         </Link>

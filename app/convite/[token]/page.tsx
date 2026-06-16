@@ -1,5 +1,6 @@
+import AuthShell from "@/components/AuthShell";
 import AcceptForm from "./AcceptForm";
-import { LogoLockup } from "@/components/Logo";
+import { CtMark } from "@/components/Logo";
 import { getUserByInvite } from "@/lib/users";
 
 export const dynamic = "force-dynamic";
@@ -16,30 +17,28 @@ export default async function InvitePage({
   const valid = user && user.status === "invited" && !expired;
 
   return (
-    <div className="admin-login">
-      <div className="admin-login-card">
-        <div style={{ marginBottom: 20 }}>
-          <LogoLockup height={26} />
-        </div>
-        {valid ? (
-          <>
-            <h1>Definir sua senha</h1>
-            <p className="admin-login-sub">
-              Olá{user.name ? `, ${user.name}` : ""}! Crie uma senha para
-              acessar o Analista Starter Kit com <strong>{user.email}</strong>.
-            </p>
-            <AcceptForm token={token} />
-          </>
-        ) : (
-          <>
-            <h1>Convite indisponível</h1>
-            <p className="admin-login-sub">
-              Este link de convite é inválido, já foi usado ou expirou. Peça a um
-              administrador para gerar um novo.
-            </p>
-          </>
-        )}
+    <AuthShell>
+      <div className="landing-logo">
+        <CtMark size={42} />
       </div>
-    </div>
+      {valid ? (
+        <>
+          <h1 className="landing-title">Definir sua senha</h1>
+          <p className="landing-sub">
+            Olá{user.name ? `, ${user.name}` : ""}! Crie uma senha para acessar a
+            Citiesoft Academy com <strong>{user.email}</strong>.
+          </p>
+          <AcceptForm token={token} />
+        </>
+      ) : (
+        <>
+          <h1 className="landing-title">Convite indisponível</h1>
+          <p className="landing-sub">
+            Este link de convite é inválido, já foi usado ou expirou. Peça a um
+            administrador para gerar um novo.
+          </p>
+        </>
+      )}
+    </AuthShell>
   );
 }
