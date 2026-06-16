@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getChapter, getChapters, getChapterSlugs } from "@/lib/chapters";
+import { getTrails } from "@/lib/trails";
 import ChapterComplete from "@/components/ChapterComplete";
 
 export async function generateStaticParams() {
@@ -32,16 +33,18 @@ export default async function ChapterPage({
   const chapter = await getChapter(slug);
   if (!chapter) notFound();
 
-  const all = await getChapters();
+  const [all, trails] = await Promise.all([getChapters(), getTrails()]);
   const idx = all.findIndex((c) => c.slug === slug);
   const prev = idx > 0 ? all[idx - 1] : null;
   const next = idx < all.length - 1 ? all[idx + 1] : null;
+  const trailTitle =
+    trails.find((t) => t.slug === chapter.trailSlug)?.title ?? chapter.trailSlug;
 
   return (
     <article>
       <div className="chapter-header">
         <span className="chapter-tag">
-          {chapter.trail} · Cap {chapter.number}
+          {trailTitle} · Cap {chapter.number}
         </span>
         <h1 className="chapter-title">{chapter.title}</h1>
         <p className="chapter-desc">{chapter.description}</p>

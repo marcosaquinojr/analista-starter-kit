@@ -11,7 +11,7 @@ export const seedChapters: Chapter[] = [
   {
     slug: "cultura",
     number: "01",
-    trail: "Contexto",
+    trailSlug: "contexto",
     title: "Cultura Citiesoft",
     description:
       "O jeito do time, valores tácitos, o que a gente prioriza quando precisa escolher.",
@@ -59,7 +59,7 @@ export const seedChapters: Chapter[] = [
   {
     slug: "quem-e-quem",
     number: "02",
-    trail: "Contexto",
+    trailSlug: "contexto",
     title: "Quem é quem",
     description:
       "Organograma mínimo do time, papéis, e a pessoa certa pra cada tipo de dúvida.",
@@ -107,7 +107,7 @@ export const seedChapters: Chapter[] = [
   {
     slug: "glossario",
     number: "03",
-    trail: "Contexto",
+    trailSlug: "contexto",
     title: "Glossário",
     description:
       "Termos do domínio, siglas, jargão do cliente, jargão Citiesoft. Consulta rápida.",
@@ -146,7 +146,7 @@ export const seedChapters: Chapter[] = [
   {
     slug: "conduta",
     number: "04",
-    trail: "Contexto",
+    trailSlug: "contexto",
     title: "Conduta e bem-estar",
     description:
       "O resumo prático de conduta, sigilo, bem-estar e direitos do dia a dia — com a fonte oficial no Manual de Conduta da Citiesoft.",
@@ -201,7 +201,7 @@ export const seedChapters: Chapter[] = [
   {
     slug: "processo",
     number: "05",
-    trail: "Rotina",
+    trailSlug: "rotina",
     title: "Processo do time",
     description:
       "Do início ao fim de uma demanda padrão. O que acontece de verdade — não o que está no PowerPoint da reunião kick-off.",
@@ -281,7 +281,7 @@ export const seedChapters: Chapter[] = [
   {
     slug: "ferramentas",
     number: "06",
-    trail: "Rotina",
+    trailSlug: "rotina",
     title: "Ferramentas",
     description:
       "Azure DevOps, Teams, Confluence — pra que serve cada uma na prática.",
@@ -352,7 +352,7 @@ export const seedChapters: Chapter[] = [
   {
     slug: "templates",
     number: "07",
-    trail: "Rotina",
+    trailSlug: "rotina",
     title: "Templates",
     description:
       "Os artefatos que o time produz, em padrão pronto pra usar. Não escreva do zero.",
@@ -394,7 +394,7 @@ export const seedChapters: Chapter[] = [
   {
     slug: "exemplos",
     number: "08",
-    trail: "Rotina",
+    trailSlug: "rotina",
     title: "Exemplos reais",
     description:
       "Um artefato real (anonimizado) por template, com comentários explicando decisões e quase-erros.",
@@ -461,7 +461,7 @@ export const seedChapters: Chapter[] = [
   {
     slug: "faq",
     number: "09",
-    trail: "Crescimento",
+    trailSlug: "crescimento",
     title: "FAQ — Primeiros 30 dias",
     description: "As perguntas que todo novo analista faz, respondidas de uma vez.",
     readTime: "Consulta livre",
@@ -488,7 +488,7 @@ export const seedChapters: Chapter[] = [
   {
     slug: "erros",
     number: "10",
-    trail: "Crescimento",
+    trailSlug: "crescimento",
     title: "Erros comuns",
     description:
       "As armadilhas que pegam quase todo mundo nos primeiros 3 meses — e como evitar.",
@@ -526,7 +526,7 @@ export const seedChapters: Chapter[] = [
   {
     slug: "proximos",
     number: "11",
-    trail: "Crescimento",
+    trailSlug: "crescimento",
     title: "Próximos passos",
     description:
       "Quando você já dominar o básico, por onde aprofundar. Trilhas, recursos externos, marcos.",

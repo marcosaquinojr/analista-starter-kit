@@ -2,13 +2,23 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
-import { saveChapter, type ActionState } from "@/app/admin/actions";
+import {
+  saveChapter,
+  deleteChapter,
+  type ActionState,
+} from "@/app/admin/actions";
 import RichEditor from "@/components/editor/RichEditor";
-import type { Chapter } from "@/lib/types";
+import type { Chapter, TrailMeta } from "@/lib/types";
 
 const initial: ActionState = {};
 
-export default function EditForm({ chapter }: { chapter: Chapter }) {
+export default function EditForm({
+  chapter,
+  trails,
+}: {
+  chapter: Chapter;
+  trails: TrailMeta[];
+}) {
   const [state, formAction, pending] = useActionState(saveChapter, initial);
   const [body, setBody] = useState(chapter.bodyHtml);
 
@@ -27,6 +37,22 @@ export default function EditForm({ chapter }: { chapter: Chapter }) {
         <div className="editor-bar-right">
           {state.ok && <span className="editor-saved">Salvo ✓</span>}
           {state.error && <span className="admin-error">{state.error}</span>}
+          <button
+            type="submit"
+            formAction={deleteChapter}
+            formNoValidate
+            className="trail-btn trail-btn-danger"
+            onClick={(e) => {
+              if (
+                !confirm(
+                  `Excluir o capítulo "${chapter.title}"? Isso não pode ser desfeito.`,
+                )
+              )
+                e.preventDefault();
+            }}
+          >
+            Excluir
+          </button>
           <button type="submit" className="btn-complete" disabled={pending}>
             {pending ? "Salvando…" : "Salvar"}
           </button>
@@ -44,10 +70,12 @@ export default function EditForm({ chapter }: { chapter: Chapter }) {
         </label>
         <label className="field field-sm">
           <span>Trilha</span>
-          <select name="trail" defaultValue={chapter.trail}>
-            <option value="Contexto">Contexto</option>
-            <option value="Rotina">Rotina</option>
-            <option value="Crescimento">Crescimento</option>
+          <select name="trail" defaultValue={chapter.trailSlug}>
+            {trails.map((t) => (
+              <option key={t.slug} value={t.slug}>
+                {t.title}
+              </option>
+            ))}
           </select>
         </label>
         <label className="field">

@@ -13,8 +13,9 @@
  */
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import { chapters } from "../lib/db/schema";
+import { chapters, trails } from "../lib/db/schema";
 import { seedChapters } from "../lib/seed/chapters";
+import { seedTrails } from "../lib/seed/trails";
 
 async function main() {
   const url = process.env.DATABASE_URL;
@@ -22,6 +23,16 @@ async function main() {
 
   const force = process.argv.includes("--force");
   const db = drizzle(neon(url));
+
+  // Trilhas primeiro: capítulos referenciam trail_slug via FK.
+  for (const t of seedTrails) {
+    if (force) {
+      await db.insert(trails).values(t).onConflictDoUpdate({ target: trails.slug, set: t });
+    } else {
+      await db.insert(trails).values(t).onConflictDoNothing({ target: trails.slug });
+    }
+  }
+  console.log(`\n  ✓ ${seedTrails.length} trilhas semeadas.`);
 
   if (force) {
     console.log(
@@ -41,7 +52,7 @@ async function main() {
       slug: c.slug,
       sortOrder: Number.parseInt(c.number, 10),
       number: c.number,
-      trail: c.trail,
+      trailSlug: c.trailSlug,
       title: c.title,
       description: c.description,
       readTime: c.readTime,

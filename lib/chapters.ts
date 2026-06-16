@@ -2,7 +2,7 @@ import "server-only";
 import { asc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chapters } from "@/lib/db/schema";
-import type { Chapter, ChapterMeta, Trail } from "@/lib/types";
+import type { Chapter, ChapterMeta } from "@/lib/types";
 
 /**
  * Camada de acesso a capítulos — agora lê do Postgres (Neon) via Drizzle.
@@ -13,31 +13,18 @@ import type { Chapter, ChapterMeta, Trail } from "@/lib/types";
 const metaColumns = {
   slug: chapters.slug,
   number: chapters.number,
-  trail: chapters.trail,
+  trailSlug: chapters.trailSlug,
   title: chapters.title,
   description: chapters.description,
   readTime: chapters.readTime,
   updatedAt: chapters.updatedAt,
 };
 
-function toMeta(r: {
-  slug: string;
-  number: string;
-  trail: string;
-  title: string;
-  description: string;
-  readTime: string;
-  updatedAt: string;
-}): ChapterMeta {
-  return { ...r, trail: r.trail as Trail };
-}
-
 export async function getChapters(): Promise<ChapterMeta[]> {
-  const rows = await db
+  return db
     .select(metaColumns)
     .from(chapters)
     .orderBy(asc(chapters.sortOrder));
-  return rows.map(toMeta);
 }
 
 export async function getChapter(slug: string): Promise<Chapter | null> {
@@ -50,7 +37,7 @@ export async function getChapter(slug: string): Promise<Chapter | null> {
   return {
     slug: row.slug,
     number: row.number,
-    trail: row.trail as Trail,
+    trailSlug: row.trailSlug,
     title: row.title,
     description: row.description,
     readTime: row.readTime,

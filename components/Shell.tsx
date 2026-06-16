@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import type { ChapterMeta, Trail } from "@/lib/types";
-import { TRAILS } from "@/lib/types";
+import type { ChapterMeta, TrailMeta } from "@/lib/types";
 import { useCompletion } from "@/components/completion";
 import { CtMark } from "@/components/Logo";
 
@@ -29,9 +28,11 @@ function CheckCircle() {
 
 export default function Shell({
   chapters,
+  trails,
   children,
 }: {
   chapters: ChapterMeta[];
+  trails: TrailMeta[];
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -85,8 +86,8 @@ export default function Shell({
     .filter(Boolean)
     .join(" ");
 
-  const byTrail = (trail: Trail) =>
-    chapters.filter((c) => c.trail === trail);
+  const byTrail = (trailSlug: string) =>
+    chapters.filter((c) => c.trailSlug === trailSlug);
 
   return (
     <div className={shellClass}>
@@ -103,7 +104,7 @@ export default function Shell({
           </button>
           <Link href="/" className="brand">
             <span className="brand-mark">
-              <CtMark size={36} />
+              <CtMark size={30} />
             </span>
             <div className="brand-text">
               <span className="brand-title">Analista Starter Kit</span>
@@ -131,11 +132,11 @@ export default function Shell({
       />
 
       <aside className="sidebar">
-        {TRAILS.map((trail) => {
-          const items = byTrail(trail.title);
+        {trails.map((trail) => {
+          const items = byTrail(trail.slug);
           if (items.length === 0) return null;
           return (
-            <div key={trail.title}>
+            <div key={trail.slug}>
               <div className="sidebar-label">{trail.title}</div>
               <ul className="sidebar-nav">
                 {items.map((c) => {

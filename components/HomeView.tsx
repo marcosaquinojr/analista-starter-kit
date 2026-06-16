@@ -1,14 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import type { ChapterMeta, Trail } from "@/lib/types";
-import { TRAILS } from "@/lib/types";
+import type { ChapterMeta, TrailMeta } from "@/lib/types";
 import { useCompletion } from "@/components/completion";
 
-export default function HomeView({ chapters }: { chapters: ChapterMeta[] }) {
+export default function HomeView({
+  chapters,
+  trails,
+}: {
+  chapters: ChapterMeta[];
+  trails: TrailMeta[];
+}) {
   const { isDone, ready } = useCompletion();
 
-  const byTrail = (trail: Trail) => chapters.filter((c) => c.trail === trail);
+  const byTrail = (trailSlug: string) =>
+    chapters.filter((c) => c.trailSlug === trailSlug);
 
   return (
     <>
@@ -31,7 +37,7 @@ export default function HomeView({ chapters }: { chapters: ChapterMeta[] }) {
             <div className="lbl">capítulos</div>
           </div>
           <div className="welcome-stat">
-            <div className="num">{TRAILS.length}</div>
+            <div className="num">{trails.length}</div>
             <div className="lbl">trilhas</div>
           </div>
           <div className="welcome-stat">
@@ -45,14 +51,14 @@ export default function HomeView({ chapters }: { chapters: ChapterMeta[] }) {
         </div>
       </div>
 
-      {TRAILS.map((trail) => {
-        const items = byTrail(trail.title);
+      {trails.map((trail) => {
+        const items = byTrail(trail.slug);
         if (items.length === 0) return null;
         return (
-          <div className="trail" key={trail.title}>
+          <div className="trail" key={trail.slug}>
             <div className="trail-header">
               <span className="trail-title">{trail.title}</span>
-              <span className="trail-desc">{trail.desc}</span>
+              <span className="trail-desc">{trail.description}</span>
             </div>
             <div className="chapter-grid">
               {items.map((c) => (

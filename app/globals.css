@@ -7,12 +7,12 @@
    ============================================================ */
 
 :root {
-  --blue: #1068f8;
+  --blue: #146bfa;
   --blue-dim: #0b4fd0;
   --blue-deep: #0a2540;
   --blue-soft: #4d8bff;
-  --blue-glow: rgba(16, 104, 248, 0.12);
-  --blue-faint: rgba(16, 104, 248, 0.06);
+  --blue-glow: rgba(20, 107, 250, 0.12);
+  --blue-faint: rgba(20, 107, 250, 0.06);
   --blue-50: #eef4ff;
   --bg: #ffffff;
   --bg2: #fafbfc;
@@ -119,17 +119,9 @@ header.site-header {
   text-decoration: none;
 }
 .brand-mark {
-  width: 36px;
-  height: 36px;
-  background: var(--blue);
-  border-radius: var(--radius-sm);
-  display: grid;
-  place-items: center;
-  font-family: var(--font-display), sans-serif;
-  font-weight: 900;
-  font-size: 18px;
-  color: var(--white);
-  box-shadow: 0 4px 12px var(--blue-glow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .brand-text {
   display: flex;
@@ -221,7 +213,7 @@ header.site-header {
 }
 .tag-alpha {
   background: var(--blue-faint);
-  border: 1px solid rgba(16, 104, 248, 0.2);
+  border: 1px solid rgba(20, 107, 250, 0.2);
   color: var(--blue);
   padding: 5px 12px;
   border-radius: 100px;
@@ -290,7 +282,7 @@ aside.sidebar {
 .sidebar-nav li a.active {
   background: var(--blue-50);
   color: var(--blue);
-  border-color: rgba(16, 104, 248, 0.18);
+  border-color: rgba(20, 107, 250, 0.18);
   font-weight: 500;
 }
 .sidebar-nav li a .num {
@@ -376,8 +368,8 @@ main.site-main {
 .hero-grid {
   position: absolute;
   inset: -60px -80px 0 -80px;
-  background-image: linear-gradient(rgba(16, 104, 248, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16, 104, 248, 0.06) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(20, 107, 250, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 107, 250, 0.06) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 70% 60% at 30% 40%, black, transparent);
   pointer-events: none;
@@ -389,7 +381,7 @@ main.site-main {
   right: -120px;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(16, 104, 248, 0.1) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(20, 107, 250, 0.1) 0%, transparent 60%);
   pointer-events: none;
   z-index: -1;
 }
@@ -398,7 +390,7 @@ main.site-main {
   align-items: center;
   gap: 8px;
   background: var(--blue-50);
-  border: 1px solid rgba(16, 104, 248, 0.2);
+  border: 1px solid rgba(20, 107, 250, 0.2);
   color: var(--blue);
   font-size: 11px;
   font-weight: 500;
@@ -613,7 +605,7 @@ main.site-main {
 .chapter-tag {
   display: inline-block;
   background: var(--blue-50);
-  border: 1px solid rgba(16, 104, 248, 0.2);
+  border: 1px solid rgba(20, 107, 250, 0.2);
   color: var(--blue);
   font-size: 10px;
   font-weight: 600;
@@ -882,7 +874,7 @@ main.site-main {
   color: var(--blue);
   font-size: 13px;
   background: var(--blue-50);
-  border: 1px solid rgba(16, 104, 248, 0.2);
+  border: 1px solid rgba(20, 107, 250, 0.2);
   width: 22px;
   height: 22px;
   display: grid;
@@ -1165,6 +1157,16 @@ main.site-main {
 }
 .admin-trail {
   margin-bottom: 24px;
+}
+.admin-trail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+.admin-trail-head .sidebar-label {
+  margin-bottom: 0;
 }
 .admin-list {
   display: flex;
@@ -1591,4 +1593,147 @@ main.site-main {
 }
 .html-block-editor:focus {
   outline: none;
+}
+
+/* ── ADMIN · TRILHAS (Fase 2) ───────────────────────────────────────────── */
+.admin-intro-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.admin-trail-empty {
+  font-size: 13px;
+  color: var(--text3);
+  font-style: italic;
+  padding: 4px 2px;
+}
+
+/* botão secundário reutilizável no admin */
+.trail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body), sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.trail-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.trail-btn-danger:hover:not(:disabled) {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+.trail-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* criar nova trilha */
+.trail-create {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.trail-create-fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+/* lista de trilhas */
+.trail-admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.trail-admin-row {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.trail-admin-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+}
+.trail-admin-order {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.trail-move {
+  width: 26px;
+  height: 22px;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text2);
+  cursor: pointer;
+  line-height: 1;
+  font-size: 12px;
+  transition: all 0.15s;
+}
+.trail-move:hover:not(:disabled) {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.trail-move:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.trail-admin-slug {
+  font-size: 11px;
+  color: var(--text3);
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+.trail-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  white-space: nowrap;
+  background: var(--blue-faint);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+.trail-count-empty {
+  color: var(--text3);
+  background: transparent;
+  border: 1px dashed var(--border2);
+}
+.trail-admin-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.trail-edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--blue-faint);
 }

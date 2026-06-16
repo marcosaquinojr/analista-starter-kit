@@ -1,9 +1,14 @@
-export type Trail = "Contexto" | "Rotina" | "Crescimento";
+export interface TrailMeta {
+  slug: string;
+  title: string;
+  description: string;
+  sortOrder: number;
+}
 
 export interface ChapterMeta {
   slug: string;
   number: string; // "01".."10"
-  trail: Trail;
+  trailSlug: string; // referencia TrailMeta.slug
   title: string;
   description: string;
   readTime: string;
@@ -13,9 +18,3 @@ export interface ChapterMeta {
 export interface Chapter extends ChapterMeta {
   bodyHtml: string;
 }
-
-export const TRAILS: { title: Trail; desc: string }[] = [
-  { title: "Contexto", desc: "Antes de produzir, entenda o terreno" },
-  { title: "Rotina", desc: "Como o trabalho do analista flui" },
-  { title: "Crescimento", desc: "Quando precisar de mais" },
-];

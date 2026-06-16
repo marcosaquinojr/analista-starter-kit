@@ -12,7 +12,7 @@ export default function AdminChrome({
       <header className="admin-header">
         <Link href="/admin" className="brand">
           <span className="brand-mark">
-            <CtMark size={36} />
+            <CtMark size={30} />
           </span>
           <div className="brand-text">
             <span className="brand-title">Edição · Analista Starter Kit</span>
