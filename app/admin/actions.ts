@@ -1,15 +1,44 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { asc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chapters, trails } from "@/lib/db/schema";
-import { ADMIN_COOKIE, sessionSecret, isAuthed } from "@/lib/auth";
+import {
+  verifyPassword,
+  setSession,
+  clearSession,
+  getSessionUser,
+  type Role,
+} from "@/lib/auth";
+import {
+  requireRole,
+  getUserByEmail,
+  getUserById,
+  createInvite,
+  resetInvite,
+  acceptInvite,
+  deleteUser,
+  countAdmins,
+} from "@/lib/users";
 import { slugify } from "@/lib/slug";
 
-export type ActionState = { error?: string; ok?: boolean };
+export type ActionState = { error?: string; ok?: boolean; inviteUrl?: string };
+
+const ROLES: Role[] = ["admin", "editor", "leitor"];
+
+/** Quem pode editar conteúdo (capítulos e trilhas). */
+const canEdit = () => requireRole("admin", "editor");
+
+async function origin(): Promise<string> {
+  const h = await headers();
+  const host = h.get("host") ?? "localhost:3000";
+  const proto =
+    host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https";
+  return `${proto}://${host}`;
+}
 
 async function trailExists(slug: string): Promise<boolean> {
   const [row] = await db
@@ -40,24 +69,26 @@ export async function login(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  if (!process.env.ADMIN_PASSWORD || password !== process.env.ADMIN_PASSWORD) {
-    return { error: "Senha incorreta." };
+  if (!email || !password) return { error: "Informe e-mail e senha." };
+
+  const user = await getUserByEmail(email);
+  // Mensagem genérica de propósito (não revela se o e-mail existe).
+  if (!user || user.status !== "active" || !verifyPassword(password, user.passwordHash)) {
+    return { error: "E-mail ou senha incorretos." };
   }
-  const store = await cookies();
-  store.set(ADMIN_COOKIE, sessionSecret(), {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7, // 7 dias
+
+  await setSession({
+    uid: user.id,
+    email: user.email,
+    role: user.role as Role,
   });
-  redirect("/admin");
+  redirect(user.role === "leitor" ? "/" : "/admin");
 }
 
 export async function logout() {
-  const store = await cookies();
-  store.delete(ADMIN_COOKIE);
+  await clearSession();
   redirect("/admin/login");
 }
 
@@ -73,7 +104,7 @@ export async function saveChapter(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  if (!(await isAuthed())) return { error: "Sessão expirada. Faça login de novo." };
+  if (!(await canEdit())) return { error: "Sem permissão. Faça login de novo." };
 
   const slug = String(formData.get("slug") ?? "");
   const title = String(formData.get("title") ?? "").trim();
@@ -118,7 +149,7 @@ export async function createTrail(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  if (!(await isAuthed())) return { error: "Sessão expirada. Faça login de novo." };
+  if (!(await canEdit())) return { error: "Sem permissão. Faça login de novo." };
 
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
@@ -145,7 +176,7 @@ export async function updateTrail(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  if (!(await isAuthed())) return { error: "Sessão expirada. Faça login de novo." };
+  if (!(await canEdit())) return { error: "Sem permissão. Faça login de novo." };
 
   const slug = String(formData.get("slug") ?? "");
   const title = String(formData.get("title") ?? "").trim();
@@ -163,7 +194,7 @@ export async function updateTrail(
 }
 
 export async function deleteTrail(formData: FormData) {
-  if (!(await isAuthed())) return;
+  if (!(await canEdit())) return;
   const slug = String(formData.get("slug") ?? "");
   if (!slug) return;
 
@@ -188,7 +219,7 @@ export async function deleteTrail(formData: FormData) {
  * Slug, número e ordem são gerados aqui; o conteúdo fica como rascunho.
  */
 export async function createChapter(formData: FormData) {
-  if (!(await isAuthed())) return;
+  if (!(await canEdit())) return;
 
   const trailSlug = String(formData.get("trail") ?? "").trim();
   if (!(await trailExists(trailSlug))) return;
@@ -230,7 +261,7 @@ export async function createChapter(formData: FormData) {
 
 /** Exclui um capítulo de vez e volta pra lista. */
 export async function deleteChapter(formData: FormData) {
-  if (!(await isAuthed())) return;
+  if (!(await canEdit())) return;
   const slug = String(formData.get("slug") ?? "");
   if (!slug) return;
 
@@ -243,8 +274,83 @@ export async function deleteChapter(formData: FormData) {
   redirect("/admin");
 }
 
+// ──────────────────────────────────────────────────────────────────────────
+// Usuários — sistema de acesso interno (/admin/usuarios). Só Admin gerencia.
+// ──────────────────────────────────────────────────────────────────────────
+
+/** Cria um convite e devolve o link pra você enviar à pessoa. */
+export async function createUserInvite(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  if (!(await requireRole("admin")))
+    return { error: "Só administradores criam acessos." };
+
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const name = String(formData.get("name") ?? "").trim();
+  const role = String(formData.get("role") ?? "") as Role;
+
+  if (!email || !email.includes("@")) return { error: "E-mail inválido." };
+  if (!ROLES.includes(role)) return { error: "Papel inválido." };
+  if (await getUserByEmail(email))
+    return { error: "Já existe um acesso com esse e-mail." };
+
+  const token = await createInvite({ email, name, role });
+  revalidatePath("/admin/usuarios");
+  return { ok: true, inviteUrl: `${await origin()}/convite/${token}` };
+}
+
+/** Gera um novo link de convite (caso o anterior tenha vencido/sumido). */
+export async function regenerateInvite(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  if (!(await requireRole("admin")))
+    return { error: "Só administradores criam acessos." };
+  const id = String(formData.get("id") ?? "");
+  const token = await resetInvite(id);
+  if (!token) return { error: "Esse acesso já foi ativado ou não existe." };
+  revalidatePath("/admin/usuarios");
+  return { ok: true, inviteUrl: `${await origin()}/convite/${token}` };
+}
+
+export async function deleteUserAction(formData: FormData) {
+  if (!(await requireRole("admin"))) return;
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  const session = await getSessionUser();
+  if (session?.uid === id) return; // não se auto-remove (evita lockout)
+
+  const target = await getUserById(id);
+  if (target?.role === "admin" && (await countAdmins()) <= 1) return; // mantém ao menos 1 admin
+
+  await deleteUser(id);
+  revalidatePath("/admin/usuarios");
+}
+
+/** A pessoa convidada define a própria senha e já entra logada. */
+export async function acceptInviteAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const token = String(formData.get("token") ?? "");
+  const password = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirm") ?? "");
+
+  if (password.length < 8)
+    return { error: "A senha precisa ter ao menos 8 caracteres." };
+  if (password !== confirm) return { error: "As senhas não conferem." };
+
+  const user = await acceptInvite(token, password);
+  if (!user) return { error: "Convite inválido ou expirado." };
+
+  await setSession({ uid: user.id, email: user.email, role: user.role as Role });
+  redirect(user.role === "leitor" ? "/" : "/admin");
+}
+
 export async function moveTrail(formData: FormData) {
-  if (!(await isAuthed())) return;
+  if (!(await canEdit())) return;
   const slug = String(formData.get("slug") ?? "");
   const dir = String(formData.get("dir") ?? "");
 

@@ -33,7 +33,27 @@ export const chapters = pgTable("chapters", {
   updatedAt: text("updated_at").notNull(),
 });
 
+/**
+ * Usuários da área interna. Sistema de acesso próprio (substitui a senha
+ * compartilhada). `passwordHash` fica nulo enquanto o convite não foi aceito;
+ * `inviteToken` destrava a página onde a pessoa define a própria senha.
+ * Papéis: 'admin' (gerencia usuários + edita), 'editor' (edita), 'leitor'.
+ */
+export const users = pgTable("users", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  name: text("name").notNull().default(""),
+  role: text("role").notNull(),
+  passwordHash: text("password_hash"),
+  inviteToken: text("invite_token"),
+  inviteExpiresAt: text("invite_expires_at"),
+  status: text("status").notNull(), // 'invited' | 'active'
+  createdAt: text("created_at").notNull(),
+});
+
 export type TrailRow = typeof trails.$inferSelect;
 export type NewTrailRow = typeof trails.$inferInsert;
 export type ChapterRow = typeof chapters.$inferSelect;
 export type NewChapterRow = typeof chapters.$inferInsert;
+export type UserRow = typeof users.$inferSelect;
+export type NewUserRow = typeof users.$inferInsert;

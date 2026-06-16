@@ -17,16 +17,24 @@ export default function LoginPage() {
         </div>
         <h1>Área de edição</h1>
         <p className="admin-login-sub">
-          Acesso interno ao Analista Starter Kit. Em breve isto vira login pela
-          sua conta Microsoft.
+          Acesso interno ao Analista Starter Kit. Entre com a conta que você
+          recebeu por convite.
         </p>
         <form action={formAction}>
+          <label htmlFor="email">E-mail</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoFocus
+            autoComplete="email"
+            placeholder="voce@citiesoft.com"
+          />
           <label htmlFor="password">Senha</label>
           <input
             id="password"
             name="password"
             type="password"
-            autoFocus
             autoComplete="current-password"
             placeholder="••••••••"
           />

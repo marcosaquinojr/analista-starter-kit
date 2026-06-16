@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { ADMIN_COOKIE } from "@/lib/auth";
+import { SESSION_COOKIE } from "@/lib/session-cookie";
 
 /**
- * Protege /admin/* (exceto /admin/login). Sem o cookie de sessão válido,
- * redireciona para o login. Substituído por Clerk na Fase 3.
+ * Gate leve de /admin/* (exceto /admin/login): sem cookie de sessão, manda
+ * pro login. Roda no edge, então só checa PRESENÇA do cookie — a validação
+ * da assinatura e do papel acontece no servidor (AdminChrome e nas actions),
+ * que é onde a autorização precisa valer de qualquer jeito.
  */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
-    const token = request.cookies.get(ADMIN_COOKIE)?.value;
-    if (!token || token !== process.env.ADMIN_SESSION_SECRET) {
+    if (!request.cookies.get(SESSION_COOKIE)?.value) {
       const url = request.nextUrl.clone();
       url.pathname = "/admin/login";
       return NextResponse.redirect(url);
