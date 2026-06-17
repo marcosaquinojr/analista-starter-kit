@@ -6,8 +6,9 @@ import { settings } from "@/lib/db/schema";
 /**
  * Conteúdo editável da página inicial (o "hero" de boas-vindas). Antes ficava
  * hardcoded no componente HomeView; agora vem da tabela `settings` (chave/valor)
- * e é editável pelo /admin/inicio. Trechos entre `**asteriscos**` viram destaque
- * (azul no título, peso no subtítulo) — ver o render em HomeView.
+ * e é editável pelo /admin/inicio com edição visual (WYSIWYG). `title` e
+ * `subtitle` guardam HTML (negrito, cor etc.); valores legados em texto puro
+ * com `**...**` continuam suportados via lib/hero.ts.
  */
 export interface HomeContent {
   tag: string;
@@ -19,9 +20,9 @@ export interface HomeContent {
 export const HOME_DEFAULTS: HomeContent = {
   tag: "Bem-vindo à Citiesoft",
   title:
-    "Você não vai precisar **adivinhar** como as coisas funcionam aqui.",
+    'Você não vai precisar <span class="accent">adivinhar</span> como as coisas funcionam aqui.',
   subtitle:
-    "Este manual reúne o que os analistas mais experientes do time aprenderam na marra — para você chegar produzindo com qualidade **desde o primeiro mês**.",
+    "Este manual reúne o que os analistas mais experientes do time aprenderam na marra — para você chegar produzindo com qualidade <strong>desde o primeiro mês</strong>.",
   readTime: "~45 min",
 };
 

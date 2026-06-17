@@ -1,31 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
 import type { ChapterMeta, TrailMeta } from "@/lib/types";
 import type { HomeContent } from "@/lib/settings";
+import { heroHtml } from "@/lib/hero";
 import { useCompletion } from "@/components/completion";
-
-/**
- * Renderiza um texto aplicando destaque nos trechos entre `**asteriscos**`.
- * `accent` pinta de azul (título); `strong` dá peso (subtítulo). Como a entrada
- * é texto puro vinda do /admin, não há risco de HTML injetado.
- */
-function withHighlight(
-  text: string,
-  kind: "accent" | "strong",
-): ReactNode[] {
-  return text.split(/\*\*(.+?)\*\*/g).map((part, i) => {
-    if (i % 2 === 0) return part;
-    return kind === "accent" ? (
-      <span key={i} className="accent">
-        {part}
-      </span>
-    ) : (
-      <strong key={i}>{part}</strong>
-    );
-  });
-}
 
 export default function HomeView({
   chapters,
@@ -47,11 +26,17 @@ export default function HomeView({
         <div className="hero-grid" />
         <div className="hero-glow" />
         {home.tag && <span className="welcome-tag">{home.tag}</span>}
-        <h1 className="welcome-title">{withHighlight(home.title, "accent")}</h1>
+        <h1
+          className="welcome-title"
+          dangerouslySetInnerHTML={{ __html: heroHtml(home.title, "accent") }}
+        />
         {home.subtitle && (
-          <p className="welcome-sub">
-            {withHighlight(home.subtitle, "strong")}
-          </p>
+          <p
+            className="welcome-sub"
+            dangerouslySetInnerHTML={{
+              __html: heroHtml(home.subtitle, "strong"),
+            }}
+          />
         )}
         <div className="welcome-stats">
           <div className="welcome-stat">

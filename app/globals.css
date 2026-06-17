@@ -2401,24 +2401,94 @@ main.site-main {
   gap: 8px;
   flex-wrap: wrap;
 }
-.home-editor {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 680px;
-}
-.home-editor code {
-  font-family: var(--font-mono), monospace;
-  font-size: 0.92em;
-  background: var(--blue-50);
-  color: var(--blue);
-  padding: 1px 5px;
-  border-radius: 4px;
-}
 .home-editor-actions {
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+/* Barra de formatação do editor visual do hero */
+.hero-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg2);
+  position: sticky;
+  top: 64px;
+  z-index: 20;
+  margin-bottom: 18px;
+}
+.tb-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s;
+}
+.tb-swatch:hover {
+  transform: scale(1.15);
+}
+.tb-swatch-custom {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: conic-gradient(
+    from 0deg,
+    #f43f5e,
+    #f59e0b,
+    #22c55e,
+    #146bfa,
+    #a855f7,
+    #f43f5e
+  );
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+}
+.tb-swatch-custom input[type="color"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Prévia editável: usa o CSS real do hero, com molduras de edição */
+.hero-edit-canvas {
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius);
+  padding: 40px 36px 36px;
+  background: var(--bg);
+}
+.hero-editable {
+  outline: none;
+  border-radius: 6px;
+  transition: box-shadow 0.12s, background 0.12s;
+  cursor: text;
+}
+.hero-editable:hover {
+  box-shadow: 0 0 0 1px var(--border2);
+}
+.hero-editable:focus {
+  box-shadow: 0 0 0 2px var(--blue-faint);
+  background: rgba(20, 107, 250, 0.03);
+}
+.hero-edit-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
 }
 
 /* ── SITE · página de perfil (/conta) ───────────────────────────────────── */
