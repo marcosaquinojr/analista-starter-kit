@@ -100,6 +100,16 @@ export default function RichEditor({ initialHtml, onChange }: Props) {
       })
       .run();
 
+  const insertGlossary = () =>
+    editor
+      .chain()
+      .focus()
+      .insertContent({
+        type: "glossary",
+        attrs: { items: [{ term: "", def: "" }] },
+      })
+      .run();
+
   const setLink = () => {
     const prev = editor.getAttributes("link").href as string | undefined;
     const url = window.prompt("URL do link:", prev ?? "https://");
@@ -184,6 +194,9 @@ export default function RichEditor({ initialHtml, onChange }: Props) {
           </Btn>
           <Btn title="Ferramentas (cartões com ícone)" on={insertTools}>
             + Ferramentas
+          </Btn>
+          <Btn title="Glossário (termo + definição)" on={insertGlossary}>
+            + Glossário
           </Btn>
           <Btn
             title="Tabela"

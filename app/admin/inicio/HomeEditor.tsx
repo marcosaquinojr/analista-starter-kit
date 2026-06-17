@@ -244,6 +244,34 @@ export default function HomeEditor({
           defaultValue={initialSub}
         />
 
+        <div className="hero-note-edit">
+          <div className="hero-note-head">
+            Aviso no rodapé da página{" "}
+            <span className="hero-note-hint">
+              — deixe o texto vazio para remover o aviso
+            </span>
+          </div>
+          <div className="hero-note-fields">
+            <label className="field field-narrow">
+              <span>Etiqueta</span>
+              <input
+                name="noteLabel"
+                defaultValue={home.noteLabel}
+                placeholder="Ex.: Alpha"
+              />
+            </label>
+            <label className="field field-grow">
+              <span>Texto do aviso</span>
+              <textarea
+                name="noteText"
+                defaultValue={home.noteText}
+                rows={2}
+                placeholder="Deixe vazio para não exibir nenhum aviso"
+              />
+            </label>
+          </div>
+        </div>
+
         <div className="hero-edit-foot">
           <label className="field field-narrow">
             <span>Tempo de leitura (estatística)</span>

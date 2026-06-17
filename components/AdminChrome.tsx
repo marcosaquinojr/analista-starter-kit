@@ -28,6 +28,7 @@ export default async function AdminChrome({
 
   const row = await getUserById(user.uid);
   const name = row?.name?.trim() ?? "";
+  const avatarUrl = row?.avatarUrl ?? "";
 
   return (
     <>
@@ -48,7 +49,12 @@ export default async function AdminChrome({
           </Link>
           <Link href="/conta" className="admin-user" title="Editar perfil">
             <span className="admin-user-avatar" aria-hidden>
-              {initials(name, user.email)}
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatarUrl} alt="" />
+              ) : (
+                initials(name, user.email)
+              )}
             </span>
             <span className="admin-user-id">
               <span className="admin-user-name">{name || user.email}</span>

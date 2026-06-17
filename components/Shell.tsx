@@ -37,7 +37,7 @@ export default function Shell({
 }: {
   chapters: ChapterMeta[];
   trails: TrailMeta[];
-  user: { email: string; name: string; role: string };
+  user: { email: string; name: string; role: string; avatarUrl: string };
   lastUpdated: string | null;
   children: React.ReactNode;
 }) {
@@ -176,7 +176,12 @@ export default function Shell({
         <div className="sidebar-footer">
           <Link href="/conta" className="sidebar-user" title="Editar perfil">
             <span className="sidebar-avatar" aria-hidden>
-              {initials(user.name, user.email)}
+              {user.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.avatarUrl} alt="" />
+              ) : (
+                initials(user.name, user.email)
+              )}
             </span>
             <span className="sidebar-user-id">
               <span className="sidebar-user-name">

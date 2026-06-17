@@ -88,7 +88,7 @@ export default function ToolsBlockView({
             <div
               className={`tools-icon-pick${isUp ? " is-uploading" : ""}${
                 isErr ? " is-error" : ""
-              }`}
+              }${it.icon && !isUp ? " has-icon" : ""}`}
               title="Enviar imagem (PNG, SVG, JPG, WEBP — máx. 512 KB)"
               role="button"
               tabIndex={0}

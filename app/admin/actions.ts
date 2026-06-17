@@ -22,7 +22,7 @@ import {
   acceptInvite,
   deleteUser,
   setUserRole,
-  setUserName,
+  setUserProfile,
   countAdmins,
 } from "@/lib/users";
 import { saveHomeContent } from "@/lib/settings";
@@ -200,10 +200,19 @@ export async function saveHome(
   const title = String(formData.get("title") ?? "").trim();
   const subtitle = String(formData.get("subtitle") ?? "").trim();
   const readTime = String(formData.get("readTime") ?? "").trim();
+  const noteLabel = String(formData.get("noteLabel") ?? "").trim();
+  const noteText = String(formData.get("noteText") ?? "").trim();
 
   if (!title) return { error: "O título é obrigatório." };
 
-  await saveHomeContent({ tag, title, subtitle, readTime });
+  await saveHomeContent({
+    tag,
+    title,
+    subtitle,
+    readTime,
+    noteLabel,
+    noteText,
+  });
   await logAction("home.update", "Página inicial");
   revalidatePath("/");
   revalidatePath("/admin/inicio");
@@ -222,10 +231,11 @@ export async function updateOwnProfile(
   if (!session) return { error: "Sessão expirada. Faça login de novo." };
 
   const name = String(formData.get("name") ?? "").trim();
+  const avatarUrl = String(formData.get("avatarUrl") ?? "").trim();
   if (!name) return { error: "Informe seu nome." };
   if (name.length > 60) return { error: "Nome muito longo (máx. 60)." };
 
-  await setUserName(session.uid, name);
+  await setUserProfile(session.uid, name, avatarUrl);
   await logAction("profile.update", name);
   revalidatePath("/");
   revalidatePath("/conta");
@@ -260,6 +270,32 @@ export async function uploadToolIcon(
   const ext = (file.name.split(".").pop() || "png").toLowerCase().slice(0, 5);
   try {
     const blob = await put(`tool-icons/${randomUUID()}.${ext}`, file, {
+      access: "public",
+      contentType: file.type,
+    });
+    return { url: blob.url };
+  } catch {
+    return { error: "Falha no upload. Tente de novo." };
+  }
+}
+
+/** Upload da foto de perfil (qualquer usuário logado envia a própria). */
+export async function uploadAvatar(
+  formData: FormData,
+): Promise<{ url?: string; error?: string }> {
+  const session = await getSessionUser();
+  if (!session) return { error: "Sessão expirada. Faça login de novo." };
+
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0)
+    return { error: "Selecione uma imagem." };
+  if (!ICON_TYPES.includes(file.type))
+    return { error: "Formato inválido (use PNG, JPG, WEBP ou GIF)." };
+  if (file.size > ICON_MAX) return { error: "Imagem muito grande (máx. 512 KB)." };
+
+  const ext = (file.name.split(".").pop() || "png").toLowerCase().slice(0, 5);
+  try {
+    const blob = await put(`avatars/${randomUUID()}.${ext}`, file, {
       access: "public",
       contentType: file.type,
     });

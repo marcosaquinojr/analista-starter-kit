@@ -86,12 +86,14 @@ export default function HomeView({
         );
       })}
 
-      <div className="callout">
-        <div className="callout-label">Alpha</div>
-        Conteúdo especulativo enquanto o form de discovery não retorna ≥5
-        respostas. Capítulos podem ser fundidos, removidos ou reordenados quando
-        os dados chegarem.
-      </div>
+      {home.noteText && (
+        <div className="callout">
+          {home.noteLabel && (
+            <div className="callout-label">{home.noteLabel}</div>
+          )}
+          {home.noteText}
+        </div>
+      )}
     </>
   );
 }

@@ -111,6 +111,18 @@ export async function setUserName(id: string, name: string): Promise<void> {
   await db.update(users).set({ name: name.trim() }).where(eq(users.id, id));
 }
 
+/** Atualiza nome + foto (avatar) da própria pessoa. */
+export async function setUserProfile(
+  id: string,
+  name: string,
+  avatarUrl: string,
+): Promise<void> {
+  await db
+    .update(users)
+    .set({ name: name.trim(), avatarUrl })
+    .where(eq(users.id, id));
+}
+
 export async function deleteUser(id: string): Promise<void> {
   await db.delete(users).where(eq(users.id, id));
 }

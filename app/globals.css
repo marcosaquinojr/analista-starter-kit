@@ -2292,12 +2292,13 @@ main.site-main {
   place-items: center;
   border-radius: 10px;
   overflow: hidden;
-  background: var(--blue-faint);
+  /* sem fundo: PNG transparente mostra o próprio card */
+  background: transparent;
 }
 .chapter-body .tool-icon img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 .chapter-body .tool-icon-empty {
@@ -2437,8 +2438,14 @@ main.site-main {
 .tools-icon-pick img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+}
+/* com imagem: fundo transparente (mostra o card), borda sólida discreta */
+.tools-icon-pick.has-icon {
+  background: transparent;
+  border-style: solid;
+  border-color: var(--border);
 }
 .tools-icon-empty {
   font-size: 11px;
@@ -2482,6 +2489,67 @@ main.site-main {
 .tools-remove:hover {
   border-color: var(--bad);
   color: var(--bad);
+}
+
+/* ── BLOCO GLOSSÁRIO — editor (/admin) ──────────────────────────────────── */
+.gloss-editor {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--blue-faint);
+  padding: 14px 16px;
+  margin: 18px 0;
+}
+.gloss-editor-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.gloss-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.gloss-editor-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.gloss-editor-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.gloss-term-input,
+.gloss-def-input {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-family: var(--font-body), sans-serif;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.gloss-term-input {
+  font-weight: 600;
+}
+.gloss-def-input {
+  resize: vertical;
+  line-height: 1.5;
+  color: var(--text);
+}
+.gloss-term-input:focus,
+.gloss-def-input:focus {
+  outline: none;
+  border-color: var(--blue);
 }
 
 /* ── Form: textarea + variações de campo ────────────────────────────────── */
@@ -2600,6 +2668,26 @@ main.site-main {
   padding-top: 20px;
   border-top: 1px solid var(--border);
 }
+.hero-note-edit {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.hero-note-head {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.hero-note-hint {
+  font-weight: 400;
+  color: var(--text3);
+}
+.hero-note-fields {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
 
 /* ── SITE · página de perfil (/conta) ───────────────────────────────────── */
 .account {
@@ -2635,6 +2723,45 @@ main.site-main {
   align-items: center;
   gap: 14px;
   margin-top: 4px;
+}
+.account-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.account-avatar {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--blue);
+  color: #fff;
+  font-family: var(--font-display), sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  overflow: hidden;
+}
+.account-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.account-avatar-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* avatares (menu e header) mostram foto quando há */
+.sidebar-avatar img,
+.admin-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 /* ── MODAL (confirmação de exclusão) ────────────────────────────────────── */

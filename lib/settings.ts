@@ -15,6 +15,8 @@ export interface HomeContent {
   title: string;
   subtitle: string;
   readTime: string;
+  noteLabel: string; // etiqueta do aviso (ex.: "Alpha") — vazio esconde o aviso
+  noteText: string; // texto do aviso
 }
 
 export const HOME_DEFAULTS: HomeContent = {
@@ -24,6 +26,9 @@ export const HOME_DEFAULTS: HomeContent = {
   subtitle:
     "Este manual reúne o que os analistas mais experientes do time aprenderam na marra — para você chegar produzindo com qualidade <strong>desde o primeiro mês</strong>.",
   readTime: "~45 min",
+  noteLabel: "Alpha",
+  noteText:
+    "Conteúdo especulativo enquanto o form de discovery não retorna ≥5 respostas. Capítulos podem ser fundidos, removidos ou reordenados quando os dados chegarem.",
 };
 
 const KEYS = {
@@ -31,6 +36,8 @@ const KEYS = {
   title: "home_title",
   subtitle: "home_subtitle",
   readTime: "home_readtime",
+  noteLabel: "home_note_label",
+  noteText: "home_note_text",
 } as const;
 
 export async function getHomeContent(): Promise<HomeContent> {
@@ -44,6 +51,8 @@ export async function getHomeContent(): Promise<HomeContent> {
     title: map.get(KEYS.title) ?? HOME_DEFAULTS.title,
     subtitle: map.get(KEYS.subtitle) ?? HOME_DEFAULTS.subtitle,
     readTime: map.get(KEYS.readTime) ?? HOME_DEFAULTS.readTime,
+    noteLabel: map.get(KEYS.noteLabel) ?? HOME_DEFAULTS.noteLabel,
+    noteText: map.get(KEYS.noteText) ?? HOME_DEFAULTS.noteText,
   };
 }
 
@@ -53,6 +62,8 @@ export async function saveHomeContent(c: HomeContent): Promise<void> {
     { key: KEYS.title, value: c.title },
     { key: KEYS.subtitle, value: c.subtitle },
     { key: KEYS.readTime, value: c.readTime },
+    { key: KEYS.noteLabel, value: c.noteLabel },
+    { key: KEYS.noteText, value: c.noteText },
   ];
   for (const e of entries) {
     await db

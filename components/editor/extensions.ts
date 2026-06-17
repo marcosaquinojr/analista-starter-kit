@@ -5,6 +5,7 @@ import { ReactNodeViewRenderer } from "@tiptap/react";
 import { Table, TableRow, TableHeader, TableCell } from "@tiptap/extension-table";
 import HtmlBlockView from "./HtmlBlockView";
 import ToolsBlockView, { type ToolItem } from "./ToolsBlockView";
+import GlossaryBlockView, { type GlossItem } from "./GlossaryBlockView";
 
 /* ── Callout (destaque colorido) ── */
 const CalloutLabel = Node.create({
@@ -117,7 +118,6 @@ const HtmlBlock = Node.create({
   },
   parseHTML() {
     return [
-      { tag: "div.glossary", priority: 60 },
       { tag: "div.process", priority: 60 },
       { tag: "div.faq-item", priority: 60 },
     ];
@@ -191,6 +191,61 @@ const Tools = Node.create({
   },
 });
 
+/* ── Glossário (lista estruturada termo + definição) ── */
+const Glossary = Node.create({
+  name: "glossary",
+  group: "block",
+  atom: true,
+  selectable: true,
+  draggable: false,
+  addAttributes() {
+    return {
+      items: {
+        default: [] as GlossItem[],
+        parseHTML: (el) => {
+          const node = el as HTMLElement;
+          const raw = node.getAttribute("data-items");
+          if (raw) {
+            try {
+              return JSON.parse(raw) as GlossItem[];
+            } catch {
+              // cai no parse da estrutura abaixo
+            }
+          }
+          return Array.from(node.querySelectorAll(".glossary-item")).map(
+            (it) => ({
+              term: (it.querySelector(".glossary-term")?.textContent ?? "").trim(),
+              def: (it.querySelector(".glossary-def")?.textContent ?? "").trim(),
+            }),
+          );
+        },
+        renderHTML: () => ({}),
+      },
+    };
+  },
+  parseHTML: () => [{ tag: "div.glossary", priority: 70 }],
+  renderHTML({ node }) {
+    const items = (node.attrs.items as GlossItem[]) || [];
+    const children = items.map(
+      (it) =>
+        [
+          "div",
+          { class: "glossary-item" },
+          ["div", { class: "glossary-term" }, it.term || ""],
+          ["div", { class: "glossary-def" }, it.def || ""],
+        ] as DOMOutputSpec,
+    );
+    return [
+      "div",
+      { class: "glossary", "data-items": JSON.stringify(items) },
+      ...children,
+    ] as DOMOutputSpec;
+  },
+  addNodeView() {
+    return ReactNodeViewRenderer(GlossaryBlockView);
+  },
+});
+
 export function buildExtensions() {
   return [
     StarterKit.configure({
@@ -208,6 +263,7 @@ export function buildExtensions() {
     CardTitle,
     CardDesc,
     Tools,
+    Glossary,
     HtmlBlock,
   ];
 }

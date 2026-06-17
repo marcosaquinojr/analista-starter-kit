@@ -32,7 +32,12 @@ export default async function SiteLayout({
       <Shell
         chapters={chapters}
         trails={trails}
-        user={{ email: user.email, name: row?.name ?? "", role: user.role }}
+        user={{
+          email: user.email,
+          name: row?.name ?? "",
+          role: user.role,
+          avatarUrl: row?.avatarUrl ?? "",
+        }}
         lastUpdated={lastUpdated}
       >
         {children}

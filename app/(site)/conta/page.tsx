@@ -22,7 +22,11 @@ export default async function AccountPage() {
       <p className="account-sub">
         Esse nome aparece no menu e identifica seu progresso de leitura.
       </p>
-      <ProfileForm name={user.name} email={user.email} />
+      <ProfileForm
+        name={user.name}
+        email={user.email}
+        avatarUrl={user.avatarUrl}
+      />
     </div>
   );
 }
