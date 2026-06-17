@@ -7,6 +7,7 @@ import type { ChapterMeta, TrailMeta } from "@/lib/types";
 import { useCompletion } from "@/components/completion";
 import { logout } from "@/app/admin/actions";
 import { CtMark } from "@/components/Logo";
+import { initials } from "@/lib/initials";
 
 const SIDEBAR_KEY = "analista-kit-sidebar-collapsed";
 
@@ -36,7 +37,7 @@ export default function Shell({
 }: {
   chapters: ChapterMeta[];
   trails: TrailMeta[];
-  user: { email: string; role: string };
+  user: { email: string; name: string; role: string };
   lastUpdated: string | null;
   children: React.ReactNode;
 }) {
@@ -173,12 +174,17 @@ export default function Shell({
         })}
 
         <div className="sidebar-footer">
-          <div className="sidebar-user">
-            <span className="sidebar-user-email">{user.email}</span>
-            <span className="sidebar-user-note">
-              Seu progresso fica salvo na sua conta.
+          <Link href="/conta" className="sidebar-user" title="Editar perfil">
+            <span className="sidebar-avatar" aria-hidden>
+              {initials(user.name, user.email)}
             </span>
-          </div>
+            <span className="sidebar-user-id">
+              <span className="sidebar-user-name">
+                {user.name?.trim() || "Defina seu nome"}
+              </span>
+              <span className="sidebar-user-email">{user.email}</span>
+            </span>
+          </Link>
           <div className="sidebar-user-actions">
             {(user.role === "admin" || user.role === "editor") && (
               <Link href="/admin" className="sidebar-admin-link">

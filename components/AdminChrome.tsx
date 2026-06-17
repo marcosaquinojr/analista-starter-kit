@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { logout } from "@/app/admin/actions";
 import { getSessionUser } from "@/lib/auth";
+import { getUserById } from "@/lib/users";
+import { initials } from "@/lib/initials";
 import { CtMark } from "@/components/Logo";
 
 const ROLE_LABEL: Record<string, string> = {
@@ -22,6 +24,9 @@ export default async function AdminChrome({
   const user = await getSessionUser();
   if (!user) redirect("/admin/login");
   if (user.role === "leitor") redirect("/");
+
+  const row = await getUserById(user.uid);
+  const name = row?.name?.trim() ?? "";
 
   return (
     <>
@@ -49,10 +54,15 @@ export default async function AdminChrome({
           <Link href="/" className="header-link" target="_blank">
             Ver site ↗
           </Link>
-          <span className="admin-user">
-            {user.email}
-            <span className="admin-user-role">{ROLE_LABEL[user.role]}</span>
-          </span>
+          <Link href="/conta" className="admin-user" title="Editar perfil">
+            <span className="admin-user-avatar" aria-hidden>
+              {initials(name, user.email)}
+            </span>
+            <span className="admin-user-id">
+              <span className="admin-user-name">{name || user.email}</span>
+              <span className="admin-user-role">{ROLE_LABEL[user.role]}</span>
+            </span>
+          </Link>
           <form action={logout}>
             <button type="submit" className="admin-logout">
               Sair

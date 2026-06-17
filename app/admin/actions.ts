@@ -22,9 +22,13 @@ import {
   acceptInvite,
   deleteUser,
   setUserRole,
+  setUserName,
   countAdmins,
 } from "@/lib/users";
+import { saveHomeContent } from "@/lib/settings";
 import { toggleProgress } from "@/lib/progress";
+import { put } from "@vercel/blob";
+import { randomUUID } from "node:crypto";
 import { slugify } from "@/lib/slug";
 
 export type ActionState = { error?: string; ok?: boolean; inviteUrl?: string };
@@ -158,6 +162,87 @@ export async function saveChapter(
   revalidatePath(`/admin/${slug}`);
 
   return { ok: true };
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Página inicial — conteúdo do hero de boas-vindas (/admin/inicio).
+// ──────────────────────────────────────────────────────────────────────────
+
+export async function saveHome(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  if (!(await canEdit())) return { error: "Sem permissão. Faça login de novo." };
+
+  const tag = String(formData.get("tag") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const subtitle = String(formData.get("subtitle") ?? "").trim();
+  const readTime = String(formData.get("readTime") ?? "").trim();
+
+  if (!title) return { error: "O título é obrigatório." };
+
+  await saveHomeContent({ tag, title, subtitle, readTime });
+  revalidatePath("/");
+  revalidatePath("/admin/inicio");
+  return { ok: true };
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Perfil — a própria pessoa edita seu nome de exibição (/conta). Qualquer papel.
+// ──────────────────────────────────────────────────────────────────────────
+
+export async function updateOwnProfile(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await getSessionUser();
+  if (!session) return { error: "Sessão expirada. Faça login de novo." };
+
+  const name = String(formData.get("name") ?? "").trim();
+  if (!name) return { error: "Informe seu nome." };
+  if (name.length > 60) return { error: "Nome muito longo (máx. 60)." };
+
+  await setUserName(session.uid, name);
+  revalidatePath("/");
+  revalidatePath("/conta");
+  return { ok: true };
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Upload de ícone de ferramenta (Vercel Blob). Usado pelo bloco "Ferramentas".
+// ──────────────────────────────────────────────────────────────────────────
+
+const ICON_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/svg+xml",
+  "image/webp",
+  "image/gif",
+];
+const ICON_MAX = 512 * 1024; // 512 KB
+
+export async function uploadToolIcon(
+  formData: FormData,
+): Promise<{ url?: string; error?: string }> {
+  if (!(await canEdit())) return { error: "Sem permissão." };
+
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0)
+    return { error: "Selecione uma imagem." };
+  if (!ICON_TYPES.includes(file.type))
+    return { error: "Formato inválido (use PNG, SVG, JPG, WEBP ou GIF)." };
+  if (file.size > ICON_MAX) return { error: "Imagem muito grande (máx. 512 KB)." };
+
+  const ext = (file.name.split(".").pop() || "png").toLowerCase().slice(0, 5);
+  try {
+    const blob = await put(`tool-icons/${randomUUID()}.${ext}`, file, {
+      access: "public",
+      contentType: file.type,
+    });
+    return { url: blob.url };
+  } catch {
+    return { error: "Falha no upload. Tente de novo." };
+  }
 }
 
 // ──────────────────────────────────────────────────────────────────────────

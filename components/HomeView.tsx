@@ -1,15 +1,40 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { ChapterMeta, TrailMeta } from "@/lib/types";
+import type { HomeContent } from "@/lib/settings";
 import { useCompletion } from "@/components/completion";
+
+/**
+ * Renderiza um texto aplicando destaque nos trechos entre `**asteriscos**`.
+ * `accent` pinta de azul (título); `strong` dá peso (subtítulo). Como a entrada
+ * é texto puro vinda do /admin, não há risco de HTML injetado.
+ */
+function withHighlight(
+  text: string,
+  kind: "accent" | "strong",
+): ReactNode[] {
+  return text.split(/\*\*(.+?)\*\*/g).map((part, i) => {
+    if (i % 2 === 0) return part;
+    return kind === "accent" ? (
+      <span key={i} className="accent">
+        {part}
+      </span>
+    ) : (
+      <strong key={i}>{part}</strong>
+    );
+  });
+}
 
 export default function HomeView({
   chapters,
   trails,
+  home,
 }: {
   chapters: ChapterMeta[];
   trails: TrailMeta[];
+  home: HomeContent;
 }) {
   const { isDone, ready } = useCompletion();
 
@@ -21,16 +46,13 @@ export default function HomeView({
       <div className="welcome-hero">
         <div className="hero-grid" />
         <div className="hero-glow" />
-        <span className="welcome-tag">Bem-vindo à Citiesoft</span>
-        <h1 className="welcome-title">
-          Você não vai precisar <span className="accent">adivinhar</span> como
-          as coisas funcionam aqui.
-        </h1>
-        <p className="welcome-sub">
-          Este manual reúne o que os analistas mais experientes do time
-          aprenderam na marra — para você chegar produzindo com qualidade{" "}
-          <strong>desde o primeiro mês</strong>.
-        </p>
+        {home.tag && <span className="welcome-tag">{home.tag}</span>}
+        <h1 className="welcome-title">{withHighlight(home.title, "accent")}</h1>
+        {home.subtitle && (
+          <p className="welcome-sub">
+            {withHighlight(home.subtitle, "strong")}
+          </p>
+        )}
         <div className="welcome-stats">
           <div className="welcome-stat">
             <div className="num">{chapters.length}</div>
@@ -41,7 +63,7 @@ export default function HomeView({
             <div className="lbl">trilhas</div>
           </div>
           <div className="welcome-stat">
-            <div className="num">~45 min</div>
+            <div className="num">{home.readTime}</div>
             <div className="lbl">leitura total</div>
           </div>
           <div className="welcome-stat">

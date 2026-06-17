@@ -14,9 +14,14 @@ export default async function AdminHome() {
       <div className="admin-intro">
         <div className="admin-intro-head">
           <h1>Capítulos</h1>
-          <Link href="/admin/trilhas" className="trail-btn">
-            Gerenciar trilhas →
-          </Link>
+          <div className="admin-intro-actions">
+            <Link href="/admin/inicio" className="trail-btn">
+              Editar página inicial →
+            </Link>
+            <Link href="/admin/trilhas" className="trail-btn">
+              Gerenciar trilhas →
+            </Link>
+          </div>
         </div>
         <p>
           Edite o conteúdo do manual. As mudanças vão pro ar na hora, sem

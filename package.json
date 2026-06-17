@@ -11,6 +11,7 @@
     "db:migrate:trails": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-trails.ts",
     "db:migrate:users": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-users.ts",
     "db:migrate:progress": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-progress.ts",
+    "db:migrate:settings": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-settings.ts",
     "users:bootstrap": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/create-admin.ts",
     "db:seed": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/seed.ts",
     "db:seed:force": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/seed.ts --force"
@@ -25,6 +26,7 @@
     "@tiptap/pm": "^3.24.0",
     "@tiptap/react": "^3.24.0",
     "@tiptap/starter-kit": "^3.24.0",
+    "@vercel/blob": "^2.4.0",
     "drizzle-orm": "^0.45.2",
     "next": "16.2.6",
     "react": "19.2.4",

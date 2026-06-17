@@ -4,6 +4,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import { Table, TableRow, TableHeader, TableCell } from "@tiptap/extension-table";
 import HtmlBlockView from "./HtmlBlockView";
+import ToolsBlockView, { type ToolItem } from "./ToolsBlockView";
 
 /* ── Callout (destaque colorido) ── */
 const CalloutLabel = Node.create({
@@ -136,6 +137,60 @@ const HtmlBlock = Node.create({
   },
 });
 
+/* ── Ferramentas (cartões de app com ícone enviado) ── */
+const Tools = Node.create({
+  name: "tools",
+  group: "block",
+  atom: true,
+  selectable: true,
+  draggable: false,
+  addAttributes() {
+    return {
+      items: {
+        default: [] as ToolItem[],
+        parseHTML: (el) => {
+          try {
+            const raw = (el as HTMLElement).getAttribute("data-items");
+            return raw ? (JSON.parse(raw) as ToolItem[]) : [];
+          } catch {
+            return [];
+          }
+        },
+        renderHTML: () => ({}),
+      },
+    };
+  },
+  parseHTML: () => [{ tag: "div.tools", priority: 70 }],
+  renderHTML({ node }) {
+    const items = (node.attrs.items as ToolItem[]) || [];
+    const cards = items.map((it) => {
+      const iconChild: DOMOutputSpec = it.icon
+        ? ["span", { class: "tool-icon" }, ["img", { src: it.icon, alt: it.name || "" }]]
+        : ["span", { class: "tool-icon tool-icon-empty" }];
+      const info: DOMOutputSpec = [
+        "span",
+        { class: "tool-info" },
+        ["strong", { class: "tool-name" }, it.name || "Ferramenta"],
+        ...(it.desc ? [["span", { class: "tool-desc" }, it.desc] as DOMOutputSpec] : []),
+      ];
+      const attrs: Record<string, string> = { class: "tool-card", href: it.url || "#" };
+      if (it.url) {
+        attrs.target = "_blank";
+        attrs.rel = "noopener noreferrer";
+      }
+      return ["a", attrs, iconChild, info] as DOMOutputSpec;
+    });
+    return [
+      "div",
+      { class: "tools", "data-items": JSON.stringify(items) },
+      ...cards,
+    ] as DOMOutputSpec;
+  },
+  addNodeView() {
+    return ReactNodeViewRenderer(ToolsBlockView);
+  },
+});
+
 export function buildExtensions() {
   return [
     StarterKit.configure({
@@ -152,6 +207,7 @@ export function buildExtensions() {
     Card,
     CardTitle,
     CardDesc,
+    Tools,
     HtmlBlock,
   ];
 }

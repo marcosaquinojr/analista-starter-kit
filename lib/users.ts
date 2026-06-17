@@ -106,6 +106,11 @@ export async function setUserRole(id: string, role: Role): Promise<void> {
   await db.update(users).set({ role }).where(eq(users.id, id));
 }
 
+/** A própria pessoa edita seu nome de exibição (usado em /conta). */
+export async function setUserName(id: string, name: string): Promise<void> {
+  await db.update(users).set({ name: name.trim() }).where(eq(users.id, id));
+}
+
 export async function deleteUser(id: string): Promise<void> {
   await db.delete(users).where(eq(users.id, id));
 }

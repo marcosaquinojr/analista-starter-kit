@@ -5,6 +5,7 @@ import { getSessionUser } from "@/lib/auth";
 import { getChapters, getLastUpdated } from "@/lib/chapters";
 import { getTrails } from "@/lib/trails";
 import { getUserProgress } from "@/lib/progress";
+import { getUserById } from "@/lib/users";
 
 export const dynamic = "force-dynamic";
 
@@ -17,11 +18,12 @@ export default async function SiteLayout({
   const user = await getSessionUser();
   if (!user) redirect("/admin/login");
 
-  const [chapters, trails, completed, lastUpdated] = await Promise.all([
+  const [chapters, trails, completed, lastUpdated, row] = await Promise.all([
     getChapters(),
     getTrails(),
     getUserProgress(user.uid),
     getLastUpdated(),
+    getUserById(user.uid),
   ]);
 
   return (
@@ -29,7 +31,7 @@ export default async function SiteLayout({
       <Shell
         chapters={chapters}
         trails={trails}
-        user={{ email: user.email, role: user.role }}
+        user={{ email: user.email, name: row?.name ?? "", role: user.role }}
         lastUpdated={lastUpdated}
       >
         {children}

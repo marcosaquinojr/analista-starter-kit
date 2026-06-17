@@ -1741,12 +1741,45 @@ main.site-main {
 /* ── ADMIN · USUÁRIOS (sistema de acesso) ───────────────────────────────── */
 .admin-user {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  gap: 9px;
   line-height: 1.2;
   font-size: 12px;
   color: var(--text2);
-  max-width: 220px;
+  max-width: 240px;
+  text-decoration: none;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease;
+}
+.admin-user:hover {
+  background: var(--blue-50);
+}
+.admin-user-avatar {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--blue);
+  color: #fff;
+  font-family: var(--font-display), sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+.admin-user-id {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.admin-user-name {
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .admin-user-role {
   font-size: 10px;
@@ -1916,22 +1949,51 @@ main.site-main {
 /* ── SITE · rodapé da sidebar (usuário logado) ──────────────────────────── */
 .sidebar-user {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 10px;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: background 0.15s ease;
 }
-.sidebar-user-email {
-  font-size: 12px;
+.sidebar-user:hover {
+  background: var(--blue-50);
+}
+.sidebar-avatar {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--blue);
+  color: #fff;
+  font-family: var(--font-display), sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.sidebar-user-id {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.sidebar-user-name {
+  font-size: 13px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.sidebar-user-note {
+.sidebar-user-email {
   font-size: 11px;
   color: var(--text3);
-  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .sidebar-user-actions {
   display: flex;
@@ -2149,4 +2211,248 @@ main.site-main {
   .landing-bg .mesh {
     animation: none;
   }
+}
+
+/* ── BLOCO FERRAMENTAS — cartões públicos (.chapter-body) ────────────────── */
+.chapter-body .tools {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+  margin: 22px 0;
+}
+.chapter-body .tool-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s;
+}
+.chapter-body .tool-card:hover {
+  border-color: var(--blue);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.chapter-body .tool-icon {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--blue-faint);
+}
+.chapter-body .tool-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.chapter-body .tool-icon-empty {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--border),
+    var(--border) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+.chapter-body .tool-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+.chapter-body .tool-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+}
+.chapter-body .tool-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.4;
+}
+
+/* ── BLOCO FERRAMENTAS — editor (/admin) ────────────────────────────────── */
+.tools-editor {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--blue-faint);
+  padding: 14px 16px;
+  margin: 18px 0;
+}
+.tools-editor-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.tools-editor-error {
+  font-size: 13px;
+  color: var(--bad);
+  margin-bottom: 8px;
+}
+.tools-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.tools-editor-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.tools-icon-pick {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--blue-faint);
+  border: 1px dashed var(--border2);
+  cursor: pointer;
+}
+.tools-icon-pick img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.tools-icon-empty {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-align: center;
+}
+.tools-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.tools-input {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-family: var(--font-body), sans-serif;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.tools-input:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+.tools-remove {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text2);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.tools-remove:hover {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+/* ── Form: textarea + variações de campo ────────────────────────────────── */
+.field textarea {
+  padding: 9px 12px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body), sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  background: var(--bg);
+  resize: vertical;
+}
+.field textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-faint);
+}
+.field-narrow {
+  max-width: 260px;
+}
+
+/* ── ADMIN · editor da página inicial (/admin/inicio) ───────────────────── */
+.admin-intro-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.home-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 680px;
+}
+.home-editor code {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.92em;
+  background: var(--blue-50);
+  color: var(--blue);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.home-editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* ── SITE · página de perfil (/conta) ───────────────────────────────────── */
+.account {
+  max-width: 520px;
+  animation: fadeUp 0.5s ease both;
+}
+.account-title {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 18px 0 6px;
+}
+.account-sub {
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.account-form input:disabled {
+  background: var(--blue-50);
+  color: var(--text3);
+  cursor: not-allowed;
+}
+.account-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
 }

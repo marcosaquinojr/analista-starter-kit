@@ -70,9 +70,20 @@ export const progress = pgTable(
   (t) => [primaryKey({ columns: [t.userId, t.chapterSlug] })],
 );
 
+/**
+ * Configurações editáveis de chave/valor. Hoje guarda o conteúdo da página
+ * inicial (tag, título, subtítulo e tempo de leitura do hero), antes hardcoded
+ * no componente. Cada linha é um campo; defaults ficam em lib/settings.ts.
+ */
+export const settings = pgTable("settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+});
+
 export type TrailRow = typeof trails.$inferSelect;
 export type NewTrailRow = typeof trails.$inferInsert;
 export type ChapterRow = typeof chapters.$inferSelect;
 export type NewChapterRow = typeof chapters.$inferInsert;
 export type UserRow = typeof users.$inferSelect;
 export type NewUserRow = typeof users.$inferInsert;
+export type SettingRow = typeof settings.$inferSelect;

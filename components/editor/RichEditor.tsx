@@ -90,6 +90,16 @@ export default function RichEditor({ initialHtml, onChange }: Props) {
       })
       .run();
 
+  const insertTools = () =>
+    editor
+      .chain()
+      .focus()
+      .insertContent({
+        type: "tools",
+        attrs: { items: [{ icon: "", name: "", desc: "", url: "" }] },
+      })
+      .run();
+
   const setLink = () => {
     const prev = editor.getAttributes("link").href as string | undefined;
     const url = window.prompt("URL do link:", prev ?? "https://");
@@ -171,6 +181,9 @@ export default function RichEditor({ initialHtml, onChange }: Props) {
           </Btn>
           <Btn title="Cards" on={insertCards}>
             + Cards
+          </Btn>
+          <Btn title="Ferramentas (cartões com ícone)" on={insertTools}>
+            + Ferramentas
           </Btn>
           <Btn
             title="Tabela"
