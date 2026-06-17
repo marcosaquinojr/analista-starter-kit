@@ -21,6 +21,10 @@ export default function EditForm({
 }) {
   const [state, formAction, pending] = useActionState(saveChapter, initial);
   const [body, setBody] = useState(chapter.bodyHtml);
+  const [showDelete, setShowDelete] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
+
+  const canDelete = confirmText.trim() === chapter.title.trim();
 
   return (
     <form action={formAction} className="editor">
@@ -32,6 +36,7 @@ export default function EditForm({
           <span className="editor-slug">/c/{chapter.slug}</span>
           <span className="editor-updated">
             Última atualização: {chapter.updatedAt}
+            {chapter.updatedBy ? ` por ${chapter.updatedBy}` : ""}
           </span>
         </div>
         <div className="editor-bar-right">
@@ -83,22 +88,66 @@ export default function EditForm({
           <span>Remove este capítulo de vez. Esta ação não pode ser desfeita.</span>
         </div>
         <button
-          type="submit"
-          formAction={deleteChapter}
-          formNoValidate
+          type="button"
           className="trail-btn trail-btn-danger"
-          onClick={(e) => {
-            if (
-              !confirm(
-                `Excluir o capítulo "${chapter.title}"? Isso não pode ser desfeito.`,
-              )
-            )
-              e.preventDefault();
+          onClick={() => {
+            setConfirmText("");
+            setShowDelete(true);
           }}
         >
           Excluir capítulo
         </button>
       </div>
+
+      {showDelete && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setShowDelete(false)}
+          role="presentation"
+        >
+          <div
+            className="modal-card"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="del-title"
+          >
+            <h2 id="del-title" className="modal-title">
+              Excluir capítulo
+            </h2>
+            <p className="modal-text">
+              Esta ação <strong>não pode ser desfeita</strong>. Para confirmar,
+              digite o título do capítulo:
+            </p>
+            <p className="modal-confirm-name">{chapter.title}</p>
+            <input
+              className="modal-input"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder="Digite o título exatamente"
+              autoFocus
+            />
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="trail-btn"
+                onClick={() => setShowDelete(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                formAction={deleteChapter}
+                formNoValidate
+                className="trail-btn trail-btn-danger"
+                disabled={!canDelete}
+              >
+                Excluir definitivamente
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }

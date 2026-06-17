@@ -31,6 +31,8 @@ export const chapters = pgTable("chapters", {
   readTime: text("read_time").notNull(),
   bodyHtml: text("body_html").notNull(),
   updatedAt: text("updated_at").notNull(),
+  // nome de quem fez a última atualização (snapshot p/ exibição)
+  updatedBy: text("updated_by").notNull().default(""),
 });
 
 /**
@@ -80,6 +82,23 @@ export const settings = pgTable("settings", {
   value: text("value").notNull(),
 });
 
+/**
+ * Log de ações dos usuários na área interna (auditoria). Cada linha é uma ação
+ * (criar/editar/excluir capítulo, trilha, usuário, etc.). Os dados de quem fez
+ * são gravados como snapshot (nome/e-mail) para o log sobreviver à exclusão do
+ * usuário. Distinto do log de versões do código (esse fica em lib/changelog.ts).
+ */
+export const auditLog = pgTable("audit_log", {
+  id: text("id").primaryKey(),
+  at: text("at").notNull(), // ISO timestamp
+  userId: text("user_id"),
+  userName: text("user_name").notNull().default(""),
+  userEmail: text("user_email").notNull().default(""),
+  action: text("action").notNull(), // ex.: "chapter.update"
+  target: text("target").notNull().default(""), // ex.: título/slug afetado
+  details: text("details").notNull().default(""),
+});
+
 export type TrailRow = typeof trails.$inferSelect;
 export type NewTrailRow = typeof trails.$inferInsert;
 export type ChapterRow = typeof chapters.$inferSelect;
@@ -87,3 +106,4 @@ export type NewChapterRow = typeof chapters.$inferInsert;
 export type UserRow = typeof users.$inferSelect;
 export type NewUserRow = typeof users.$inferInsert;
 export type SettingRow = typeof settings.$inferSelect;
+export type AuditRow = typeof auditLog.$inferSelect;

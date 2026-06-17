@@ -26,6 +26,7 @@ import {
   countAdmins,
 } from "@/lib/users";
 import { saveHomeContent } from "@/lib/settings";
+import { logAction } from "@/lib/audit";
 import { toggleProgress } from "@/lib/progress";
 import { put } from "@vercel/blob";
 import { randomUUID } from "node:crypto";
@@ -123,11 +124,27 @@ function today(): string {
   }).format(new Date());
 }
 
+/** Carimbo de exibição com data e hora: "dd/mm/aaaa às HH:mm". */
+function now(): string {
+  const d = new Date();
+  const date = new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(d);
+  const time = new Intl.DateTimeFormat("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(d);
+  return `${date} às ${time}`;
+}
+
 export async function saveChapter(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  if (!(await canEdit())) return { error: "Sem permissão. Faça login de novo." };
+  const me = await canEdit();
+  if (!me) return { error: "Sem permissão. Faça login de novo." };
 
   const slug = String(formData.get("slug") ?? "");
   const title = String(formData.get("title") ?? "").trim();
@@ -141,6 +158,8 @@ export async function saveChapter(
   if (!title) return { error: "O título é obrigatório." };
   if (!(await trailExists(trailSlug))) return { error: "Trilha inválida." };
 
+  const author = me.name || me.email;
+
   await db
     .update(chapters)
     .set({
@@ -151,9 +170,12 @@ export async function saveChapter(
       number,
       sortOrder: Number.parseInt(number, 10) || 0,
       bodyHtml,
-      updatedAt: today(),
+      updatedAt: now(),
+      updatedBy: author,
     })
     .where(eq(chapters.slug, slug));
+
+  await logAction("chapter.update", title, `/c/${slug}`);
 
   // atualiza as páginas públicas e a lista do admin
   revalidatePath("/");
@@ -182,6 +204,7 @@ export async function saveHome(
   if (!title) return { error: "O título é obrigatório." };
 
   await saveHomeContent({ tag, title, subtitle, readTime });
+  await logAction("home.update", "Página inicial");
   revalidatePath("/");
   revalidatePath("/admin/inicio");
   return { ok: true };
@@ -203,6 +226,7 @@ export async function updateOwnProfile(
   if (name.length > 60) return { error: "Nome muito longo (máx. 60)." };
 
   await setUserName(session.uid, name);
+  await logAction("profile.update", name);
   revalidatePath("/");
   revalidatePath("/conta");
   return { ok: true };
@@ -272,6 +296,7 @@ export async function createTrail(
   const sortOrder = existing.reduce((m, r) => Math.max(m, r.sortOrder), 0) + 1;
 
   await db.insert(trails).values({ slug, title, description, sortOrder });
+  await logAction("trail.create", title);
   revalidateTrails();
   return { ok: true };
 }
@@ -293,6 +318,7 @@ export async function updateTrail(
     .update(trails)
     .set({ title, description })
     .where(eq(trails.slug, slug));
+  await logAction("trail.update", title);
   revalidateTrails();
   return { ok: true };
 }
@@ -310,7 +336,14 @@ export async function deleteTrail(formData: FormData) {
     .limit(1);
   if (inUse.length > 0) return;
 
+  const [row] = await db
+    .select({ title: trails.title })
+    .from(trails)
+    .where(eq(trails.slug, slug))
+    .limit(1);
+
   await db.delete(trails).where(eq(trails.slug, slug));
+  await logAction("trail.delete", row?.title ?? slug);
   revalidateTrails();
 }
 
@@ -323,7 +356,8 @@ export async function deleteTrail(formData: FormData) {
  * Slug, número e ordem são gerados aqui; o conteúdo fica como rascunho.
  */
 export async function createChapter(formData: FormData) {
-  if (!(await canEdit())) return;
+  const me = await canEdit();
+  if (!me) return;
 
   const trailSlug = String(formData.get("trail") ?? "").trim();
   if (!(await trailExists(trailSlug))) return;
@@ -354,8 +388,11 @@ export async function createChapter(formData: FormData) {
     description: "",
     readTime: "5 min",
     bodyHtml: "<p>Escreva o conteúdo do capítulo aqui.</p>",
-    updatedAt: today(),
+    updatedAt: now(),
+    updatedBy: me.name || me.email,
   });
+
+  await logAction("chapter.create", "Novo capítulo", `/c/${slug}`);
 
   revalidatePath("/");
   revalidatePath("/admin");
@@ -369,7 +406,14 @@ export async function deleteChapter(formData: FormData) {
   const slug = String(formData.get("slug") ?? "");
   if (!slug) return;
 
+  const [row] = await db
+    .select({ title: chapters.title })
+    .from(chapters)
+    .where(eq(chapters.slug, slug))
+    .limit(1);
+
   await db.delete(chapters).where(eq(chapters.slug, slug));
+  await logAction("chapter.delete", row?.title ?? slug, `/c/${slug}`);
 
   revalidatePath("/");
   revalidatePath(`/c/${slug}`);
@@ -400,6 +444,7 @@ export async function createUserInvite(
     return { error: "Já existe um acesso com esse e-mail." };
 
   const token = await createInvite({ email, name, role });
+  await logAction("user.invite", name || email, `papel: ${role}`);
   revalidatePath("/admin/usuarios");
   return { ok: true, inviteUrl: `${await origin()}/convite/${token}` };
 }
@@ -435,6 +480,11 @@ export async function changeUserRole(formData: FormData) {
     return;
 
   await setUserRole(id, role);
+  await logAction(
+    "user.role",
+    target.name || target.email,
+    `${target.role} → ${role}`,
+  );
   revalidatePath("/admin/usuarios");
   revalidatePath("/admin/progresso");
 }
@@ -451,6 +501,7 @@ export async function deleteUserAction(formData: FormData) {
   if (target?.role === "admin" && (await countAdmins()) <= 1) return; // mantém ao menos 1 admin
 
   await deleteUser(id);
+  await logAction("user.delete", target?.name || target?.email || id);
   revalidatePath("/admin/usuarios");
 }
 

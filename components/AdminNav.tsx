@@ -45,6 +45,11 @@ export default function AdminNav({ isAdmin }: { isAdmin: boolean }) {
               label: "Usuários",
               match: (p: string) => p.startsWith("/admin/usuarios"),
             },
+            {
+              href: "/admin/log",
+              label: "Log",
+              match: (p: string) => p.startsWith("/admin/log"),
+            },
           ]
         : []),
     ];

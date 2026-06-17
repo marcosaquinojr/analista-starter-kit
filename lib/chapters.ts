@@ -18,6 +18,7 @@ const metaColumns = {
   description: chapters.description,
   readTime: chapters.readTime,
   updatedAt: chapters.updatedAt,
+  updatedBy: chapters.updatedBy,
 };
 
 export async function getChapters(): Promise<ChapterMeta[]> {
@@ -42,6 +43,7 @@ export async function getChapter(slug: string): Promise<Chapter | null> {
     description: row.description,
     readTime: row.readTime,
     updatedAt: row.updatedAt,
+    updatedBy: row.updatedBy,
     bodyHtml: row.bodyHtml,
   };
 }

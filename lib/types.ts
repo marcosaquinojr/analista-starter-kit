@@ -12,7 +12,8 @@ export interface ChapterMeta {
   title: string;
   description: string;
   readTime: string;
-  updatedAt: string; // ISO date or display string
+  updatedAt: string; // string de exibição: dd/mm/aaaa às HH:mm
+  updatedBy?: string; // nome de quem fez a última atualização (vazio em dados seed)
 }
 
 export interface Chapter extends ChapterMeta {

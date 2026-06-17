@@ -25,7 +25,10 @@ export default function ToolsBlockView({
     Array.isArray(node.attrs.items) ? (node.attrs.items as ToolItem[]) : [],
   );
   const [uploading, setUploading] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [errorAt, setErrorAt] = useState<{ i: number; msg: string } | null>(
+    null,
+  );
+  const [doneAt, setDoneAt] = useState<number | null>(null);
 
   const sync = (next: ToolItem[]) => {
     setItems(next);
@@ -37,17 +40,26 @@ export default function ToolsBlockView({
   const remove = (i: number) => sync(items.filter((_, idx) => idx !== i));
 
   const onUpload = async (i: number, file: File) => {
-    setError(null);
+    setErrorAt(null);
+    setDoneAt(null);
     setUploading(i);
-    const fd = new FormData();
-    fd.append("file", file);
-    const res = await uploadToolIcon(fd);
-    setUploading(null);
-    if (res.error) {
-      setError(res.error);
-      return;
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await uploadToolIcon(fd);
+      if (res.error) {
+        setErrorAt({ i, msg: res.error });
+      } else if (res.url) {
+        update(i, { icon: res.url });
+        setDoneAt(i);
+        // o ✓ some sozinho depois de um tempo
+        setTimeout(() => setDoneAt((d) => (d === i ? null : d)), 2500);
+      }
+    } catch {
+      setErrorAt({ i, msg: "Falha no envio. Tente de novo." });
+    } finally {
+      setUploading(null);
     }
-    if (res.url) update(i, { icon: res.url });
   };
 
   return (
@@ -63,21 +75,41 @@ export default function ToolsBlockView({
         </button>
       </div>
 
-      {error && <p className="tools-editor-error">{error}</p>}
-
       <div className="tools-editor-list">
-        {items.map((it, i) => (
+        {items.map((it, i) => {
+          const isUp = uploading === i;
+          const isErr = errorAt?.i === i;
+          const isDone = doneAt === i;
+          return (
           <div className="tools-editor-row" key={i}>
             <label
-              className="tools-icon-pick"
-              title="Enviar ícone (PNG, SVG, JPG, WEBP — máx. 512 KB)"
+              className={`tools-icon-pick${isUp ? " is-uploading" : ""}${
+                isErr ? " is-error" : ""
+              }`}
+              title="Enviar imagem (PNG, SVG, JPG, WEBP — máx. 512 KB)"
             >
-              {it.icon ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={it.icon} alt="" />
+              {isUp ? (
+                <span className="tools-spinner" aria-label="Enviando…" />
+              ) : it.icon ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={it.icon}
+                    alt=""
+                    onError={() =>
+                      setErrorAt({ i, msg: "A imagem não carregou." })
+                    }
+                  />
+                  <span className="tools-icon-hover">Trocar</span>
+                  {isDone && (
+                    <span className="tools-icon-done" aria-label="Carregada">
+                      ✓
+                    </span>
+                  )}
+                </>
               ) : (
                 <span className="tools-icon-empty">
-                  {uploading === i ? "…" : "+ ícone"}
+                  {isErr ? "Erro" : "+ imagem"}
                 </span>
               )}
               <input
@@ -111,6 +143,17 @@ export default function ToolsBlockView({
                 value={it.url}
                 onChange={(e) => update(i, { url: e.target.value })}
               />
+              {isUp && (
+                <span className="tools-field-status">Enviando imagem…</span>
+              )}
+              {isErr && (
+                <span className="tools-field-error">{errorAt.msg}</span>
+              )}
+              {isDone && (
+                <span className="tools-field-status tools-field-ok">
+                  Imagem carregada ✓
+                </span>
+              )}
             </div>
 
             <button
@@ -122,7 +165,8 @@ export default function ToolsBlockView({
               ×
             </button>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <button type="button" className="hb-btn" onClick={add}>
