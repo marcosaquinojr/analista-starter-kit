@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { updateOwnProfile, type ActionState } from "@/app/admin/actions";
+import { toast } from "@/lib/toast-store";
 
 const initial: ActionState = {};
 
@@ -13,6 +14,11 @@ export default function ProfileForm({
   email: string;
 }) {
   const [state, action, saving] = useActionState(updateOwnProfile, initial);
+
+  useEffect(() => {
+    if (state.ok) toast.success("Perfil atualizado.");
+    else if (state.error) toast.error(state.error);
+  }, [state]);
 
   return (
     <form action={action} className="account-form">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import {
   saveChapter,
   deleteChapter,
@@ -9,6 +9,7 @@ import {
 } from "@/app/admin/actions";
 import RichEditor from "@/components/editor/RichEditor";
 import type { Chapter, TrailMeta } from "@/lib/types";
+import { toast } from "@/lib/toast-store";
 
 const initial: ActionState = {};
 
@@ -25,6 +26,11 @@ export default function EditForm({
   const [confirmText, setConfirmText] = useState("");
 
   const canDelete = confirmText.trim() === chapter.title.trim();
+
+  useEffect(() => {
+    if (state.ok) toast.success("Capítulo publicado.");
+    else if (state.error) toast.error(state.error);
+  }, [state]);
 
   return (
     <form action={formAction} className="editor">

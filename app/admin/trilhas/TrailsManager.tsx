@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import {
   createTrail,
   updateTrail,
@@ -10,6 +10,7 @@ import {
   type ActionState,
 } from "@/app/admin/actions";
 import type { TrailWithCount } from "@/lib/trails";
+import { toast } from "@/lib/toast-store";
 
 const initial: ActionState = {};
 
@@ -24,6 +25,16 @@ export default function TrailsManager({
   );
   const [editState, editAction, editing] = useActionState(updateTrail, initial);
   const [openSlug, setOpenSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (createState.ok) toast.success("Trilha criada.");
+    else if (createState.error) toast.error(createState.error);
+  }, [createState]);
+
+  useEffect(() => {
+    if (editState.ok) toast.success("Trilha salva.");
+    else if (editState.error) toast.error(editState.error);
+  }, [editState]);
 
   return (
     <>

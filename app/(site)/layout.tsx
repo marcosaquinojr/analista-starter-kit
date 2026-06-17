@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { CompletionProvider } from "@/components/completion";
 import Shell from "@/components/Shell";
+import Toaster from "@/components/Toaster";
 import { getSessionUser } from "@/lib/auth";
 import { getChapters, getLastUpdated } from "@/lib/chapters";
 import { getTrails } from "@/lib/trails";
@@ -36,6 +37,7 @@ export default async function SiteLayout({
       >
         {children}
       </Shell>
+      <Toaster />
     </CompletionProvider>
   );
 }

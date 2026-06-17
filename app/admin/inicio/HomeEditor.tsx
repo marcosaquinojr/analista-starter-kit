@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useMemo, useRef, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { saveHome, type ActionState } from "@/app/admin/actions";
 import type { HomeContent } from "@/lib/settings";
 import { heroHtml } from "@/lib/hero";
+import { toast } from "@/lib/toast-store";
 
 const initial: ActionState = {};
 
@@ -29,6 +30,11 @@ export default function HomeEditor({
 }) {
   const [state, action, saving] = useActionState(saveHome, initial);
   const [readTime, setReadTime] = useState(home.readTime);
+
+  useEffect(() => {
+    if (state.ok) toast.success("Página inicial publicada.");
+    else if (state.error) toast.error(state.error);
+  }, [state]);
 
   // Conteúdo inicial dos campos editáveis (memoizado: identidade estável evita
   // que o React reescreva o contentEditable e apague a edição num re-render).

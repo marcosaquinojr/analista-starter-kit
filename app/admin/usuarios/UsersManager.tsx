@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import {
   createUserInvite,
   regenerateInvite,
@@ -9,6 +9,7 @@ import {
   changeUserRole,
   type ActionState,
 } from "@/app/admin/actions";
+import { toast } from "@/lib/toast-store";
 
 const initial: ActionState = {};
 
@@ -64,6 +65,16 @@ export default function UsersManager({
     initial,
   );
   const [regenState, regenAction] = useActionState(regenerateInvite, initial);
+
+  useEffect(() => {
+    if (createState.ok) toast.success("Convite criado.");
+    else if (createState.error) toast.error(createState.error);
+  }, [createState]);
+
+  useEffect(() => {
+    if (regenState.ok) toast.success("Novo link de convite gerado.");
+    else if (regenState.error) toast.error(regenState.error);
+  }, [regenState]);
 
   return (
     <>

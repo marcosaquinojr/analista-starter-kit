@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { uploadToolIcon } from "@/app/admin/actions";
 
@@ -29,6 +29,9 @@ export default function ToolsBlockView({
     null,
   );
   const [doneAt, setDoneAt] = useState<number | null>(null);
+  // refs dos inputs de arquivo (um por card) — disparamos o clique manualmente
+  // porque o ProseMirror engole o clique no <label> dentro do node view.
+  const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const sync = (next: ToolItem[]) => {
     setItems(next);
@@ -82,11 +85,21 @@ export default function ToolsBlockView({
           const isDone = doneAt === i;
           return (
           <div className="tools-editor-row" key={i}>
-            <label
+            <div
               className={`tools-icon-pick${isUp ? " is-uploading" : ""}${
                 isErr ? " is-error" : ""
               }`}
               title="Enviar imagem (PNG, SVG, JPG, WEBP — máx. 512 KB)"
+              role="button"
+              tabIndex={0}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={() => !isUp && fileRefs.current[i]?.click()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  fileRefs.current[i]?.click();
+                }
+              }}
             >
               {isUp ? (
                 <span className="tools-spinner" aria-label="Enviando…" />
@@ -113,6 +126,9 @@ export default function ToolsBlockView({
                 </span>
               )}
               <input
+                ref={(el) => {
+                  fileRefs.current[i] = el;
+                }}
                 type="file"
                 accept="image/png,image/jpeg,image/svg+xml,image/webp,image/gif"
                 hidden
@@ -122,7 +138,7 @@ export default function ToolsBlockView({
                   e.target.value = "";
                 }}
               />
-            </label>
+            </div>
 
             <div className="tools-fields">
               <input
