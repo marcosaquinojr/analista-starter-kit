@@ -116,8 +116,12 @@ export async function toggleChapterDone(
   return { done };
 }
 
+// Servidor (Vercel) roda em UTC; fixamos o fuso de Brasília na exibição.
+const TZ = "America/Sao_Paulo";
+
 function today(): string {
   return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: TZ,
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -128,11 +132,13 @@ function today(): string {
 function now(): string {
   const d = new Date();
   const date = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: TZ,
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   }).format(d);
   const time = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: TZ,
     hour: "2-digit",
     minute: "2-digit",
   }).format(d);

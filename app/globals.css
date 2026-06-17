@@ -784,6 +784,39 @@ main.site-main {
   color: var(--text2);
   line-height: 1.5;
 }
+/* Bloco de cards no editor: wrapper com × para remover */
+.cards-block {
+  position: relative;
+  margin: 20px 0 24px;
+}
+.cards-block .cards {
+  margin: 0;
+}
+.block-del {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  z-index: 5;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--border2);
+  background: var(--bg);
+  color: var(--text2);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  opacity: 0.55;
+  transition: opacity 0.12s, color 0.12s, border-color 0.12s;
+}
+.cards-block:hover .block-del {
+  opacity: 1;
+}
+.block-del:hover {
+  border-color: var(--bad);
+  color: var(--bad);
+}
 
 /* TABLE */
 .chapter-body table {

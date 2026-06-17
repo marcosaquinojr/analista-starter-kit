@@ -6,6 +6,7 @@ import { Table, TableRow, TableHeader, TableCell } from "@tiptap/extension-table
 import HtmlBlockView from "./HtmlBlockView";
 import ToolsBlockView, { type ToolItem } from "./ToolsBlockView";
 import GlossaryBlockView, { type GlossItem } from "./GlossaryBlockView";
+import CardGridView from "./CardGridView";
 
 /* ── Callout (destaque colorido) ── */
 const CalloutLabel = Node.create({
@@ -98,6 +99,9 @@ const CardGrid = Node.create({
     mergeAttributes(HTMLAttributes, { class: "cards" }),
     0,
   ],
+  addNodeView() {
+    return ReactNodeViewRenderer(CardGridView);
+  },
 });
 
 /* ── Bloco rico preservado (glossário, processo, FAQ, etc.) ── */
