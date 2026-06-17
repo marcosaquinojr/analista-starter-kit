@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type MouseEvent } from "react";
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { uploadToolIcon } from "@/app/admin/actions";
 
@@ -66,7 +66,12 @@ export default function ToolsBlockView({
   };
 
   return (
-    <NodeViewWrapper className="tools-editor" contentEditable={false}>
+    <NodeViewWrapper
+      className="tools-editor"
+      contentEditable={false}
+      // impede o ProseMirror de engolir cliques (botões/inputs) dentro do bloco
+      onMouseDown={(e: MouseEvent) => e.stopPropagation()}
+    >
       <div className="tools-editor-bar">
         <span className="html-block-tag">Ferramentas</span>
         <button

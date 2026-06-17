@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 
 function friendlyName(html: string): string {
@@ -22,7 +22,11 @@ export default function HtmlBlockView({ node, updateAttributes, deleteNode }: No
   const [draft, setDraft] = useState(html);
 
   return (
-    <NodeViewWrapper className="html-block" contentEditable={false}>
+    <NodeViewWrapper
+      className="html-block"
+      contentEditable={false}
+      onMouseDown={(e: MouseEvent) => e.stopPropagation()}
+    >
       <div className="html-block-bar">
         <span className="html-block-tag">{friendlyName(html)}</span>
         <div className="html-block-actions">

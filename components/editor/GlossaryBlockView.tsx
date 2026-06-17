@@ -1,7 +1,7 @@
 "use client";
 
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 
 export interface GlossItem {
   term: string;
@@ -32,7 +32,11 @@ export default function GlossaryBlockView({
   const remove = (i: number) => sync(items.filter((_, idx) => idx !== i));
 
   return (
-    <NodeViewWrapper className="gloss-editor" contentEditable={false}>
+    <NodeViewWrapper
+      className="gloss-editor"
+      contentEditable={false}
+      onMouseDown={(e: MouseEvent) => e.stopPropagation()}
+    >
       <div className="gloss-editor-bar">
         <span className="html-block-tag">Glossário</span>
         <button
