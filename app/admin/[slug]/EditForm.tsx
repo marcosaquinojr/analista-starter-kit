@@ -29,32 +29,19 @@ export default function EditForm({
 
       <div className="editor-bar">
         <div className="editor-bar-left">
-          <Link href="/admin" className="header-link">
-            ← Capítulos
-          </Link>
           <span className="editor-slug">/c/{chapter.slug}</span>
+          <span className="editor-updated">
+            Última atualização: {chapter.updatedAt}
+          </span>
         </div>
         <div className="editor-bar-right">
-          {state.ok && <span className="editor-saved">Salvo ✓</span>}
+          {state.ok && <span className="editor-saved">Publicado ✓</span>}
           {state.error && <span className="admin-error">{state.error}</span>}
-          <button
-            type="submit"
-            formAction={deleteChapter}
-            formNoValidate
-            className="trail-btn trail-btn-danger"
-            onClick={(e) => {
-              if (
-                !confirm(
-                  `Excluir o capítulo "${chapter.title}"? Isso não pode ser desfeito.`,
-                )
-              )
-                e.preventDefault();
-            }}
-          >
-            Excluir
-          </button>
+          <Link href="/admin" className="trail-btn">
+            Cancelar
+          </Link>
           <button type="submit" className="btn-complete" disabled={pending}>
-            {pending ? "Salvando…" : "Salvar"}
+            {pending ? "Publicando…" : "Publicar"}
           </button>
         </div>
       </div>
@@ -89,6 +76,29 @@ export default function EditForm({
       </div>
 
       <RichEditor initialHtml={chapter.bodyHtml} onChange={setBody} />
+
+      <div className="editor-danger">
+        <div className="editor-danger-text">
+          <strong>Excluir capítulo</strong>
+          <span>Remove este capítulo de vez. Esta ação não pode ser desfeita.</span>
+        </div>
+        <button
+          type="submit"
+          formAction={deleteChapter}
+          formNoValidate
+          className="trail-btn trail-btn-danger"
+          onClick={(e) => {
+            if (
+              !confirm(
+                `Excluir o capítulo "${chapter.title}"? Isso não pode ser desfeito.`,
+              )
+            )
+              e.preventDefault();
+          }}
+        >
+          Excluir capítulo
+        </button>
+      </div>
     </form>
   );
 }

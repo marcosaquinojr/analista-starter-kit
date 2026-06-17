@@ -5,6 +5,7 @@ import { getSessionUser } from "@/lib/auth";
 import { getUserById } from "@/lib/users";
 import { initials } from "@/lib/initials";
 import { CtMark } from "@/components/Logo";
+import AdminNav from "@/components/AdminNav";
 
 const ROLE_LABEL: Record<string, string> = {
   admin: "Admin",
@@ -41,16 +42,7 @@ export default async function AdminChrome({
           </div>
         </Link>
         <div className="admin-header-actions">
-          {user.role === "admin" && (
-            <>
-              <Link href="/admin/progresso" className="header-link">
-                Progresso
-              </Link>
-              <Link href="/admin/usuarios" className="header-link">
-                Usuários
-              </Link>
-            </>
-          )}
+          <AdminNav isAdmin={user.role === "admin"} />
           <Link href="/" className="header-link" target="_blank">
             Ver site ↗
           </Link>

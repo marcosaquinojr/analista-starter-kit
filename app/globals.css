@@ -231,6 +231,10 @@ header.site-header {
 .header-link:hover {
   color: var(--blue);
 }
+.header-link.active {
+  color: var(--blue);
+  font-weight: 600;
+}
 
 /* ── SIDEBAR ── */
 aside.sidebar {
@@ -675,11 +679,21 @@ main.site-main {
 }
 .chapter-body ul,
 .chapter-body ol {
-  margin: 14px 0 20px 20px;
+  margin: 14px 0 20px;
+  padding-left: 24px;
   color: var(--text);
+}
+.chapter-body ul {
+  list-style: disc;
+}
+.chapter-body ol {
+  list-style: decimal;
 }
 .chapter-body li {
   margin-bottom: 6px;
+}
+.chapter-body li::marker {
+  color: var(--text3);
 }
 .chapter-body em {
   color: var(--text2);
@@ -1240,6 +1254,10 @@ main.site-main {
   color: var(--text3);
   font-variant-numeric: tabular-nums;
 }
+.editor-updated {
+  font-size: 12px;
+  color: var(--text3);
+}
 .editor-bar-right {
   display: flex;
   align-items: center;
@@ -1638,6 +1656,34 @@ main.site-main {
 .trail-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* Zona de exclusão discreta no rodapé do editor de capítulo */
+.editor-danger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg2);
+}
+.editor-danger-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.editor-danger-text strong {
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 600;
+}
+.editor-danger-text span {
+  font-size: 12px;
+  color: var(--text3);
 }
 
 /* criar nova trilha */
