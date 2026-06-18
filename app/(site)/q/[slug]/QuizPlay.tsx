@@ -67,6 +67,13 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
   const [revealed, setRevealed] = useState(false);
   const [timeLeft, setTimeLeft] = useState(maxMs);
   const [gain, setGain] = useState<number | null>(null); // pontos da última pergunta
+  const [result, setResult] = useState<{
+    correct: number;
+    total: number;
+    pct: number;
+    passed: boolean;
+    score: number;
+  } | null>(null);
   const startRef = useRef(0);
   const answersRef = useRef<{ questionId: string; chosenIndex: number; msTaken: number }[]>([]);
   const correctRef = useRef(0);
@@ -83,6 +90,19 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
     startRef.current = Date.now();
     lockRef.current = false;
   }, [maxMs]);
+
+  const finish = useCallback(() => {
+    const correct = correctRef.current;
+    const pct = Math.round((correct / total) * 100);
+    const passed = pct >= quiz.passThreshold;
+    setResult({ correct, total, pct, passed, score: scoreRef.current });
+    setPhase("done");
+    sfx.finish();
+    // persiste no servidor (recomputa lá); best-effort, não trava a UI
+    submitQuizResult({ quizSlug: quiz.slug, answers: answersRef.current }).catch(
+      () => {},
+    );
+  }, [total, quiz.passThreshold, quiz.slug]);
 
   const answer = useCallback(
     (index: number | null) => {
@@ -124,7 +144,7 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
     [revealed, q, maxMs, qi, total],
   );
 
-  // timer da pergunta
+  // Cronômetro da pergunta (o setState ocorre no callback do intervalo).
   useEffect(() => {
     if (phase !== "playing" || revealed) return;
     const id = window.setInterval(() => {
@@ -139,9 +159,12 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
     return () => window.clearInterval(id);
   }, [phase, revealed, qi, maxMs, answer]);
 
-  // ao trocar de pergunta, reinicia
+  // Ao trocar de pergunta, reinicia o estado dela (seleção, timer…).
   useEffect(() => {
-    if (phase === "playing") beginQuestion();
+    if (phase === "playing") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      beginQuestion();
+    }
   }, [qi, phase, beginQuestion]);
 
   const start = () => {
@@ -155,27 +178,6 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
     setQi(0);
     setPhase("playing");
   };
-
-  const [result, setResult] = useState<{
-    correct: number;
-    total: number;
-    pct: number;
-    passed: boolean;
-    score: number;
-  } | null>(null);
-
-  function finish() {
-    const correct = correctRef.current;
-    const pct = Math.round((correct / total) * 100);
-    const passed = pct >= quiz.passThreshold;
-    setResult({ correct, total, pct, passed, score: scoreRef.current });
-    setPhase("done");
-    sfx.finish();
-    // persiste no servidor (recomputa lá); best-effort, não trava a UI
-    submitQuizResult({ quizSlug: quiz.slug, answers: answersRef.current }).catch(
-      () => {},
-    );
-  }
 
   const replay = () => {
     setResult(null);
@@ -309,32 +311,37 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
   );
 }
 
-// Confete simples (sem dependência) — peças com cor/posição/delay aleatórios.
-function Confetti() {
+// Confete simples (sem dependência). As peças aleatórias são geradas UMA vez,
+// no inicializador do useState (escopo de módulo) — render puro, sem
+// Math.random durante a renderização e sem setState em efeito.
+type Piece = { left: number; delay: number; dur: number; bg: string; rot: number };
+function makeConfetti(): Piece[] {
   const colors = ["#e21b3c", "#1368ce", "#d89e00", "#26890c", "#146bfa", "#ec4899"];
-  const pieces = Array.from({ length: 90 }, (_, i) => i);
+  return Array.from({ length: 90 }, (_, i) => ({
+    left: Math.random() * 100,
+    delay: Math.random() * 0.6,
+    dur: 2.2 + Math.random() * 1.4,
+    bg: colors[i % colors.length],
+    rot: Math.random() * 360,
+  }));
+}
+function Confetti() {
+  const [pieces] = useState<Piece[]>(makeConfetti);
   return (
     <div className="confetti" aria-hidden>
-      {pieces.map((i) => {
-        const left = Math.random() * 100;
-        const delay = Math.random() * 0.6;
-        const dur = 2.2 + Math.random() * 1.4;
-        const bg = colors[i % colors.length];
-        const rot = Math.random() * 360;
-        return (
-          <span
-            key={i}
-            className="confetti-piece"
-            style={{
-              left: `${left}%`,
-              background: bg,
-              animationDelay: `${delay}s`,
-              animationDuration: `${dur}s`,
-              transform: `rotate(${rot}deg)`,
-            }}
-          />
-        );
-      })}
+      {pieces.map((p, i) => (
+        <span
+          key={i}
+          className="confetti-piece"
+          style={{
+            left: `${p.left}%`,
+            background: p.bg,
+            animationDelay: `${p.delay}s`,
+            animationDuration: `${p.dur}s`,
+            transform: `rotate(${p.rot}deg)`,
+          }}
+        />
+      ))}
     </div>
   );
 }
