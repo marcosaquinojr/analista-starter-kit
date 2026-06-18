@@ -2581,23 +2581,24 @@ main.site-main {
   place-items: center;
   padding: 24px;
   overflow: hidden;
-  background: #060912;
-  color: #fff;
+  background:
+    radial-gradient(120% 100% at 50% 0%, var(--blue-50), transparent 55%),
+    var(--bg3);
+  color: var(--ink);
 }
 .landing-bg {
   position: absolute;
   inset: -15%;
   z-index: 0;
 }
-/* "vídeo" = mesh de gradiente animado (trocável por <video> — ver AuthShell) */
+/* glows de marca bem sutis sobre o fundo claro */
 .landing-bg .mesh {
   position: absolute;
   width: 60vmax;
   height: 60vmax;
   border-radius: 50%;
-  filter: blur(70px);
-  opacity: 0.55;
-  mix-blend-mode: screen;
+  filter: blur(85px);
+  opacity: 0.14;
   will-change: transform;
 }
 .mesh-1 {
@@ -2613,7 +2614,7 @@ main.site-main {
   animation: meshFloat2 23s ease-in-out infinite;
 }
 .mesh-3 {
-  background: radial-gradient(circle, #6d28d9, transparent 62%);
+  background: radial-gradient(circle, #4d8bff, transparent 62%);
   top: 28%;
   left: 42%;
   animation: meshFloat3 27s ease-in-out infinite;
@@ -2633,21 +2634,18 @@ main.site-main {
 .landing-grain {
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    120% 120% at 50% 35%,
-    transparent 48%,
-    rgba(0, 0, 0, 0.6) 100%
-  );
+  background-image:
+    linear-gradient(rgba(20, 107, 250, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 107, 250, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 28%, black, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 28%, black, transparent);
 }
 .landing-overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(
-    160deg,
-    rgba(6, 9, 18, 0.35),
-    rgba(6, 9, 18, 0.72)
-  );
+  background: none;
 }
 .landing-card {
   position: relative;
@@ -2656,17 +2654,13 @@ main.site-main {
   max-width: 420px;
   padding: 40px 36px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(22px) saturate(160%);
-  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
 }
 .landing-logo {
   margin-bottom: 22px;
-  color: #fff;
+  color: var(--ink);
 }
 .landing-title {
   font-family: var(--font-display), sans-serif;
@@ -2675,16 +2669,16 @@ main.site-main {
   line-height: 1.1;
   letter-spacing: -0.02em;
   margin-bottom: 10px;
-  color: #fff;
+  color: var(--ink);
 }
 .landing-sub {
   font-size: 14px;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--text2);
   margin-bottom: 26px;
 }
 .landing-sub strong {
-  color: #fff;
+  color: var(--ink);
 }
 .landing-form {
   display: flex;
@@ -2693,7 +2687,7 @@ main.site-main {
 .landing-form label {
   font-size: 12px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text2);
   margin-bottom: 6px;
 }
 .landing-form input {
@@ -2702,22 +2696,21 @@ main.site-main {
   margin-bottom: 16px;
   font-size: 14px;
   font-family: var(--font-body), sans-serif;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--border2);
   border-radius: 10px;
   transition:
     border-color 0.15s,
-    background 0.15s;
+    box-shadow 0.15s;
 }
 .landing-form input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text3);
 }
 .landing-form input:focus {
   outline: none;
   border-color: var(--blue);
-  background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 0 3px rgba(20, 107, 250, 0.3);
+  box-shadow: 0 0 0 3px var(--blue-glow);
 }
 .landing-btn {
   margin-top: 6px;
@@ -2746,7 +2739,7 @@ main.site-main {
 }
 .landing-error {
   font-size: 13px;
-  color: #fca5a5;
+  color: var(--bad);
   margin-bottom: 8px;
 }
 .landing-footer {
@@ -2757,7 +2750,7 @@ main.site-main {
   right: 0;
   text-align: center;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text3);
 }
 @media (prefers-reduced-motion: reduce) {
   .landing-bg .mesh {

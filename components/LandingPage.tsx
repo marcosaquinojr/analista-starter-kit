@@ -4,17 +4,18 @@ import Link from "next/link";
 import { CtMark } from "@/components/Logo";
 
 /**
- * Página pública na raiz do site (visitante sem login). É uma ferramenta
- * interna, então nada de pitch de venda: só a marca, uma linha do que é, e o
- * botão de entrar. Tom escuro/imersivo coerente com a tela de login.
+ * Página pública na raiz do site (visitante sem login). Ferramenta interna:
+ * nada de pitch de venda — só a marca, uma linha do que é, e o botão de entrar.
+ * Tema claro, coerente com o login e o resto do app.
  */
 export default function LandingPage() {
   return (
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: "#030712",
-        color: "#f3f4f6",
+        background:
+          "radial-gradient(120% 100% at 50% 0%, var(--blue-50), transparent 55%), var(--bg3)",
+        color: "var(--ink)",
         fontFamily: 'var(--font-body), "Inter", -apple-system, sans-serif',
         position: "relative",
         overflow: "hidden",
@@ -25,17 +26,6 @@ export default function LandingPage() {
         padding: "24px",
       }}
     >
-      {/* Brilho de fundo sutil */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(circle at 50% 35%, rgba(20, 107, 250, 0.13), transparent 60%)",
-          pointerEvents: "none",
-        }}
-      />
-
       <div
         style={{
           position: "relative",
@@ -52,10 +42,11 @@ export default function LandingPage() {
         <div>
           <h1
             style={{
+              fontFamily: "var(--font-display), sans-serif",
               fontSize: "30px",
               fontWeight: 800,
               letterSpacing: "-0.02em",
-              color: "#ffffff",
+              color: "var(--ink)",
               margin: 0,
             }}
           >
@@ -64,7 +55,7 @@ export default function LandingPage() {
           <p
             style={{
               fontSize: "15px",
-              color: "#9ca3af",
+              color: "var(--text2)",
               marginTop: "10px",
               lineHeight: 1.55,
             }}
@@ -77,8 +68,8 @@ export default function LandingPage() {
         <Link
           href="/admin/login"
           style={{
-            background: "#ffffff",
-            color: "#030712",
+            background: "var(--blue)",
+            color: "#fff",
             padding: "12px 30px",
             borderRadius: "8px",
             fontSize: "14px",
@@ -87,7 +78,7 @@ export default function LandingPage() {
             display: "inline-flex",
             alignItems: "center",
             gap: "8px",
-            boxShadow: "0 4px 20px rgba(255, 255, 255, 0.1)",
+            boxShadow: "var(--shadow-md)",
           }}
         >
           Entrar <span aria-hidden>→</span>
@@ -99,7 +90,7 @@ export default function LandingPage() {
           position: "absolute",
           bottom: "24px",
           fontSize: "12px",
-          color: "#4b5563",
+          color: "var(--text3)",
         }}
       >
         © {new Date().getFullYear()} Citiesoft
