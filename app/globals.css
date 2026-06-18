@@ -696,36 +696,42 @@ main.site-main {
 
 /* Checkboxes de áreas no editor de capítulo */
 .area-checks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 4px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 6px;
+  width: 100%;
 }
 .area-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
   border: 1px solid var(--border2);
-  border-radius: 999px;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
   color: var(--text);
   background: var(--bg);
   cursor: pointer;
-  transition: border-color 0.12s, background 0.12s, color 0.12s;
+  transition: border-color 0.12s, background-color 0.12s, color 0.12s, box-shadow 0.12s;
+  min-height: 48px;
 }
 .area-check:hover {
   border-color: var(--blue);
+  background: var(--bg2);
 }
 .area-check.on {
   border-color: var(--blue);
   background: var(--blue-50);
   color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue);
 }
 .area-check input {
   accent-color: var(--blue);
   margin: 0;
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 .area-checks-empty {
   font-size: 13px;
