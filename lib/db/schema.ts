@@ -1,4 +1,11 @@
-import { pgTable, text, integer, primaryKey } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  integer,
+  primaryKey,
+  jsonb,
+  boolean,
+} from "drizzle-orm/pg-core";
 
 /**
  * Tabela de trilhas (as seções do menu: Contexto, Rotina, Crescimento...).
@@ -146,11 +153,98 @@ export const chapterVersions = pgTable("chapter_versions", {
   revisionNote: text("revision_note").notNull().default(""),
 });
 
+/**
+ * Quizzes — "capítulos especiais" gamificados. Aparecem numa trilha como um
+ * card, pertencem a área(s) (como capítulos) e podem exigir capítulos
+ * concluídos (pré-requisitos) pra desbloquear.
+ */
+export const quizzes = pgTable("quizzes", {
+  slug: text("slug").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull().default(""),
+  trailSlug: text("trail_slug")
+    .notNull()
+    .references(() => trails.slug),
+  passThreshold: integer("pass_threshold").notNull().default(70), // % p/ passar
+  secondsPerQuestion: integer("seconds_per_question").notNull().default(20),
+  sortOrder: integer("sort_order").notNull(),
+  updatedAt: text("updated_at").notNull().default(""),
+  updatedBy: text("updated_by").notNull().default(""),
+});
+
+/** Perguntas de um quiz. `options` = JSON [{text, correct}] (V/F = 2 opções). */
+export const quizQuestions = pgTable("quiz_questions", {
+  id: text("id").primaryKey(),
+  quizSlug: text("quiz_slug")
+    .notNull()
+    .references(() => quizzes.slug, { onDelete: "cascade" }),
+  type: text("type").notNull(), // 'mc' | 'tf'
+  text: text("text").notNull(),
+  options: jsonb("options")
+    .$type<{ text: string; correct: boolean }[]>()
+    .notNull(),
+  points: integer("points").notNull().default(1000), // base de pontos da pergunta
+  sortOrder: integer("sort_order").notNull(),
+});
+
+/** Capítulos exigidos pra desbloquear o quiz (todos precisam estar concluídos). */
+export const quizPrereqs = pgTable(
+  "quiz_prereqs",
+  {
+    quizSlug: text("quiz_slug")
+      .notNull()
+      .references(() => quizzes.slug, { onDelete: "cascade" }),
+    chapterSlug: text("chapter_slug")
+      .notNull()
+      .references(() => chapters.slug, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.quizSlug, t.chapterSlug] })],
+);
+
+/** Áreas a que o quiz pertence (como chapter_areas). */
+export const quizAreas = pgTable(
+  "quiz_areas",
+  {
+    quizSlug: text("quiz_slug")
+      .notNull()
+      .references(() => quizzes.slug, { onDelete: "cascade" }),
+    areaSlug: text("area_slug")
+      .notNull()
+      .references(() => areas.slug, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.quizSlug, t.areaSlug] })],
+);
+
+/**
+ * Tentativas de quiz. Guarda todas; o XP/nível e as medalhas são derivados da
+ * MELHOR tentativa por (usuário, quiz). `passed` = nota ≥ nota mínima.
+ */
+export const quizResults = pgTable("quiz_results", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  quizSlug: text("quiz_slug")
+    .notNull()
+    .references(() => quizzes.slug, { onDelete: "cascade" }),
+  score: integer("score").notNull(),
+  correctCount: integer("correct_count").notNull(),
+  totalQuestions: integer("total_questions").notNull(),
+  passed: boolean("passed").notNull(),
+  takenAt: text("taken_at").notNull(), // ISO
+});
+
 export type TrailRow = typeof trails.$inferSelect;
 export type NewTrailRow = typeof trails.$inferInsert;
 export type AreaRow = typeof areas.$inferSelect;
 export type NewAreaRow = typeof areas.$inferInsert;
 export type ChapterAreaRow = typeof chapterAreas.$inferSelect;
+export type QuizRow = typeof quizzes.$inferSelect;
+export type NewQuizRow = typeof quizzes.$inferInsert;
+export type QuizQuestionRow = typeof quizQuestions.$inferSelect;
+export type NewQuizQuestionRow = typeof quizQuestions.$inferInsert;
+export type QuizResultRow = typeof quizResults.$inferSelect;
+export type NewQuizResultRow = typeof quizResults.$inferInsert;
 export type ChapterRow = typeof chapters.$inferSelect;
 export type NewChapterRow = typeof chapters.$inferInsert;
 export type UserRow = typeof users.$inferSelect;

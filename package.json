@@ -17,6 +17,7 @@
     "db:migrate:tracks": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-tracks.ts",
     "db:migrate:versions": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-chapter-versions.ts",
     "db:migrate:areas": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-areas.ts",
+    "db:migrate:quizzes": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-quizzes.ts",
     "users:bootstrap": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/create-admin.ts",
     "db:seed": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/seed.ts",
     "db:seed:force": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/seed.ts --force"
