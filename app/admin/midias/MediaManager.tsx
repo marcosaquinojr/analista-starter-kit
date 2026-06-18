@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { deleteMediaFile } from "@/app/admin/actions";
+import { useRef, useState } from "react";
+import { deleteMediaFile, uploadMedia } from "@/app/admin/actions";
 import { toast } from "@/lib/toast-store";
+
+const ACCEPT = "image/png,image/jpeg,image/svg+xml,image/webp,image/gif,application/pdf";
 
 type BlobInfo = {
   url: string;
@@ -14,6 +16,31 @@ type BlobInfo = {
 export default function MediaManager({ initialBlobs }: { initialBlobs: BlobInfo[] }) {
   const [blobs, setBlobs] = useState<BlobInfo[]>(initialBlobs);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await uploadMedia(fd);
+      if (res.error) {
+        toast.error(res.error);
+      } else if (res.blob) {
+        const b = res.blob;
+        setBlobs((prev) => [{ ...b, uploadedAt: new Date(b.uploadedAt) }, ...prev]);
+        toast.success("Mídia enviada.");
+      }
+    } catch {
+      toast.error("Erro ao enviar a mídia.");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
 
   const copyUrl = (url: string) => {
     navigator.clipboard.writeText(url);
@@ -46,6 +73,25 @@ export default function MediaManager({ initialBlobs }: { initialBlobs: BlobInfo[
 
   return (
     <div className="media-manager">
+      <div className="media-toolbar">
+        <button
+          type="button"
+          className="trail-btn"
+          disabled={uploading}
+          onClick={() => fileRef.current?.click()}
+        >
+          {uploading ? "Enviando…" : "＋ Enviar mídia"}
+        </button>
+        <span className="media-toolbar-hint">PNG, JPG, SVG, WEBP, GIF ou PDF · até 5 MB</span>
+        <input
+          ref={fileRef}
+          type="file"
+          accept={ACCEPT}
+          onChange={handleUpload}
+          style={{ display: "none" }}
+        />
+      </div>
+
       {blobs.length === 0 ? (
         <div className="empty-state">
           <span className="empty-state-icon" aria-hidden>
@@ -66,8 +112,8 @@ export default function MediaManager({ initialBlobs }: { initialBlobs: BlobInfo[
           </span>
           <p className="empty-state-title">Nenhuma mídia enviada ainda</p>
           <p className="empty-state-desc">
-            As mídias aparecerão aqui conforme forem enviadas no editor de
-            capítulos ou nos cartões de ferramentas.
+            Envie pelo botão “Enviar mídia” acima — ou elas aparecem aqui
+            conforme forem enviadas no editor de capítulos.
           </p>
         </div>
       ) : (

@@ -780,6 +780,48 @@ export async function generateAIContent(
   }
 }
 
+const MEDIA_TYPES = [...ICON_TYPES, "application/pdf"];
+const MEDIA_MAX = 5 * 1024 * 1024; // 5 MB
+
+/** Upload direto pela Biblioteca de mídias (/admin/midias). */
+export async function uploadMedia(formData: FormData): Promise<{
+  blob?: { url: string; pathname: string; size: number; uploadedAt: string };
+  error?: string;
+}> {
+  if (!(await canEdit())) return { error: "Sem permissão. Faça login de novo." };
+
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0)
+    return { error: "Selecione um arquivo." };
+  if (!MEDIA_TYPES.includes(file.type))
+    return { error: "Formato inválido (use PNG, JPG, SVG, WEBP, GIF ou PDF)." };
+  if (file.size > MEDIA_MAX)
+    return { error: "Arquivo muito grande (máx. 5 MB)." };
+
+  const ext = (file.name.split(".").pop() || "bin").toLowerCase().slice(0, 5);
+  // nome legível: slug do nome original + sufixo curto único
+  const base = slugify(file.name.replace(/\.[^.]+$/, "")) || "midia";
+
+  try {
+    const blob = await put(`media/${base}-${randomUUID().slice(0, 8)}.${ext}`, file, {
+      access: "public",
+      contentType: file.type,
+    });
+    await logAction("media.upload", file.name);
+    revalidatePath("/admin/midias");
+    return {
+      blob: {
+        url: blob.url,
+        pathname: blob.pathname,
+        size: file.size,
+        uploadedAt: new Date().toISOString(),
+      },
+    };
+  } catch {
+    return { error: "Falha no upload. Tente de novo." };
+  }
+}
+
 export async function listMediaFiles() {
   if (!(await canEdit())) return { error: "Sem permissão. Faça login de novo." };
   try {
