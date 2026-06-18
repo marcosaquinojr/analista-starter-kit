@@ -2405,8 +2405,8 @@ main.site-main {
   text-transform: uppercase;
   color: var(--text3);
 }
-.field input,
-.field select {
+.field > input,
+.field > select {
   padding: 9px 12px;
   border: 1px solid var(--border2);
   border-radius: var(--radius-sm);
@@ -2414,8 +2414,8 @@ main.site-main {
   font-size: 14px;
   background: var(--bg);
 }
-.field input:focus,
-.field select:focus {
+.field > input:focus,
+.field > select:focus {
   outline: none;
   border-color: var(--blue);
   box-shadow: 0 0 0 3px var(--blue-faint);
@@ -2430,7 +2430,7 @@ main.site-main {
 .field-full {
   flex-basis: 100%;
 }
-.field-full input {
+.field-full > input {
   width: 100%;
 }
 

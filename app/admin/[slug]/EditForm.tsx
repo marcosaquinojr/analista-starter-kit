@@ -247,6 +247,14 @@ export default function EditForm({
                 ))}
               </select>
             </label>
+            <label className="field field-sm">
+              <span>Tempo de leitura</span>
+              <input name="readTime" value={readTime} onChange={(e) => setReadTime(e.target.value)} />
+            </label>
+            <label className="field field-full">
+              <span>Descrição</span>
+              <input name="description" value={description} onChange={(e) => setDescription(e.target.value)} />
+            </label>
             <div className="field field-full">
               <span>Áreas</span>
               {allAreas.length === 0 ? (
@@ -287,14 +295,6 @@ export default function EditForm({
                 </span>
               )}
             </div>
-            <label className="field">
-              <span>Tempo de leitura</span>
-              <input name="readTime" value={readTime} onChange={(e) => setReadTime(e.target.value)} />
-            </label>
-            <label className="field field-full">
-              <span>Descrição</span>
-              <input name="description" value={description} onChange={(e) => setDescription(e.target.value)} />
-            </label>
           </div>
 
           <RichEditor initialHtml={body} onChange={setBody} isAiEnabled={isAiEnabled} />

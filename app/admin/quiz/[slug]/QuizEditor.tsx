@@ -104,25 +104,37 @@ export default function QuizEditor({
   const tile = ["tile-red", "tile-blue", "tile-gold", "tile-green"];
 
   return (
-    <form action={action}>
-      <div className="admin-intro admin-intro-head">
-        <div>
-          <Link href="/admin" className="header-link">
-            ← Capítulos
-          </Link>
-          <h1>Editar quiz</h1>
-          <p>
-            Monte o quiz estilo Kahoot. Defina trilha, áreas e os capítulos
-            que a pessoa precisa concluir pra liberar o quiz; depois adicione as
-            perguntas.
-          </p>
+    <form action={action} className="editor">
+      <div className="editor-bar">
+        <div className="editor-bar-left">
+          <span className="editor-slug">/admin/quiz/{quiz.slug}</span>
+          <span className="editor-updated">
+            Última atualização: {quiz.updatedAt || "—"}
+            {quiz.updatedBy ? ` por ${quiz.updatedBy}` : ""}
+          </span>
         </div>
-        <div className="admin-intro-actions">
+        <div className="editor-bar-right">
+          {state.ok && <span className="editor-saved">Salvo ✓</span>}
+          {state.error && <span className="admin-error">{state.error}</span>}
+          <Link href="/admin" className="trail-btn">
+            Cancelar
+          </Link>
           <button type="submit" className="btn-complete" disabled={pending}>
             {pending ? "Salvando…" : "Salvar quiz"}
           </button>
-          {state.ok && <span className="editor-saved">Salvo ✓</span>}
         </div>
+      </div>
+
+      <div className="admin-intro">
+        <Link href="/admin" className="header-link">
+          ← Capítulos
+        </Link>
+        <h1>Editar quiz</h1>
+        <p>
+          Monte o quiz estilo Kahoot. Defina trilha, áreas e os capítulos
+          que a pessoa precisa concluir pra liberar o quiz; depois adicione as
+          perguntas.
+        </p>
       </div>
 
       <input type="hidden" name="slug" value={quiz.slug} />

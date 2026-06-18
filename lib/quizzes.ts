@@ -38,6 +38,8 @@ export interface QuizFull extends QuizMeta {
   questions: QuizQuestion[];
   prereqSlugs: string[];
   areaSlugs: string[];
+  updatedAt: string;
+  updatedBy: string;
 }
 
 const metaCols = {
@@ -90,6 +92,8 @@ export async function getQuiz(slug: string): Promise<QuizFull | null> {
     passThreshold: q.passThreshold,
     secondsPerQuestion: q.secondsPerQuestion,
     sortOrder: q.sortOrder,
+    updatedAt: q.updatedAt,
+    updatedBy: q.updatedBy,
     questions: questions.map((qq) => ({
       id: qq.id,
       type: qq.type,
