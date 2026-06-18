@@ -14,6 +14,37 @@ export const trails = pgTable("trails", {
 });
 
 /**
+ * Áreas de onboarding (ex.: Negócios, Desenvolvimento). Antes eram um valor
+ * fixo no campo `chapters.onboardingTrack`; agora são entidade gerenciável
+ * pelo /admin (como as trilhas). Um usuário pertence a uma área; um capítulo
+ * pode pertencer a várias (tabela de ligação `chapter_areas`).
+ */
+export const areas = pgTable("areas", {
+  slug: text("slug").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull().default(""),
+  sortOrder: integer("sort_order").notNull(),
+});
+
+/**
+ * Ligação muitos-para-muitos entre capítulos e áreas. Presença da linha =
+ * o capítulo pertence àquela área. Reaproveitar um capítulo em outra área =
+ * mais uma linha aqui. Capítulo sem nenhuma linha = rascunho (oculto no leitor).
+ */
+export const chapterAreas = pgTable(
+  "chapter_areas",
+  {
+    chapterSlug: text("chapter_slug")
+      .notNull()
+      .references(() => chapters.slug, { onDelete: "cascade" }),
+    areaSlug: text("area_slug")
+      .notNull()
+      .references(() => areas.slug, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.chapterSlug, t.areaSlug] })],
+);
+
+/**
  * Tabela de capítulos do manual. `bodyHtml` guarda o conteúdo rico
  * (HTML com as classes do design system). `updatedAt` é uma string de
  * exibição (dd/mm/aaaa) atualizada quando um editor salva. `trailSlug`
@@ -117,6 +148,9 @@ export const chapterVersions = pgTable("chapter_versions", {
 
 export type TrailRow = typeof trails.$inferSelect;
 export type NewTrailRow = typeof trails.$inferInsert;
+export type AreaRow = typeof areas.$inferSelect;
+export type NewAreaRow = typeof areas.$inferInsert;
+export type ChapterAreaRow = typeof chapterAreas.$inferSelect;
 export type ChapterRow = typeof chapters.$inferSelect;
 export type NewChapterRow = typeof chapters.$inferInsert;
 export type UserRow = typeof users.$inferSelect;
