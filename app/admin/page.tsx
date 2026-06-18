@@ -1,4 +1,3 @@
-import Link from "next/link";
 import AdminChrome from "@/components/AdminChrome";
 import AdminChaptersList from "./AdminChaptersList";
 import { getChapters } from "@/lib/chapters";
@@ -12,17 +11,7 @@ export default async function AdminHome() {
   return (
     <AdminChrome>
       <div className="admin-intro">
-        <div className="admin-intro-head">
-          <h1>Capítulos</h1>
-          <div className="admin-intro-actions">
-            <Link href="/admin/inicio" className="trail-btn">
-              Editar página inicial →
-            </Link>
-            <Link href="/admin/trilhas" className="trail-btn">
-              Gerenciar trilhas →
-            </Link>
-          </div>
-        </div>
+        <h1>Capítulos</h1>
         <p>
           Edite o conteúdo do manual. As mudanças vão pro ar na hora, sem
           publicar de novo. Arraste e solte os capítulos para reordená-los ou

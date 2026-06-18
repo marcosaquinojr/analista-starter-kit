@@ -33,6 +33,8 @@ export default function HomeView({
   return (
     <>
       <div className="home-hub">
+        <div className="hero-grid" />
+        <div className="hero-glow" />
         <h1 className="home-hub-greeting">
           {firstName ? `Olá, ${firstName}` : "Olá"}
         </h1>
