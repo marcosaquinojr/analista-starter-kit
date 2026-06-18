@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ChapterMeta, TrailMeta } from "@/lib/types";
 import type { HomeContent } from "@/lib/settings";
+import type { ReaderQuiz } from "@/lib/quizzes";
 import { useCompletion } from "@/components/completion";
 
 export default function HomeView({
@@ -10,11 +11,13 @@ export default function HomeView({
   trails,
   home,
   userName,
+  quizzes,
 }: {
   chapters: ChapterMeta[];
   trails: TrailMeta[];
   home: HomeContent;
   userName: string;
+  quizzes: ReaderQuiz[];
 }) {
   const { isDone } = useCompletion();
 
@@ -29,6 +32,8 @@ export default function HomeView({
 
   const byTrail = (trailSlug: string) =>
     chapters.filter((c) => c.trailSlug === trailSlug);
+  const quizzesByTrail = (trailSlug: string) =>
+    quizzes.filter((q) => q.trailSlug === trailSlug);
 
   return (
     <>
@@ -76,7 +81,8 @@ export default function HomeView({
 
       {trails.map((trail) => {
         const items = byTrail(trail.slug);
-        if (items.length === 0) return null;
+        const qs = quizzesByTrail(trail.slug);
+        if (items.length === 0 && qs.length === 0) return null;
         return (
           <div className="trail" key={trail.slug}>
             <div className="trail-header">
@@ -95,6 +101,42 @@ export default function HomeView({
                   <div className="chapter-card-desc">{c.description}</div>
                 </Link>
               ))}
+
+              {qs.map((qz) => {
+                const unlocked = qz.prereqSlugs.every((s) => isDone(s));
+                if (!unlocked) {
+                  return (
+                    <div
+                      key={qz.slug}
+                      className="chapter-card quiz-card locked"
+                      title="Conclua os capítulos pré-requisito para liberar"
+                    >
+                      <span className="quiz-card-badge">QUIZ 🔒</span>
+                      <div className="chapter-card-title">{qz.title}</div>
+                      <div className="chapter-card-desc">
+                        Conclua os pré-requisitos para liberar.
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <Link
+                    key={qz.slug}
+                    href={`/q/${qz.slug}`}
+                    className={`chapter-card quiz-card${qz.passed ? " completed" : ""}`}
+                  >
+                    <span className="quiz-card-badge">
+                      QUIZ {qz.passed ? "✓" : "▶"}
+                    </span>
+                    <div className="chapter-card-title">{qz.title}</div>
+                    <div className="chapter-card-desc">
+                      {qz.questionCount}{" "}
+                      {qz.questionCount === 1 ? "pergunta" : "perguntas"}
+                      {qz.passed ? " · concluído" : ""}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         );

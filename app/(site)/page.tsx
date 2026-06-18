@@ -3,6 +3,7 @@ import LandingPage from "@/components/LandingPage";
 import { getChapters } from "@/lib/chapters";
 import { getTrails } from "@/lib/trails";
 import { getHomeContent } from "@/lib/settings";
+import { getReaderQuizzes } from "@/lib/quizzes";
 import { getSessionUser } from "@/lib/auth";
 import { getUserById } from "@/lib/users";
 
@@ -15,10 +16,11 @@ export default async function Home() {
   const row = await getUserById(user.uid);
   const track = row?.onboardingTrack ?? "negocios";
 
-  const [chapters, trails, home] = await Promise.all([
+  const [chapters, trails, home, quizzes] = await Promise.all([
     getChapters(track),
     getTrails(),
     getHomeContent(),
+    getReaderQuizzes(track, user.uid),
   ]);
   return (
     <HomeView
@@ -26,6 +28,7 @@ export default async function Home() {
       trails={trails}
       home={home}
       userName={row?.name ?? ""}
+      quizzes={quizzes}
     />
   );
 }

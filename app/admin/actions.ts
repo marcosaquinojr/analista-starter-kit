@@ -15,6 +15,7 @@ import {
   quizQuestions,
   quizPrereqs,
   quizAreas,
+  quizResults,
 } from "@/lib/db/schema";
 import { quizExists } from "@/lib/quizzes";
 import {
@@ -735,6 +736,71 @@ export async function deleteQuiz(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   redirect("/admin");
+}
+
+/**
+ * Registra uma tentativa de quiz. O servidor RECOMPUTA acertos e pontos a
+ * partir do banco (o cliente manda só a opção escolhida e o tempo) — assim o
+ * XP gravado é confiável. Qualquer pessoa logada registra a própria tentativa.
+ */
+export async function submitQuizResult(input: {
+  quizSlug: string;
+  answers: { questionId: string; chosenIndex: number; msTaken: number }[];
+}): Promise<
+  | { ok: true; score: number; correctCount: number; total: number; passed: boolean; passThreshold: number }
+  | { ok: false; error: string }
+> {
+  const session = await getSessionUser();
+  if (!session) return { ok: false, error: "Sessão expirada." };
+
+  const { quizSlug, answers } = input;
+  const [quiz] = await db
+    .select()
+    .from(quizzes)
+    .where(eq(quizzes.slug, quizSlug))
+    .limit(1);
+  if (!quiz) return { ok: false, error: "Quiz não encontrado." };
+
+  const questions = await db
+    .select()
+    .from(quizQuestions)
+    .where(eq(quizQuestions.quizSlug, quizSlug))
+    .orderBy(asc(quizQuestions.sortOrder));
+  const total = questions.length;
+  if (total === 0) return { ok: false, error: "Quiz sem perguntas." };
+
+  const maxMs = quiz.secondsPerQuestion * 1000;
+  const byQ = new Map(answers.map((a) => [a.questionId, a]));
+  let score = 0;
+  let correctCount = 0;
+  for (const q of questions) {
+    const a = byQ.get(q.id);
+    if (!a) continue;
+    const opt = q.options[a.chosenIndex];
+    if (opt && opt.correct) {
+      correctCount += 1;
+      const used = Math.min(Math.max(0, a.msTaken), maxMs);
+      const left = maxMs - used;
+      score += Math.round(500 + 500 * (left / maxMs)); // 500–1000 por acerto
+    }
+  }
+  const pct = Math.round((correctCount / total) * 100);
+  const passed = pct >= quiz.passThreshold;
+
+  await db.insert(quizResults).values({
+    id: randomUUID(),
+    userId: session.uid,
+    quizSlug,
+    score,
+    correctCount,
+    totalQuestions: total,
+    passed,
+    takenAt: new Date().toISOString(),
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin/progresso");
+  return { ok: true, score, correctCount, total, passed, passThreshold: quiz.passThreshold };
 }
 
 // ──────────────────────────────────────────────────────────────────────────

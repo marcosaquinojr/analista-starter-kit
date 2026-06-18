@@ -1,7 +1,13 @@
 import "server-only";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { quizzes, quizQuestions, quizPrereqs, quizAreas } from "@/lib/db/schema";
+import {
+  quizzes,
+  quizQuestions,
+  quizPrereqs,
+  quizAreas,
+  quizResults,
+} from "@/lib/db/schema";
 
 /**
  * Camada de acesso a quizzes. Um quiz é um "capítulo especial" gamificado:
@@ -95,6 +101,73 @@ export async function getQuiz(slug: string): Promise<QuizFull | null> {
     prereqSlugs: prereqs.map((p) => p.chapterSlug),
     areaSlugs: areas.map((a) => a.areaSlug),
   };
+}
+
+export interface ReaderQuiz {
+  slug: string;
+  title: string;
+  description: string;
+  trailSlug: string;
+  questionCount: number;
+  prereqSlugs: string[];
+  passed: boolean;
+}
+
+/**
+ * Quizzes que o leitor de uma área vê, com pré-requisitos (pra cadeado) e se a
+ * pessoa já passou. O desbloqueio em si é checado no cliente contra o progresso.
+ */
+export async function getReaderQuizzes(
+  area: string,
+  userId: string,
+): Promise<ReaderQuiz[]> {
+  const qs = await getQuizzesByArea(area);
+  if (qs.length === 0) return [];
+  const slugs = qs.map((q) => q.slug);
+
+  const [prereqs, results, counts] = await Promise.all([
+    db
+      .select()
+      .from(quizPrereqs)
+      .where(inArray(quizPrereqs.quizSlug, slugs)),
+    db
+      .select({ quizSlug: quizResults.quizSlug })
+      .from(quizResults)
+      .where(
+        and(
+          eq(quizResults.userId, userId),
+          eq(quizResults.passed, true),
+          inArray(quizResults.quizSlug, slugs),
+        ),
+      ),
+    db
+      .select({ quizSlug: quizQuestions.quizSlug })
+      .from(quizQuestions)
+      .where(inArray(quizQuestions.quizSlug, slugs)),
+  ]);
+
+  const prMap = new Map<string, string[]>();
+  for (const p of prereqs) {
+    const arr = prMap.get(p.quizSlug) ?? [];
+    arr.push(p.chapterSlug);
+    prMap.set(p.quizSlug, arr);
+  }
+  const passedSet = new Set(results.map((r) => r.quizSlug));
+  const countMap = new Map<string, number>();
+  for (const c of counts)
+    countMap.set(c.quizSlug, (countMap.get(c.quizSlug) ?? 0) + 1);
+
+  return qs
+    .map((q) => ({
+      slug: q.slug,
+      title: q.title,
+      description: q.description,
+      trailSlug: q.trailSlug,
+      questionCount: countMap.get(q.slug) ?? 0,
+      prereqSlugs: prMap.get(q.slug) ?? [],
+      passed: passedSet.has(q.slug),
+    }))
+    .filter((q) => q.questionCount > 0); // quiz sem pergunta não aparece
 }
 
 export async function quizExists(slug: string): Promise<boolean> {
