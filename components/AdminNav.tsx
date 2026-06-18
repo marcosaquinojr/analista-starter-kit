@@ -29,6 +29,7 @@ export default function AdminNav({ isAdmin }: { isAdmin: boolean }) {
   // (que cobre /admin e o editor de capítulo /admin/[slug]).
   const nonChapter = [
     "/admin/trilhas",
+    "/admin/areas",
     "/admin/inicio",
     "/admin/midias",
     "/admin/progresso",
@@ -46,6 +47,11 @@ export default function AdminNav({ isAdmin }: { isAdmin: boolean }) {
       href: "/admin/trilhas",
       label: "Trilhas",
       active: p.startsWith("/admin/trilhas"),
+    },
+    {
+      href: "/admin/areas",
+      label: "Áreas",
+      active: p.startsWith("/admin/areas"),
     },
     {
       href: "/admin/inicio",

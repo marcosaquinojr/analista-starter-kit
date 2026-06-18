@@ -5,6 +5,13 @@ export interface TrailMeta {
   sortOrder: number;
 }
 
+export interface AreaMeta {
+  slug: string;
+  name: string;
+  description: string;
+  sortOrder: number;
+}
+
 export interface ChapterMeta {
   slug: string;
   number: string; // "01".."10"

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { asc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { chapters, trails, chapterVersions } from "@/lib/db/schema";
+import { chapters, trails, chapterVersions, areas, chapterAreas } from "@/lib/db/schema";
 import {
   verifyPassword,
   setSession,
@@ -433,6 +433,122 @@ export async function deleteTrail(formData: FormData) {
   await db.delete(trails).where(eq(trails.slug, slug));
   await logAction("trail.delete", row?.title ?? slug);
   revalidateTrails();
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Áreas (Negócios, Desenvolvimento, …) — CRUD pelo /admin/areas
+// ──────────────────────────────────────────────────────────────────────────
+
+async function areaExists(slug: string): Promise<boolean> {
+  const [row] = await db
+    .select({ slug: areas.slug })
+    .from(areas)
+    .where(eq(areas.slug, slug))
+    .limit(1);
+  return Boolean(row);
+}
+
+/** Revalida o que depende das áreas (leitor + telas de admin que as listam). */
+function revalidateAreas() {
+  revalidatePath("/");
+  revalidatePath("/admin/areas");
+  revalidatePath("/admin/usuarios");
+}
+
+export async function createArea(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  if (!(await canEdit())) return { error: "Sem permissão. Faça login de novo." };
+
+  const name = String(formData.get("name") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  if (!name) return { error: "O nome é obrigatório." };
+
+  const base = slugify(name);
+  if (!base) return { error: "Esse nome não gera um identificador válido." };
+
+  let slug = base;
+  let n = 2;
+  while (await areaExists(slug)) slug = `${base}-${n++}`;
+
+  const existing = await db.select({ sortOrder: areas.sortOrder }).from(areas);
+  const sortOrder = existing.reduce((m, r) => Math.max(m, r.sortOrder), 0) + 1;
+
+  await db.insert(areas).values({ slug, name, description, sortOrder });
+  await logAction("area.create", name);
+  revalidateAreas();
+  return { ok: true };
+}
+
+export async function updateArea(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  if (!(await canEdit())) return { error: "Sem permissão. Faça login de novo." };
+
+  const slug = String(formData.get("slug") ?? "");
+  const name = String(formData.get("name") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+
+  if (!slug || !(await areaExists(slug))) return { error: "Área inválida." };
+  if (!name) return { error: "O nome é obrigatório." };
+
+  await db.update(areas).set({ name, description }).where(eq(areas.slug, slug));
+  await logAction("area.update", name);
+  revalidateAreas();
+  return { ok: true };
+}
+
+export async function deleteArea(formData: FormData) {
+  if (!(await canEdit())) return;
+  const slug = String(formData.get("slug") ?? "");
+  if (!slug) return;
+
+  // bloqueio: não exclui área com capítulos vinculados
+  const inUse = await db
+    .select({ chapterSlug: chapterAreas.chapterSlug })
+    .from(chapterAreas)
+    .where(eq(chapterAreas.areaSlug, slug))
+    .limit(1);
+  if (inUse.length > 0) return;
+
+  const [row] = await db
+    .select({ name: areas.name })
+    .from(areas)
+    .where(eq(areas.slug, slug))
+    .limit(1);
+
+  await db.delete(areas).where(eq(areas.slug, slug));
+  await logAction("area.delete", row?.name ?? slug);
+  revalidateAreas();
+}
+
+export async function moveArea(formData: FormData) {
+  if (!(await canEdit())) return;
+  const slug = String(formData.get("slug") ?? "");
+  const dir = String(formData.get("dir") ?? "");
+
+  const all = await db
+    .select()
+    .from(areas)
+    .orderBy(asc(areas.sortOrder), asc(areas.name));
+  const i = all.findIndex((a) => a.slug === slug);
+  if (i < 0) return;
+  const j = dir === "up" ? i - 1 : i + 1;
+  if (j < 0 || j >= all.length) return;
+
+  const reordered = [...all];
+  [reordered[i], reordered[j]] = [reordered[j], reordered[i]];
+  for (let k = 0; k < reordered.length; k++) {
+    if (reordered[k].sortOrder !== k + 1) {
+      await db
+        .update(areas)
+        .set({ sortOrder: k + 1 })
+        .where(eq(areas.slug, reordered[k].slug));
+    }
+  }
+  revalidateAreas();
 }
 
 // ──────────────────────────────────────────────────────────────────────────
