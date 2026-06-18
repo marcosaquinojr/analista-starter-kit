@@ -47,19 +47,27 @@ export default function MediaManager({ initialBlobs }: { initialBlobs: BlobInfo[
   return (
     <div className="media-manager">
       {blobs.length === 0 ? (
-        <div
-          style={{
-            background: "var(--bg)",
-            border: "2px dashed var(--border2)",
-            borderRadius: "var(--radius)",
-            padding: "48px",
-            textAlign: "center",
-            color: "var(--text2)",
-          }}
-        >
-          <p style={{ fontSize: "16px", fontWeight: "600", color: "var(--ink)", margin: 0 }}>Nenhuma mídia enviada ainda</p>
-          <p style={{ fontSize: "13px", marginTop: "4px" }}>
-            As mídias aparecerão aqui conforme forem enviadas no editor de capítulos ou nos cartões de ferramentas.
+        <div className="empty-state">
+          <span className="empty-state-icon" aria-hidden>
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="9" cy="9" r="2" />
+              <path d="m21 15-3.5-3.5a2 2 0 0 0-2.8 0L6 21" />
+            </svg>
+          </span>
+          <p className="empty-state-title">Nenhuma mídia enviada ainda</p>
+          <p className="empty-state-desc">
+            As mídias aparecerão aqui conforme forem enviadas no editor de
+            capítulos ou nos cartões de ferramentas.
           </p>
         </div>
       ) : (

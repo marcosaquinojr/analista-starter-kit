@@ -594,6 +594,93 @@ main.site-main {
   background: var(--good);
   box-shadow: 0 0 0 4px var(--good-glow);
 }
+/* Card de métrica dupla (ex.: Progresso — Ativos | Conclusão média) */
+.stat-card-duo {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin-top: 12px;
+}
+.stat-card-duo > div {
+  display: flex;
+  flex-direction: column;
+}
+.stat-card-duo .divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--border);
+}
+.stat-card-metric {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.stat-card-metric small {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text3);
+}
+.stat-card-metric.accent {
+  color: var(--blue);
+}
+.stat-card-sublabel {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+
+/* Badge de trilha de onboarding (reutilizável: Progresso, Usuários) */
+.track-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--blue-faint);
+  color: var(--blue);
+  border: 1px solid rgba(20, 107, 250, 0.15);
+  white-space: nowrap;
+}
+
+/* Estado vazio reutilizável (ex.: Biblioteca de mídias sem itens) */
+.empty-state {
+  background: var(--bg);
+  border: 2px dashed var(--border2);
+  border-radius: var(--radius);
+  padding: 48px 32px;
+  text-align: center;
+  color: var(--text2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.empty-state-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--blue-50);
+  color: var(--blue);
+  margin-bottom: 8px;
+}
+.empty-state-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.empty-state-desc {
+  font-size: 13px;
+  max-width: 420px;
+  line-height: 1.5;
+}
 
 /* ── TRAIL SECTIONS ── */
 .trail {
@@ -2237,6 +2324,12 @@ main.site-main {
   flex-direction: column;
   min-width: 0;
   flex: 1 1 200px;
+}
+.progress-row-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 160px;
 }
 .progress-bar-wrap {
   display: flex;

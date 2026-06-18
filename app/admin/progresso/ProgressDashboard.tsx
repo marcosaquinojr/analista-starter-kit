@@ -94,101 +94,30 @@ export default function ProgressDashboard({ overview, chapters }: ProgressDashbo
         </p>
       </div>
 
-      {/* Cards de Estatísticas por Trilha */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-          gap: "16px",
-          marginBottom: "32px",
-        }}
-      >
-        {/* Card Geral */}
-        <div className="progress-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: "8px" }}>
-          <span
-            style={{
-              fontSize: "11px",
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-              color: "var(--text3)",
-            }}
-          >
-            Visão Geral
-          </span>
-          <div style={{ display: "flex", gap: "24px", marginTop: "4px" }}>
-            <div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--ink)" }}>
-                {allStats.activeCount} <span style={{ fontSize: "14px", fontWeight: 400, color: "var(--text3)" }}>/ {allStats.totalCount}</span>
+      {/* Cards de estatísticas por trilha */}
+      <div className="stat-card-grid">
+        {[
+          { label: "Visão geral", s: allStats },
+          { label: "Negócios / Analista", s: negociosStats },
+          { label: "Desenvolvimento / Dev", s: devStats },
+        ].map((c) => (
+          <div className="stat-card" key={c.label}>
+            <span className="stat-card-label">{c.label}</span>
+            <div className="stat-card-duo">
+              <div>
+                <div className="stat-card-metric">
+                  {c.s.activeCount} <small>/ {c.s.totalCount}</small>
+                </div>
+                <div className="stat-card-sublabel">Ativos</div>
               </div>
-              <div style={{ fontSize: "11px", color: "var(--text3)", marginTop: "2px" }}>Ativos</div>
-            </div>
-            <div style={{ borderLeft: "1px solid var(--border)", paddingLeft: "24px" }}>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--blue)" }}>
-                {allStats.avgPct}%
+              <div className="divider" />
+              <div>
+                <div className="stat-card-metric accent">{c.s.avgPct}%</div>
+                <div className="stat-card-sublabel">Conclusão média</div>
               </div>
-              <div style={{ fontSize: "11px", color: "var(--text3)", marginTop: "2px" }}>Conclusão Média</div>
             </div>
           </div>
-        </div>
-
-        {/* Card Negócios / Analista */}
-        <div className="progress-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: "8px" }}>
-          <span
-            style={{
-              fontSize: "11px",
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-              color: "var(--text3)",
-            }}
-          >
-            Negócios / Analista
-          </span>
-          <div style={{ display: "flex", gap: "24px", marginTop: "4px" }}>
-            <div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--ink)" }}>
-                {negociosStats.activeCount} <span style={{ fontSize: "14px", fontWeight: 400, color: "var(--text3)" }}>/ {negociosStats.totalCount}</span>
-              </div>
-              <div style={{ fontSize: "11px", color: "var(--text3)", marginTop: "2px" }}>Ativos</div>
-            </div>
-            <div style={{ borderLeft: "1px solid var(--border)", paddingLeft: "24px" }}>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--blue)" }}>
-                {negociosStats.avgPct}%
-              </div>
-              <div style={{ fontSize: "11px", color: "var(--text3)", marginTop: "2px" }}>Conclusão Média</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Card Desenvolvimento / Dev */}
-        <div className="progress-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: "8px" }}>
-          <span
-            style={{
-              fontSize: "11px",
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-              color: "var(--text3)",
-            }}
-          >
-            Desenvolvimento / Dev
-          </span>
-          <div style={{ display: "flex", gap: "24px", marginTop: "4px" }}>
-            <div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--ink)" }}>
-                {devStats.activeCount} <span style={{ fontSize: "14px", fontWeight: 400, color: "var(--text3)" }}>/ {devStats.totalCount}</span>
-              </div>
-              <div style={{ fontSize: "11px", color: "var(--text3)", marginTop: "2px" }}>Ativos</div>
-            </div>
-            <div style={{ borderLeft: "1px solid var(--border)", paddingLeft: "24px" }}>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--blue)" }}>
-                {devStats.avgPct}%
-              </div>
-              <div style={{ fontSize: "11px", color: "var(--text3)", marginTop: "2px" }}>Conclusão Média</div>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Filtros de Trilha */}
@@ -236,22 +165,11 @@ export default function ProgressDashboard({ overview, chapters }: ProgressDashbo
                   <span className="admin-row-title">{u.name || u.email}</span>
                   <span className="admin-row-desc">{u.email}</span>
                 </div>
-                <div style={{ display: "flex", gap: "8px", alignItems: "center", minWidth: "160px" }}>
+                <div className="progress-row-badges">
                   <span className={`user-role-badge role-${u.role}`}>
                     {ROLE_LABEL[u.role] ?? u.role}
                   </span>
-                  <span
-                    className="user-role-badge"
-                    style={{
-                      backgroundColor: "var(--blue-faint)",
-                      color: "var(--blue)",
-                      border: "1px solid rgba(20, 107, 250, 0.15)",
-                      textTransform: "uppercase",
-                      fontSize: "10px",
-                      fontWeight: "700",
-                      padding: "3px 8px"
-                    }}
-                  >
+                  <span className="track-badge">
                     {u.onboardingTrack === "negocios" ? "Negócios" : "Dev"}
                   </span>
                 </div>

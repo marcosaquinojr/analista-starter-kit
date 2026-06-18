@@ -194,18 +194,7 @@ export default function UsersManager({
                       <span className={`user-role-badge role-${u.role}`}>
                         {ROLE_LABEL[u.role] ?? u.role}
                       </span>
-                      <span
-                        className="user-role-badge"
-                        style={{
-                          backgroundColor: "var(--blue-faint)",
-                          color: "var(--blue)",
-                          border: "1px solid rgba(20, 107, 250, 0.15)",
-                          textTransform: "uppercase",
-                          fontSize: "10px",
-                          fontWeight: "700",
-                          padding: "3px 8px"
-                        }}
-                      >
+                      <span className="track-badge">
                         {u.onboardingTrack === "negocios" ? "Negócios" : "Dev"}
                       </span>
                     </div>
