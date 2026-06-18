@@ -738,6 +738,166 @@ main.site-main {
   margin-top: 6px;
 }
 
+/* ── QUIZ · editor (construtor de perguntas) ── */
+.quiz-builder {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.quiz-builder-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.quiz-q {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+}
+.quiz-q-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.quiz-q-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--blue);
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.quiz-q-type {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+}
+.quiz-q-text {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+.quiz-q-text:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-glow);
+}
+.quiz-opts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.quiz-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  border-left-width: 5px;
+  background: var(--bg2);
+}
+.quiz-opt input[type="radio"] {
+  accent-color: var(--blue);
+  flex-shrink: 0;
+}
+.quiz-opt-text {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--ink);
+}
+.quiz-opt-text:focus {
+  outline: none;
+}
+.quiz-opt-x {
+  border: none;
+  background: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+.quiz-opt-x:hover {
+  color: var(--bad);
+}
+/* cores estilo Kahoot (também usadas na tela de jogar) */
+.tile-red {
+  border-left-color: #e21b3c;
+}
+.tile-blue {
+  border-left-color: #1368ce;
+}
+.tile-gold {
+  border-left-color: #d89e00;
+}
+.tile-green {
+  border-left-color: #26890c;
+}
+/* lista de quizzes na home do admin */
+.admin-quiz-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+.admin-quiz-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--blue);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+.admin-quiz-row:hover {
+  border-color: var(--border2);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.admin-quiz-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--blue);
+  background: var(--blue-50);
+  padding: 3px 7px;
+  border-radius: 5px;
+}
+.admin-quiz-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+  flex: 1;
+  min-width: 0;
+}
+.admin-quiz-edit {
+  font-size: 12px;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
 /* ── HOME · hub pessoal (leitor logado) ── */
 .home-hub {
   position: relative;

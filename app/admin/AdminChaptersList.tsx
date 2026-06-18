@@ -3,21 +3,26 @@
 import Link from "next/link";
 import { useState } from "react";
 import type { ChapterMeta, TrailMeta } from "@/lib/types";
-import { saveChaptersOrder, createChapter } from "@/app/admin/actions";
+import type { QuizMeta } from "@/lib/quizzes";
+import { saveChaptersOrder, createChapter, createQuiz } from "@/app/admin/actions";
 import { toast } from "@/lib/toast-store";
 
 export default function AdminChaptersList({
   initialChapters,
   trails,
+  quizzes = [],
 }: {
   initialChapters: ChapterMeta[];
   trails: TrailMeta[];
+  quizzes?: QuizMeta[];
 }) {
   const [chapters, setChapters] = useState(initialChapters);
   const [draggedSlug, setDraggedSlug] = useState<string | null>(null);
 
   const byTrail = (trailSlug: string) =>
     chapters.filter((c) => c.trailSlug === trailSlug);
+  const quizzesOf = (trailSlug: string) =>
+    quizzes.filter((q) => q.trailSlug === trailSlug);
 
   const handleDragStart = (e: React.DragEvent, slug: string) => {
     setDraggedSlug(slug);
@@ -89,12 +94,20 @@ export default function AdminChaptersList({
           >
             <div className="admin-trail-head">
               <div className="sidebar-label">{trail.title}</div>
-              <form action={createChapter}>
-                <input type="hidden" name="trail" value={trail.slug} />
-                <button type="submit" className="trail-btn">
-                  + Novo capítulo
-                </button>
-              </form>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <form action={createChapter}>
+                  <input type="hidden" name="trail" value={trail.slug} />
+                  <button type="submit" className="trail-btn">
+                    + Novo capítulo
+                  </button>
+                </form>
+                <form action={createQuiz}>
+                  <input type="hidden" name="trail" value={trail.slug} />
+                  <button type="submit" className="trail-btn">
+                    + Novo quiz
+                  </button>
+                </form>
+              </div>
             </div>
             {items.length === 0 ? (
               <p className="admin-trail-empty" style={{ border: "2px dashed #cbd5e1", padding: "16px", borderRadius: "6px", textAlign: "center", color: "#64748b" }}>
@@ -177,6 +190,22 @@ export default function AdminChaptersList({
                     </div>
                   );
                 })}
+              </div>
+            )}
+
+            {quizzesOf(trail.slug).length > 0 && (
+              <div className="admin-quiz-list">
+                {quizzesOf(trail.slug).map((q) => (
+                  <Link
+                    key={q.slug}
+                    href={`/admin/quiz/${q.slug}`}
+                    className="admin-quiz-row"
+                  >
+                    <span className="admin-quiz-badge">QUIZ</span>
+                    <span className="admin-quiz-title">{q.title}</span>
+                    <span className="admin-quiz-edit">Editar →</span>
+                  </Link>
+                ))}
               </div>
             )}
           </section>

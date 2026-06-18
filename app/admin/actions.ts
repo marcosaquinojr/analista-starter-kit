@@ -5,7 +5,18 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { asc, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { chapters, trails, chapterVersions, areas, chapterAreas } from "@/lib/db/schema";
+import {
+  chapters,
+  trails,
+  chapterVersions,
+  areas,
+  chapterAreas,
+  quizzes,
+  quizQuestions,
+  quizPrereqs,
+  quizAreas,
+} from "@/lib/db/schema";
+import { quizExists } from "@/lib/quizzes";
 import {
   verifyPassword,
   setSession,
@@ -565,6 +576,165 @@ export async function moveArea(formData: FormData) {
     }
   }
   revalidateAreas();
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Quizzes — criar/salvar/excluir (/admin/quiz/[slug])
+// ──────────────────────────────────────────────────────────────────────────
+
+function clampInt(v: unknown, min: number, max: number, fallback: number): number {
+  const n = Number.parseInt(String(v ?? ""), 10);
+  if (Number.isNaN(n)) return fallback;
+  return Math.min(max, Math.max(min, n));
+}
+
+/** Cria um quiz vazio numa trilha e leva direto pro editor. */
+export async function createQuiz(formData: FormData) {
+  const me = await canEdit();
+  if (!me) return;
+  const trailSlug = String(formData.get("trail") ?? "").trim();
+  if (!(await trailExists(trailSlug))) return;
+
+  const base = "novo-quiz";
+  let slug = base;
+  let n = 2;
+  while (await quizExists(slug)) slug = `${base}-${n++}`;
+
+  const all = await db.select({ sortOrder: quizzes.sortOrder }).from(quizzes);
+  const maxSort = all.reduce((m, r) => Math.max(m, r.sortOrder), 0);
+
+  await db.insert(quizzes).values({
+    slug,
+    title: "Novo quiz",
+    description: "",
+    trailSlug,
+    passThreshold: 70,
+    secondsPerQuestion: 20,
+    sortOrder: maxSort + 1,
+    updatedAt: now(),
+    updatedBy: me.name || me.email,
+  });
+  await logAction("quiz.create", "Novo quiz", `/admin/quiz/${slug}`);
+  revalidatePath("/admin");
+  redirect(`/admin/quiz/${slug}`);
+}
+
+interface IncomingQuestion {
+  type?: string;
+  text?: string;
+  options?: { text?: string; correct?: boolean }[];
+}
+
+/** Salva o quiz inteiro: meta + áreas + pré-requisitos + perguntas (substitui). */
+export async function saveQuiz(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const me = await canEdit();
+  if (!me) return { error: "Sem permissão. Faça login de novo." };
+
+  const slug = String(formData.get("slug") ?? "");
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const trailSlug = String(formData.get("trail") ?? "").trim();
+  const passThreshold = clampInt(formData.get("passThreshold"), 0, 100, 70);
+  const secondsPerQuestion = clampInt(formData.get("secondsPerQuestion"), 5, 120, 20);
+  const areaSlugs = formData.getAll("areas").map(String).filter(Boolean);
+  const prereqSlugs = formData.getAll("prereqs").map(String).filter(Boolean);
+
+  if (!slug || !(await quizExists(slug))) return { error: "Quiz inválido." };
+  if (!title) return { error: "O título é obrigatório." };
+  if (!(await trailExists(trailSlug))) return { error: "Trilha inválida." };
+
+  let raw: unknown;
+  try {
+    raw = JSON.parse(String(formData.get("questions") ?? "[]"));
+  } catch {
+    raw = [];
+  }
+  const cleanQuestions: { type: string; text: string; options: { text: string; correct: boolean }[] }[] = [];
+  for (const q of Array.isArray(raw) ? (raw as IncomingQuestion[]) : []) {
+    const text = String(q.text ?? "").trim();
+    const type = q.type === "tf" ? "tf" : "mc";
+    const options = Array.isArray(q.options)
+      ? q.options
+          .map((o) => ({ text: String(o.text ?? "").trim(), correct: Boolean(o.correct) }))
+          .filter((o) => o.text)
+      : [];
+    if (!text || options.length < 2 || !options.some((o) => o.correct)) continue;
+    cleanQuestions.push({ type, text, options });
+  }
+  if (cleanQuestions.length === 0) {
+    return { error: "Adicione ao menos uma pergunta válida (enunciado, 2+ opções e uma correta)." };
+  }
+
+  await db
+    .update(quizzes)
+    .set({
+      title,
+      description,
+      trailSlug,
+      passThreshold,
+      secondsPerQuestion,
+      updatedAt: now(),
+      updatedBy: me.name || me.email,
+    })
+    .where(eq(quizzes.slug, slug));
+
+  // áreas (substitui, validando)
+  const validAreas = areaSlugs.length
+    ? (await db.select({ slug: areas.slug }).from(areas).where(inArray(areas.slug, areaSlugs))).map((r) => r.slug)
+    : [];
+  await db.delete(quizAreas).where(eq(quizAreas.quizSlug, slug));
+  if (validAreas.length) {
+    await db.insert(quizAreas).values(validAreas.map((a) => ({ quizSlug: slug, areaSlug: a })));
+  }
+
+  // pré-requisitos (substitui, validando contra capítulos existentes)
+  const validPrereqs = prereqSlugs.length
+    ? (await db.select({ slug: chapters.slug }).from(chapters).where(inArray(chapters.slug, prereqSlugs))).map((r) => r.slug)
+    : [];
+  await db.delete(quizPrereqs).where(eq(quizPrereqs.quizSlug, slug));
+  if (validPrereqs.length) {
+    await db.insert(quizPrereqs).values(validPrereqs.map((c) => ({ quizSlug: slug, chapterSlug: c })));
+  }
+
+  // perguntas (substitui o conjunto)
+  await db.delete(quizQuestions).where(eq(quizQuestions.quizSlug, slug));
+  await db.insert(quizQuestions).values(
+    cleanQuestions.map((q, i) => ({
+      id: randomUUID(),
+      quizSlug: slug,
+      type: q.type,
+      text: q.text,
+      options: q.options,
+      points: 1000,
+      sortOrder: i + 1,
+    })),
+  );
+
+  await logAction("quiz.update", title, `/admin/quiz/${slug}`);
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath(`/admin/quiz/${slug}`);
+  return { ok: true };
+}
+
+export async function deleteQuiz(formData: FormData) {
+  if (!(await canEdit())) return;
+  const slug = String(formData.get("slug") ?? "");
+  if (!slug) return;
+  const [row] = await db
+    .select({ title: quizzes.title })
+    .from(quizzes)
+    .where(eq(quizzes.slug, slug))
+    .limit(1);
+  // cascade remove perguntas/pré-requisitos/áreas/resultados
+  await db.delete(quizzes).where(eq(quizzes.slug, slug));
+  await logAction("quiz.delete", row?.title ?? slug);
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect("/admin");
 }
 
 // ──────────────────────────────────────────────────────────────────────────

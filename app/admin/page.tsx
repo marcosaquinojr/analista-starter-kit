@@ -2,11 +2,16 @@ import AdminChrome from "@/components/AdminChrome";
 import AdminChaptersList from "./AdminChaptersList";
 import { getChapters } from "@/lib/chapters";
 import { getTrails } from "@/lib/trails";
+import { getQuizzes } from "@/lib/quizzes";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminHome() {
-  const [chapters, trails] = await Promise.all([getChapters(), getTrails()]);
+  const [chapters, trails, quizzes] = await Promise.all([
+    getChapters(),
+    getTrails(),
+    getQuizzes(),
+  ]);
 
   return (
     <AdminChrome>
@@ -37,7 +42,11 @@ export default async function AdminHome() {
         </div>
       </div>
 
-      <AdminChaptersList initialChapters={chapters} trails={trails} />
+      <AdminChaptersList
+        initialChapters={chapters}
+        trails={trails}
+        quizzes={quizzes}
+      />
     </AdminChrome>
   );
 }
