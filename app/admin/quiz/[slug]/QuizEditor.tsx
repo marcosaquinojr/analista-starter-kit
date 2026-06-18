@@ -128,7 +128,7 @@ export default function QuizEditor({
       <input type="hidden" name="slug" value={quiz.slug} />
       <input type="hidden" name="questions" value={JSON.stringify(questions)} />
 
-      <div className="editor-meta">
+      <div className="editor-meta" style={{ gap: "16px" }}>
         <label className="field field-grow">
           <span>Título</span>
           <input
@@ -183,10 +183,8 @@ export default function QuizEditor({
             placeholder="Aparece na capa do quiz"
           />
         </label>
-      </div>
 
-      <div className="editor-meta" style={{ flexDirection: "column", gap: "16px" }}>
-        <div className="field field-full">
+        <div className="field field-full" style={{ marginTop: "4px" }}>
           <span>Áreas</span>
           {allAreas.length === 0 ? (
             <span className="area-checks-empty">Crie áreas em Conteúdo → Áreas.</span>
@@ -215,7 +213,7 @@ export default function QuizEditor({
           )}
         </div>
 
-        <div className="field field-full">
+        <div className="field field-full" style={{ marginTop: "4px" }}>
           <span>Pré-requisitos (capítulos que liberam o quiz)</span>
           {allChapters.length === 0 ? (
             <span className="area-checks-empty">Nenhum capítulo ainda.</span>
