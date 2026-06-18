@@ -1,15 +1,22 @@
 "use client";
 
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { buildExtensions } from "./extensions";
+import { generateAIContent } from "@/app/admin/actions";
+import { toast } from "@/lib/toast-store";
 
 type Props = {
   initialHtml: string;
   onChange: (html: string) => void;
+  isAiEnabled?: boolean;
 };
 
-export default function RichEditor({ initialHtml, onChange }: Props) {
+export default function RichEditor({
+  initialHtml,
+  onChange,
+  isAiEnabled = false,
+}: Props) {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: buildExtensions(),
@@ -22,6 +29,37 @@ export default function RichEditor({ initialHtml, onChange }: Props) {
 
   // re-renderiza a toolbar quando a seleção/estado muda
   const [, force] = useReducer((x) => x + 1, 0);
+  const [aiMenuOpen, setAiMenuOpen] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  const handleAICall = async (promptType: string) => {
+    if (!editor) return;
+    const { from, to } = editor.state.selection;
+    const selectedText = editor.state.doc.textBetween(from, to, " ");
+    if (!selectedText.trim()) {
+      toast.error("Por favor, selecione algum texto no editor primeiro!");
+      setAiMenuOpen(false);
+      return;
+    }
+
+    setAiLoading(true);
+    setAiMenuOpen(false);
+    toast.success("Enviando solicitação ao assistente de IA...");
+
+    try {
+      const res = await generateAIContent(promptType, selectedText);
+      if (res.error) {
+        toast.error(res.error);
+      } else if (res.text) {
+        editor.chain().focus().insertContent(res.text).run();
+        toast.success("Texto processado com sucesso!");
+      }
+    } catch {
+      toast.error("Ocorreu um erro ao processar o texto via IA.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
   useEffect(() => {
     if (!editor) return;
     const handler = () => force();
@@ -30,6 +68,14 @@ export default function RichEditor({ initialHtml, onChange }: Props) {
       editor.off("transaction", handler);
     };
   }, [editor]);
+
+  // Atualiza o editor se o HTML inicial mudar de fora (ex: restauração de rascunho)
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return;
+    if (editor.getHTML() !== initialHtml) {
+      editor.commands.setContent(initialHtml);
+    }
+  }, [editor, initialHtml]);
 
   if (!editor) return <div className="editor-loading">Carregando editor…</div>;
 
@@ -211,6 +257,53 @@ export default function RichEditor({ initialHtml, onChange }: Props) {
             + Tabela
           </Btn>
         </div>
+
+        {isAiEnabled && (
+          <div className="tb-group" style={{ position: "relative" }}>
+            <button
+              type="button"
+              className={`tb-btn ${aiMenuOpen ? "active" : ""}`}
+              style={{ display: "flex", alignItems: "center", gap: "4px" }}
+              onClick={() => setAiMenuOpen(!aiMenuOpen)}
+              disabled={aiLoading}
+            >
+              {aiLoading ? "⏳ Processando..." : "✨ Assistente de IA"}
+            </button>
+            
+            {aiMenuOpen && (
+              <div className="rich-ai-dropdown">
+                <button
+                  type="button"
+                  className="rich-ai-item"
+                  onClick={() => handleAICall("acceptance_criteria")}
+                >
+                  BDD: Critérios de Aceite
+                </button>
+                <button
+                  type="button"
+                  className="rich-ai-item"
+                  onClick={() => handleAICall("simplify")}
+                >
+                  Simplificar Jargão Técnico
+                </button>
+                <button
+                  type="button"
+                  className="rich-ai-item"
+                  onClick={() => handleAICall("summarize")}
+                >
+                  Gerar Resumo Curto
+                </button>
+                <button
+                  type="button"
+                  className="rich-ai-item"
+                  onClick={() => handleAICall("expand")}
+                >
+                  Melhorar / Expandir Redação
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {inCallout && (
           <div className="tb-group tb-variants">

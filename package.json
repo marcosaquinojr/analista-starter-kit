@@ -14,6 +14,8 @@
     "db:migrate:settings": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-settings.ts",
     "db:migrate:audit": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-audit.ts",
     "db:migrate:avatar": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-avatar.ts",
+    "db:migrate:tracks": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-tracks.ts",
+    "db:migrate:versions": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/migrate-chapter-versions.ts",
     "users:bootstrap": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/create-admin.ts",
     "db:seed": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/seed.ts",
     "db:seed:force": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/seed.ts --force"

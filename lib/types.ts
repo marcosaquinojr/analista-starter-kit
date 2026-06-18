@@ -14,8 +14,20 @@ export interface ChapterMeta {
   readTime: string;
   updatedAt: string; // string de exibição: dd/mm/aaaa às HH:mm
   updatedBy?: string; // nome de quem fez a última atualização (vazio em dados seed)
+  onboardingTrack?: string;
 }
 
 export interface Chapter extends ChapterMeta {
   bodyHtml: string;
+}
+
+export interface ChapterVersion {
+  id: string;
+  chapterSlug: string;
+  title: string;
+  description: string;
+  bodyHtml: string;
+  updatedAt: string;
+  updatedBy: string;
+  revisionNote: string;
 }

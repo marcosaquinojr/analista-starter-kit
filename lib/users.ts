@@ -50,6 +50,7 @@ export async function createInvite(opts: {
   email: string;
   name: string;
   role: Role;
+  onboardingTrack?: string;
 }): Promise<string> {
   const token = newInviteToken();
   await db.insert(users).values({
@@ -62,6 +63,7 @@ export async function createInvite(opts: {
     inviteExpiresAt: new Date(Date.now() + 7 * 86400000).toISOString(),
     status: "invited",
     createdAt: new Date().toISOString(),
+    onboardingTrack: opts.onboardingTrack ?? "negocios",
   });
   return token;
 }
@@ -104,6 +106,10 @@ export async function acceptInvite(
 
 export async function setUserRole(id: string, role: Role): Promise<void> {
   await db.update(users).set({ role }).where(eq(users.id, id));
+}
+
+export async function setUserTrack(id: string, track: string): Promise<void> {
+  await db.update(users).set({ onboardingTrack: track }).where(eq(users.id, id));
 }
 
 /** A própria pessoa edita seu nome de exibição (usado em /conta). */

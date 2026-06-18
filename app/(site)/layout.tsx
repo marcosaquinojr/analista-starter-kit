@@ -15,16 +15,24 @@ export default async function SiteLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Leitura agora exige login: identifica a pessoa pra salvar o progresso.
   const user = await getSessionUser();
-  if (!user) redirect("/admin/login");
+  if (!user) {
+    return (
+      <>
+        {children}
+        <Toaster />
+      </>
+    );
+  }
 
-  const [chapters, trails, completed, lastUpdated, row] = await Promise.all([
-    getChapters(),
+  const row = await getUserById(user.uid);
+  const track = row?.onboardingTrack ?? "negocios";
+
+  const [chapters, trails, completed, lastUpdated] = await Promise.all([
+    getChapters(track),
     getTrails(),
     getUserProgress(user.uid),
     getLastUpdated(),
-    getUserById(user.uid),
   ]);
 
   return (
@@ -37,6 +45,7 @@ export default async function SiteLayout({
           name: row?.name ?? "",
           role: user.role,
           avatarUrl: row?.avatarUrl ?? "",
+          onboardingTrack: track,
         }}
         lastUpdated={lastUpdated}
       >

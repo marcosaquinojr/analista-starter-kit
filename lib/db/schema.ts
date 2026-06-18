@@ -33,6 +33,7 @@ export const chapters = pgTable("chapters", {
   updatedAt: text("updated_at").notNull(),
   // nome de quem fez a última atualização (snapshot p/ exibição)
   updatedBy: text("updated_by").notNull().default(""),
+  onboardingTrack: text("onboarding_track").notNull().default("negocios"),
 });
 
 /**
@@ -52,6 +53,7 @@ export const users = pgTable("users", {
   inviteExpiresAt: text("invite_expires_at"),
   status: text("status").notNull(), // 'invited' | 'active'
   createdAt: text("created_at").notNull(),
+  onboardingTrack: text("onboarding_track").notNull().default("negocios"),
 });
 
 /**
@@ -100,6 +102,19 @@ export const auditLog = pgTable("audit_log", {
   details: text("details").notNull().default(""),
 });
 
+export const chapterVersions = pgTable("chapter_versions", {
+  id: text("id").primaryKey(),
+  chapterSlug: text("chapter_slug")
+    .notNull()
+    .references(() => chapters.slug, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  bodyHtml: text("body_html").notNull(),
+  updatedAt: text("updated_at").notNull(),
+  updatedBy: text("updated_by").notNull(),
+  revisionNote: text("revision_note").notNull().default(""),
+});
+
 export type TrailRow = typeof trails.$inferSelect;
 export type NewTrailRow = typeof trails.$inferInsert;
 export type ChapterRow = typeof chapters.$inferSelect;
@@ -108,3 +123,5 @@ export type UserRow = typeof users.$inferSelect;
 export type NewUserRow = typeof users.$inferInsert;
 export type SettingRow = typeof settings.$inferSelect;
 export type AuditRow = typeof auditLog.$inferSelect;
+export type ChapterVersionRow = typeof chapterVersions.$inferSelect;
+export type NewChapterVersionRow = typeof chapterVersions.$inferInsert;

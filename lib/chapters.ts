@@ -1,8 +1,10 @@
 import "server-only";
-import { asc, eq } from "drizzle-orm";
+import { asc, desc, eq, or } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { chapters } from "@/lib/db/schema";
-import type { Chapter, ChapterMeta } from "@/lib/types";
+import { chapters, trails, chapterVersions } from "@/lib/db/schema";
+import type { Chapter, ChapterMeta, ChapterVersion } from "@/lib/types";
+
+const pad2 = (n: number) => String(n).padStart(2, "0");
 
 /**
  * Camada de acesso a capítulos — agora lê do Postgres (Neon) via Drizzle.
@@ -19,9 +21,22 @@ const metaColumns = {
   readTime: chapters.readTime,
   updatedAt: chapters.updatedAt,
   updatedBy: chapters.updatedBy,
+  onboardingTrack: chapters.onboardingTrack,
 };
 
-export async function getChapters(): Promise<ChapterMeta[]> {
+export async function getChapters(track?: string): Promise<ChapterMeta[]> {
+  if (track) {
+    return db
+      .select(metaColumns)
+      .from(chapters)
+      .where(
+        or(
+          eq(chapters.onboardingTrack, track),
+          eq(chapters.onboardingTrack, "ambos")
+        )
+      )
+      .orderBy(asc(chapters.sortOrder));
+  }
   return db
     .select(metaColumns)
     .from(chapters)
@@ -45,6 +60,7 @@ export async function getChapter(slug: string): Promise<Chapter | null> {
     updatedAt: row.updatedAt,
     updatedBy: row.updatedBy,
     bodyHtml: row.bodyHtml,
+    onboardingTrack: row.onboardingTrack,
   };
 }
 
@@ -71,4 +87,12 @@ export async function getChapterSlugs(): Promise<string[]> {
     .from(chapters)
     .orderBy(asc(chapters.sortOrder));
   return rows.map((r) => r.slug);
+}
+
+export async function getChapterVersions(chapterSlug: string): Promise<ChapterVersion[]> {
+  return db
+    .select()
+    .from(chapterVersions)
+    .where(eq(chapterVersions.chapterSlug, chapterSlug))
+    .orderBy(desc(chapterVersions.updatedAt));
 }

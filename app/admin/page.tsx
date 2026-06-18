@@ -1,6 +1,6 @@
 import Link from "next/link";
 import AdminChrome from "@/components/AdminChrome";
-import { createChapter } from "@/app/admin/actions";
+import AdminChaptersList from "./AdminChaptersList";
 import { getChapters } from "@/lib/chapters";
 import { getTrails } from "@/lib/trails";
 
@@ -25,50 +25,84 @@ export default async function AdminHome() {
         </div>
         <p>
           Edite o conteúdo do manual. As mudanças vão pro ar na hora, sem
-          publicar de novo.
+          publicar de novo. Arraste e solte os capítulos para reordená-los ou
+          movê-los entre as trilhas.
         </p>
       </div>
 
-      {trails.map((trail) => {
-        const items = chapters.filter((c) => c.trailSlug === trail.slug);
-        return (
-          <section className="admin-trail" key={trail.slug}>
-            <div className="admin-trail-head">
-              <div className="sidebar-label">{trail.title}</div>
-              <form action={createChapter}>
-                <input type="hidden" name="trail" value={trail.slug} />
-                <button type="submit" className="trail-btn">
-                  + Novo capítulo
-                </button>
-              </form>
-            </div>
-            {items.length === 0 ? (
-              <p className="admin-trail-empty">
-                Trilha sem capítulos ainda.
-              </p>
-            ) : (
-              <div className="admin-list">
-                {items.map((c) => (
-                  <Link
-                    key={c.slug}
-                    href={`/admin/${c.slug}`}
-                    className="admin-row"
-                  >
-                    <span className="admin-row-num">{c.number}</span>
-                    <span className="admin-row-body">
-                      <span className="admin-row-title">{c.title}</span>
-                      <span className="admin-row-desc">{c.description}</span>
-                    </span>
-                    <span className="admin-row-meta">
-                      Atualizado {c.updatedAt} →
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </section>
-        );
-      })}
+      {/* Stats Cards Section */}
+      <div
+        className="admin-stats-grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: "16px",
+          marginBottom: "28px",
+        }}
+      >
+        <div
+          style={{
+            background: "var(--bg)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius)",
+            padding: "20px",
+            boxShadow: "var(--shadow-sm)",
+          }}
+        >
+          <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "var(--text2)", letterSpacing: "0.05em" }}>
+            Total de Capítulos
+          </span>
+          <h2 style={{ fontSize: "32px", fontWeight: "800", color: "var(--ink)", margin: "4px 0 0 0" }}>
+            {chapters.length}
+          </h2>
+        </div>
+
+        <div
+          style={{
+            background: "var(--bg)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius)",
+            padding: "20px",
+            boxShadow: "var(--shadow-sm)",
+          }}
+        >
+          <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "var(--text2)", letterSpacing: "0.05em" }}>
+            Trilhas Organizadoras
+          </span>
+          <h2 style={{ fontSize: "32px", fontWeight: "800", color: "var(--ink)", margin: "4px 0 0 0" }}>
+            {trails.length}
+          </h2>
+        </div>
+
+        <div
+          style={{
+            background: "var(--bg)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius)",
+            padding: "20px",
+            boxShadow: "var(--shadow-sm)",
+          }}
+        >
+          <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "var(--text2)", letterSpacing: "0.05em" }}>
+            Status do Portal
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "12px" }}>
+            <span
+              style={{
+                width: "10px",
+                height: "10px",
+                borderRadius: "50%",
+                background: "var(--good)",
+                display: "inline-block",
+                boxShadow: "0 0 8px var(--good)",
+              }}
+            />
+            <span style={{ fontSize: "14px", fontWeight: "600", color: "var(--ink)" }}>Pronto para Leitura</span>
+          </div>
+        </div>
+      </div>
+
+      <AdminChaptersList initialChapters={chapters} trails={trails} />
     </AdminChrome>
   );
 }

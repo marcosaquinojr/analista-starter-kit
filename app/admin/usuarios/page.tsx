@@ -22,6 +22,7 @@ export default async function UsersAdminPage() {
           role: u.role,
           status: u.status,
           createdAt: u.createdAt,
+          onboardingTrack: u.onboardingTrack,
         }))}
         currentUserId={session?.uid ?? ""}
       />

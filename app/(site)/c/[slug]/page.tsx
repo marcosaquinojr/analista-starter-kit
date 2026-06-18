@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getChapter, getChapters, getChapterSlugs } from "@/lib/chapters";
 import { getTrails } from "@/lib/trails";
 import ChapterComplete from "@/components/ChapterComplete";
+import { getSessionUser } from "@/lib/auth";
+import { getUserById } from "@/lib/users";
 
 export async function generateStaticParams() {
   const slugs = await getChapterSlugs();
@@ -29,11 +31,22 @@ export default async function ChapterPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const user = await getSessionUser();
+  if (!user) redirect("/admin/login");
+
+  const row = await getUserById(user.uid);
+  const track = row?.onboardingTrack ?? "negocios";
+
   const { slug } = await params;
   const chapter = await getChapter(slug);
   if (!chapter) notFound();
 
-  const [all, trails] = await Promise.all([getChapters(), getTrails()]);
+  // Bloqueia acesso a capítulos de outra trilha
+  if (chapter.onboardingTrack !== "ambos" && chapter.onboardingTrack !== track) {
+    notFound();
+  }
+
+  const [all, trails] = await Promise.all([getChapters(track), getTrails()]);
   const idx = all.findIndex((c) => c.slug === slug);
   const prev = idx > 0 ? all[idx - 1] : null;
   const next = idx < all.length - 1 ? all[idx + 1] : null;

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { asc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { chapters, trails } from "@/lib/db/schema";
+import { chapters, trails, chapterVersions } from "@/lib/db/schema";
 import {
   verifyPassword,
   setSession,
@@ -24,11 +24,12 @@ import {
   setUserRole,
   setUserProfile,
   countAdmins,
+  setUserTrack,
 } from "@/lib/users";
 import { saveHomeContent } from "@/lib/settings";
 import { logAction } from "@/lib/audit";
 import { toggleProgress } from "@/lib/progress";
-import { put } from "@vercel/blob";
+import { put, list, del } from "@vercel/blob";
 import { randomUUID } from "node:crypto";
 import { slugify } from "@/lib/slug";
 
@@ -72,19 +73,48 @@ function revalidateTrails() {
   revalidatePath("/admin/trilhas");
 }
 
+const loginAttempts = new Map<string, { count: number; lockUntil: number }>();
+
+function isRateLimited(email: string): boolean {
+  const attempt = loginAttempts.get(email);
+  if (!attempt) return false;
+  if (Date.now() < attempt.lockUntil) return true;
+  return false;
+}
+
+function recordFailure(email: string) {
+  const attempt = loginAttempts.get(email) ?? { count: 0, lockUntil: 0 };
+  attempt.count += 1;
+  if (attempt.count >= 5) {
+    attempt.lockUntil = Date.now() + 60 * 1000 * 15; // 15 minutos
+  }
+  loginAttempts.set(email, attempt);
+}
+
+function recordSuccess(email: string) {
+  loginAttempts.delete(email);
+}
+
 export async function login(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const email = String(formData.get("email") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   if (!email || !password) return { error: "Informe e-mail e senha." };
+
+  if (isRateLimited(email)) {
+    return { error: "Muitas tentativas falhas. Conta bloqueada temporariamente por 15 minutos." };
+  }
 
   const user = await getUserByEmail(email);
   // Mensagem genérica de propósito (não revela se o e-mail existe).
   if (!user || user.status !== "active" || !verifyPassword(password, user.passwordHash)) {
+    recordFailure(email);
     return { error: "E-mail ou senha incorretos." };
   }
+
+  recordSuccess(email);
 
   await setSession({
     uid: user.id,
@@ -159,12 +189,15 @@ export async function saveChapter(
   const trailSlug = String(formData.get("trail") ?? "").trim();
   const number = String(formData.get("number") ?? "").trim();
   const bodyHtml = String(formData.get("bodyHtml") ?? "");
+  const onboardingTrack = String(formData.get("onboardingTrack") ?? "negocios").trim();
+  const revisionNote = String(formData.get("revisionNote") ?? "").trim();
 
   if (!slug) return { error: "Capítulo inválido." };
   if (!title) return { error: "O título é obrigatório." };
   if (!(await trailExists(trailSlug))) return { error: "Trilha inválida." };
 
   const author = me.name || me.email;
+  const updateTime = now();
 
   await db
     .update(chapters)
@@ -176,10 +209,23 @@ export async function saveChapter(
       number,
       sortOrder: Number.parseInt(number, 10) || 0,
       bodyHtml,
-      updatedAt: now(),
+      updatedAt: updateTime,
       updatedBy: author,
+      onboardingTrack,
     })
     .where(eq(chapters.slug, slug));
+
+  // Salva no histórico de versões
+  await db.insert(chapterVersions).values({
+    id: randomUUID(),
+    chapterSlug: slug,
+    title,
+    description,
+    bodyHtml,
+    updatedAt: updateTime,
+    updatedBy: author,
+    revisionNote: revisionNote || "Edição sem notas de revisão",
+  });
 
   await logAction("chapter.update", title, `/c/${slug}`);
 
@@ -432,6 +478,7 @@ export async function createChapter(formData: FormData) {
     bodyHtml: "<p>Escreva o conteúdo do capítulo aqui.</p>",
     updatedAt: now(),
     updatedBy: me.name || me.email,
+    onboardingTrack: "negocios",
   });
 
   await logAction("chapter.create", "Novo capítulo", `/c/${slug}`);
@@ -479,13 +526,14 @@ export async function createUserInvite(
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const name = String(formData.get("name") ?? "").trim();
   const role = String(formData.get("role") ?? "") as Role;
+  const onboardingTrack = String(formData.get("onboardingTrack") ?? "negocios").trim();
 
   if (!email || !email.includes("@")) return { error: "E-mail inválido." };
   if (!ROLES.includes(role)) return { error: "Papel inválido." };
   if (await getUserByEmail(email))
     return { error: "Já existe um acesso com esse e-mail." };
 
-  const token = await createInvite({ email, name, role });
+  const token = await createInvite({ email, name, role, onboardingTrack });
   await logAction("user.invite", name || email, `papel: ${role}`);
   revalidatePath("/admin/usuarios");
   return { ok: true, inviteUrl: `${await origin()}/convite/${token}` };
@@ -529,6 +577,24 @@ export async function changeUserRole(formData: FormData) {
   );
   revalidatePath("/admin/usuarios");
   revalidatePath("/admin/progresso");
+}
+
+export async function changeUserTrack(formData: FormData) {
+  if (!(await requireRole("admin"))) return;
+  const id = String(formData.get("id") ?? "");
+  const track = String(formData.get("onboardingTrack") ?? "").trim();
+  if (!id || !track) return;
+
+  const target = await getUserById(id);
+  if (!target || target.onboardingTrack === track) return;
+
+  await setUserTrack(id, track);
+  await logAction(
+    "user.track",
+    target.name || target.email,
+    `${target.onboardingTrack} → ${track}`,
+  );
+  revalidatePath("/admin/usuarios");
 }
 
 export async function deleteUserAction(formData: FormData) {
@@ -593,4 +659,154 @@ export async function moveTrail(formData: FormData) {
     }
   }
   revalidateTrails();
+}
+
+export async function saveChaptersOrder(
+  data: { slug: string; trailSlug: string }[],
+) {
+  if (!(await canEdit())) return;
+
+  for (let i = 0; i < data.length; i++) {
+    await db
+      .update(chapters)
+      .set({
+        trailSlug: data[i].trailSlug,
+        sortOrder: i + 1,
+        number: String(i + 1).padStart(2, "0"),
+      })
+      .where(eq(chapters.slug, data[i].slug));
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/admin/trilhas");
+}
+
+export async function generateAIContent(
+  promptType: string,
+  text: string,
+): Promise<{ text?: string; error?: string }> {
+  if (!(await canEdit())) return { error: "Sem permissão. Faça login de novo." };
+  if (!text) return { error: "Nenhum texto selecionado." };
+
+  // Chave e provedor vêm de variáveis de ambiente (Vercel) — sem segredo em
+  // texto puro no banco. O provedor é inferido pela chave presente (Claude tem
+  // prioridade).
+  const apiKey =
+    process.env.ANTHROPIC_API_KEY ||
+    process.env.OPENAI_API_KEY ||
+    process.env.GEMINI_API_KEY;
+  const provider = process.env.ANTHROPIC_API_KEY
+    ? "claude"
+    : process.env.GEMINI_API_KEY
+      ? "gemini"
+      : "openai";
+
+  if (!apiKey) {
+    return {
+      error:
+        "Nenhuma chave de API configurada. Defina ANTHROPIC_API_KEY (recomendado), OPENAI_API_KEY ou GEMINI_API_KEY nas variáveis de ambiente do projeto.",
+    };
+  }
+
+  const systemPrompt = "Você é um assistente de IA especialista em redação técnica para analistas de sistemas.";
+  let userPrompt = "";
+
+  if (promptType === "acceptance_criteria") {
+    userPrompt = `Gere critérios de aceite no formato estruturado BDD (Dado/Quando/Então) para o seguinte requisito ou descrição:\n\n${text}`;
+  } else if (promptType === "simplify") {
+    userPrompt = `Simplifique o jargão técnico do seguinte texto, tornando-o claro e compreensível para stakeholders de negócios, sem perder a precisão do conteúdo original:\n\n${text}`;
+  } else if (promptType === "summarize") {
+    userPrompt = `Escreva um resumo conciso (máximo de 2 a 3 frases) do seguinte texto, ideal para ser usado como descrição curta de um capítulo:\n\n${text}`;
+  } else {
+    userPrompt = `Expanda e melhore a redação do seguinte texto técnico, mantendo o tom profissional e instrutivo:\n\n${text}`;
+  }
+
+  try {
+    if (provider === "claude" || apiKey.startsWith("sk-ant")) {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1000,
+          messages: [
+            { role: "user", content: userPrompt }
+          ],
+        }),
+      });
+      const data = await res.json();
+      if (data.error) return { error: data.error.message || "Erro na API do Claude." };
+      return { text: data.content[0]?.text || "" };
+    } else if (provider === "gemini" || apiKey.includes("AIzaSy")) {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }]
+        }),
+      });
+      const data = await res.json();
+      if (data.error) return { error: data.error.message || "Erro na API do Gemini." };
+      return { text: data.candidates?.[0]?.content?.parts?.[0]?.text || "" };
+    } else {
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+        }),
+      });
+      const data = await res.json();
+      if (data.error) return { error: data.error.message || "Erro na API do OpenAI." };
+      return { text: data.choices?.[0]?.message?.content || "" };
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { error: `Falha na comunicação com a API: ${msg}` };
+  }
+}
+
+export async function listMediaFiles() {
+  if (!(await canEdit())) return { error: "Sem permissão. Faça login de novo." };
+  try {
+    const response = await list();
+    return { blobs: response.blobs };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { error: `Erro ao listar mídias: ${msg}` };
+  }
+}
+
+export async function deleteMediaFile(url: string) {
+  if (!(await canEdit())) return { error: "Sem permissão. Faça login de novo." };
+  try {
+    await del(url);
+    revalidatePath("/admin/midias");
+    return { ok: true };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { error: `Erro ao deletar mídia: ${msg}` };
+  }
+}
+
+export async function checkIsAiEnabled(): Promise<boolean> {
+  return !!(
+    process.env.ANTHROPIC_API_KEY ||
+    process.env.OPENAI_API_KEY ||
+    process.env.GEMINI_API_KEY
+  );
 }

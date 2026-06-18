@@ -54,6 +54,7 @@ export interface UserProgress {
   status: string;
   doneCount: number;
   lastCompletedAt: string | null;
+  onboardingTrack: string;
 }
 
 /**
@@ -84,6 +85,7 @@ export async function getProgressOverview(): Promise<UserProgress[]> {
       status: u.status,
       doneCount: agg?.count ?? 0,
       lastCompletedAt: agg?.last ?? null,
+      onboardingTrack: u.onboardingTrack,
     };
   });
 }

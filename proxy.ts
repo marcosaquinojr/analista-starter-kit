@@ -11,8 +11,8 @@ import { SESSION_COOKIE } from "@/lib/session-cookie";
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Rotas públicas: entrar e aceitar convite.
-  if (pathname === "/admin/login" || pathname.startsWith("/convite")) {
+  // Rotas públicas: landing page, entrar e aceitar convite.
+  if (pathname === "/" || pathname === "/admin/login" || pathname.startsWith("/convite")) {
     return NextResponse.next();
   }
 

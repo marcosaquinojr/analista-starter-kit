@@ -24,14 +24,21 @@ export default function AdminNav({ isAdmin }: { isAdmin: boolean }) {
           p.startsWith("/admin/trilhas") ||
           (p.startsWith("/admin/") &&
             !p.startsWith("/admin/inicio") &&
+            !p.startsWith("/admin/midias") &&
             !p.startsWith("/admin/progresso") &&
             !p.startsWith("/admin/usuarios") &&
+            !p.startsWith("/admin/log") &&
             !p.startsWith("/admin/login")),
       },
       {
         href: "/admin/inicio",
         label: "Página inicial",
         match: (p) => p.startsWith("/admin/inicio"),
+      },
+      {
+        href: "/admin/midias",
+        label: "Mídias",
+        match: (p) => p.startsWith("/admin/midias"),
       },
       ...(isAdmin
         ? [
@@ -55,16 +62,16 @@ export default function AdminNav({ isAdmin }: { isAdmin: boolean }) {
     ];
 
   return (
-    <>
+    <div className="admin-nav-tabs">
       {tabs.map((t) => (
         <Link
           key={t.href}
           href={t.href}
-          className={`header-link${t.match(pathname ?? "") ? " active" : ""}`}
+          className={`admin-nav-tab${t.match(pathname ?? "") ? " active" : ""}`}
         >
           {t.label}
         </Link>
       ))}
-    </>
+    </div>
   );
 }

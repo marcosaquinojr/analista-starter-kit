@@ -7,6 +7,7 @@ import {
   regenerateInvite,
   deleteUserAction,
   changeUserRole,
+  changeUserTrack,
   type ActionState,
 } from "@/app/admin/actions";
 import { toast } from "@/lib/toast-store";
@@ -20,6 +21,7 @@ type UserView = {
   role: string;
   status: string;
   createdAt: string;
+  onboardingTrack: string;
 };
 
 const ROLE_LABEL: Record<string, string> = {
@@ -65,6 +67,12 @@ export default function UsersManager({
     initial,
   );
   const [regenState, regenAction] = useActionState(regenerateInvite, initial);
+  const [trackFilter, setTrackFilter] = useState<"all" | "negocios" | "desenvolvimento">("all");
+
+  const filteredUsers = users.filter((u) => {
+    if (trackFilter === "all") return true;
+    return u.onboardingTrack === trackFilter;
+  });
 
   useEffect(() => {
     if (createState.ok) toast.success("Convite criado.");
@@ -114,6 +122,13 @@ export default function UsersManager({
               <option value="leitor">Leitor</option>
             </select>
           </label>
+          <label className="field field-sm">
+            <span>Trilha</span>
+            <select name="onboardingTrack" defaultValue="negocios">
+              <option value="negocios">Negócios</option>
+              <option value="desenvolvimento">Desenvolvimento</option>
+            </select>
+          </label>
           <button type="submit" className="btn-complete" disabled={creating}>
             {creating ? "Criando…" : "Criar convite"}
           </button>
@@ -131,84 +146,144 @@ export default function UsersManager({
       )}
       {regenState.error && <p className="admin-error">{regenState.error}</p>}
 
+      {/* Filtros de Trilha */}
+      <div className="admin-nav-tabs" style={{ marginBottom: "20px", width: "fit-content" }}>
+        <button
+          type="button"
+          className={`admin-nav-tab${trackFilter === "all" ? " active" : ""}`}
+          onClick={() => setTrackFilter("all")}
+        >
+          Todos ({users.length})
+        </button>
+        <button
+          type="button"
+          className={`admin-nav-tab${trackFilter === "negocios" ? " active" : ""}`}
+          onClick={() => setTrackFilter("negocios")}
+        >
+          Negócios / Analista ({users.filter(u => u.onboardingTrack === "negocios").length})
+        </button>
+        <button
+          type="button"
+          className={`admin-nav-tab${trackFilter === "desenvolvimento" ? " active" : ""}`}
+          onClick={() => setTrackFilter("desenvolvimento")}
+        >
+          Desenvolvimento / Dev ({users.filter(u => u.onboardingTrack === "desenvolvimento").length})
+        </button>
+      </div>
+
       {/* Lista */}
       <div className="trail-admin-list">
-        {users.map((u) => {
-          const isSelf = u.id === currentUserId;
-          return (
-            <div className="trail-admin-row" key={u.id}>
-              <div className="trail-admin-main">
-                <div className="admin-row-body">
-                  <span className="admin-row-title">
-                    {u.name || u.email}
-                    {isSelf && <span className="user-you"> (você)</span>}
-                  </span>
-                  <span className="admin-row-desc">{u.email}</span>
-                </div>
+        {filteredUsers.length === 0 ? (
+          <p className="admin-trail-empty" style={{ padding: "20px 8px" }}>Nenhum usuário nesta trilha.</p>
+        ) : (
+          filteredUsers.map((u) => {
+            const isSelf = u.id === currentUserId;
+            return (
+              <div className="trail-admin-row" key={u.id}>
+                <div className="trail-admin-main">
+                  <div className="admin-row-body">
+                    <span className="admin-row-title">
+                      {u.name || u.email}
+                      {isSelf && <span className="user-you"> (você)</span>}
+                    </span>
+                    <span className="admin-row-desc">{u.email}</span>
+                  </div>
 
-                {isSelf ? (
-                  <span className={`user-role-badge role-${u.role}`}>
-                    {ROLE_LABEL[u.role] ?? u.role}
+                  {isSelf ? (
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                      <span className={`user-role-badge role-${u.role}`}>
+                        {ROLE_LABEL[u.role] ?? u.role}
+                      </span>
+                      <span
+                        className="user-role-badge"
+                        style={{
+                          backgroundColor: "var(--blue-faint)",
+                          color: "var(--blue)",
+                          border: "1px solid rgba(20, 107, 250, 0.15)",
+                          textTransform: "uppercase",
+                          fontSize: "10px",
+                          fontWeight: "700",
+                          padding: "3px 8px"
+                        }}
+                      >
+                        {u.onboardingTrack === "negocios" ? "Negócios" : "Dev"}
+                      </span>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                      <form action={changeUserRole} className="role-select-form">
+                        <input type="hidden" name="id" value={u.id} />
+                        <select
+                          name="role"
+                          defaultValue={u.role}
+                          className={`role-select role-${u.role}`}
+                          title="Mudar papel"
+                          onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                        >
+                          <option value="admin">Admin</option>
+                          <option value="editor">Editor</option>
+                          <option value="leitor">Leitor</option>
+                        </select>
+                      </form>
+                      <form action={changeUserTrack} className="role-select-form">
+                        <input type="hidden" name="id" value={u.id} />
+                        <select
+                          name="onboardingTrack"
+                          defaultValue={u.onboardingTrack}
+                          className="track-select"
+                          title="Mudar trilha"
+                          onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                        >
+                          <option value="negocios">Negócios</option>
+                          <option value="desenvolvimento">Dev</option>
+                        </select>
+                      </form>
+                    </div>
+                  )}
+                  <span
+                    className={`user-status ${
+                      u.status === "active" ? "is-active" : "is-invited"
+                    }`}
+                  >
+                    {u.status === "active" ? "Ativo" : "Convite pendente"}
                   </span>
-                ) : (
-                  <form action={changeUserRole} className="role-select-form">
-                    <input type="hidden" name="id" value={u.id} />
-                    <select
-                      name="role"
-                      defaultValue={u.role}
-                      className={`role-select role-${u.role}`}
-                      title="Mudar papel"
-                      onChange={(e) => e.currentTarget.form?.requestSubmit()}
+
+                  <div className="trail-admin-actions">
+                    {u.status === "invited" && (
+                      <form action={regenAction}>
+                        <input type="hidden" name="id" value={u.id} />
+                        <button type="submit" className="trail-btn">
+                          Gerar link
+                        </button>
+                      </form>
+                    )}
+                    <form
+                      action={deleteUserAction}
+                      onSubmit={(e) => {
+                        if (!confirm(`Remover o acesso de "${u.email}"?`))
+                          e.preventDefault();
+                      }}
                     >
-                      <option value="admin">Admin</option>
-                      <option value="editor">Editor</option>
-                      <option value="leitor">Leitor</option>
-                    </select>
-                  </form>
-                )}
-                <span
-                  className={`user-status ${
-                    u.status === "active" ? "is-active" : "is-invited"
-                  }`}
-                >
-                  {u.status === "active" ? "Ativo" : "Convite pendente"}
-                </span>
-
-                <div className="trail-admin-actions">
-                  {u.status === "invited" && (
-                    <form action={regenAction}>
                       <input type="hidden" name="id" value={u.id} />
-                      <button type="submit" className="trail-btn">
-                        Gerar link
+                      <button
+                        type="submit"
+                        className="trail-btn trail-btn-danger"
+                        disabled={isSelf}
+                        title={
+                          isSelf
+                            ? "Você não pode remover o próprio acesso"
+                            : "Remover acesso"
+                        }
+                      >
+                        Remover
                       </button>
                     </form>
-                  )}
-                  <form
-                    action={deleteUserAction}
-                    onSubmit={(e) => {
-                      if (!confirm(`Remover o acesso de "${u.email}"?`))
-                        e.preventDefault();
-                    }}
-                  >
-                    <input type="hidden" name="id" value={u.id} />
-                    <button
-                      type="submit"
-                      className="trail-btn trail-btn-danger"
-                      disabled={isSelf}
-                      title={
-                        isSelf
-                          ? "Você não pode remover o próprio acesso"
-                          : "Remover acesso"
-                      }
-                    >
-                      Remover
-                    </button>
-                  </form>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </>
   );
