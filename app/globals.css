@@ -682,6 +682,81 @@ main.site-main {
   line-height: 1.5;
 }
 
+/* ── HOME · hub pessoal (leitor logado) ── */
+.home-hub {
+  margin-bottom: 44px;
+  padding: 4px 0;
+  animation: fadeUp 0.5s ease both;
+}
+.home-hub-greeting {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-size: clamp(28px, 3.5vw, 38px);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.home-hub-sub {
+  font-size: 16px;
+  color: var(--text2);
+  margin-bottom: 26px;
+}
+.home-hub-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 440px;
+  margin-bottom: 22px;
+}
+.home-hub-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--bg4);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.home-hub-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--blue-soft));
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.home-hub-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.home-hub-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--blue);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 12px 22px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.home-hub-cta:hover {
+  background: var(--blue-dim);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.home-hub-cta.secondary {
+  background: var(--bg);
+  color: var(--blue);
+  border: 1px solid var(--border2);
+  box-shadow: none;
+}
+.home-hub-cta.secondary:hover {
+  background: var(--blue-50);
+}
+
 /* ── TRAIL SECTIONS ── */
 .trail {
   margin-bottom: 44px;

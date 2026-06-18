@@ -20,5 +20,12 @@ export default async function Home() {
     getTrails(),
     getHomeContent(),
   ]);
-  return <HomeView chapters={chapters} trails={trails} home={home} />;
+  return (
+    <HomeView
+      chapters={chapters}
+      trails={trails}
+      home={home}
+      userName={row?.name ?? ""}
+    />
+  );
 }
