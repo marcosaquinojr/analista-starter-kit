@@ -2,6 +2,22 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  Check,
+  Circle,
+  Diamond,
+  Flame,
+  Play,
+  RotateCcw,
+  Square,
+  Target,
+  Triangle,
+  Trophy,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
 import { submitQuizResult } from "@/app/admin/actions";
 
 type Option = { text: string; correct: boolean };
@@ -16,10 +32,10 @@ type Quiz = {
 };
 
 const TILES = [
-  { cls: "q-red", shape: "▲" },
-  { cls: "q-blue", shape: "◆" },
-  { cls: "q-gold", shape: "●" },
-  { cls: "q-green", shape: "■" },
+  { cls: "q-red", Icon: Triangle },
+  { cls: "q-blue", Icon: Diamond },
+  { cls: "q-gold", Icon: Circle },
+  { cls: "q-green", Icon: Square },
 ];
 
 // ── Som (Web Audio, sintetizado — sem assets) ──────────────────────────────
@@ -223,10 +239,12 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
             </div>
           </div>
           <button className="quiz-start" onClick={start}>
-            Começar ▶
+            <Play size={20} fill="currentColor" strokeWidth={0} />
+            Começar
           </button>
           <Link href="/" className="quiz-exit">
-            ← Voltar ao início
+            <ArrowLeft size={15} />
+            Voltar ao início
           </Link>
         </div>
       </div>
@@ -240,7 +258,7 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
         {result.passed && <Confetti />}
         <div className="quiz-result">
           <div className={`quiz-result-emoji ${result.passed ? "pass" : "fail"}`}>
-            {result.passed ? "🎉" : "💪"}
+            {result.passed ? <Trophy size={72} /> : <Target size={72} />}
           </div>
           <h1 className="quiz-result-title">
             {result.passed ? "Você passou!" : "Quase lá!"}
@@ -252,7 +270,8 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
           </p>
           <div className="quiz-result-actions">
             <button className="quiz-start" onClick={replay}>
-              Refazer ↻
+              <RotateCcw size={18} />
+              Refazer
             </button>
             <Link href="/" className="quiz-exit-btn">
               Voltar ao início
@@ -269,7 +288,7 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
     <div className="quiz-stage playing">
       <div className="quiz-topbar">
         <Link href="/" className="quiz-topbar-exit" title="Sair do quiz">
-          ✕
+          <X size={20} />
         </Link>
         <span className="quiz-progress">
           {qi + 1}/{total}
@@ -279,10 +298,14 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
         </div>
         <span className="quiz-score">
           {score} XP
-          {combo >= 2 && <span className="quiz-combo">🔥 {combo}</span>}
+          {combo >= 2 && (
+            <span className="quiz-combo">
+              <Flame size={13} fill="currentColor" /> {combo}
+            </span>
+          )}
         </span>
         <button className="quiz-topbar-mute" onClick={toggleMute} title={muted ? "Ativar som" : "Desativar som"}>
-          {muted ? "🔇" : "🔊"}
+          {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
         </button>
       </div>
 
@@ -307,6 +330,7 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
                 ? "wrong"
                 : "dim"
             : "";
+          const Shape = t.Icon;
           return (
             <button
               key={i}
@@ -314,11 +338,19 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
               disabled={revealed}
               onClick={() => answer(i)}
             >
-              <span className="quiz-tile-shape">{t.shape}</span>
+              <span className="quiz-tile-shape">
+                <Shape size={22} fill="currentColor" strokeWidth={0} />
+              </span>
               <span className="quiz-tile-text">{o.text}</span>
-              {revealed && o.correct && <span className="quiz-tile-mark">✓</span>}
+              {revealed && o.correct && (
+                <span className="quiz-tile-mark">
+                  <Check size={18} strokeWidth={3} />
+                </span>
+              )}
               {revealed && i === selected && !o.correct && (
-                <span className="quiz-tile-mark">✕</span>
+                <span className="quiz-tile-mark">
+                  <X size={18} strokeWidth={3} />
+                </span>
               )}
             </button>
           );

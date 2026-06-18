@@ -981,6 +981,10 @@ main.site-main {
   color: rgba(255, 255, 255, 0.65);
 }
 .quiz-start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   font-family: var(--font-display), sans-serif;
   font-size: 20px;
   font-weight: 800;
@@ -998,8 +1002,11 @@ main.site-main {
   transform: scale(1.04);
 }
 .quiz-exit {
-  display: inline-block;
-  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 22px auto 0;
+  width: fit-content;
   color: rgba(255, 255, 255, 0.6);
   font-size: 14px;
   text-decoration: none;
@@ -1081,6 +1088,9 @@ main.site-main {
   justify-content: flex-end;
 }
 .quiz-combo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   background: rgba(251, 191, 36, 0.2);
   color: #fbbf24;
   padding: 2px 8px;
@@ -1172,25 +1182,51 @@ main.site-main {
   background: #26890c;
 }
 .quiz-tile-shape {
-  font-size: 22px;
+  display: inline-flex;
+  align-items: center;
   flex-shrink: 0;
+  opacity: 0.92;
 }
 .quiz-tile-text {
   flex: 1;
 }
 .quiz-tile-mark {
-  font-size: 24px;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 18px;
   font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: quizBounce 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.quiz-tile.correct .quiz-tile-mark {
+  color: #16a34a;
+}
+.quiz-tile.wrong .quiz-tile-mark {
+  color: #dc2626;
 }
 .quiz-tile.correct {
   animation: quizCorrect 0.5s ease both;
-  filter: brightness(1.15);
+  filter: brightness(1.12) saturate(1.1);
+  box-shadow:
+    0 0 0 4px #fff,
+    0 0 32px 6px rgba(52, 211, 153, 0.6),
+    0 6px 0 rgba(0, 0, 0, 0.25);
+  z-index: 2;
 }
 .quiz-tile.wrong {
   animation: quizShake 0.4s ease both;
+  filter: saturate(0.4) brightness(0.62);
+  opacity: 0.85;
 }
 .quiz-tile.dim {
-  opacity: 0.4;
+  opacity: 0.3;
+  filter: grayscale(0.55) brightness(0.7);
 }
 .quiz-result {
   text-align: center;
@@ -1199,8 +1235,16 @@ main.site-main {
   animation: quizPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .quiz-result-emoji {
-  font-size: 72px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 6px;
   animation: quizBounce 0.7s ease both;
+}
+.quiz-result-emoji.pass {
+  color: #fbbf24;
+}
+.quiz-result-emoji.fail {
+  color: rgba(255, 255, 255, 0.85);
 }
 .quiz-result-title {
   font-family: var(--font-display), sans-serif;
