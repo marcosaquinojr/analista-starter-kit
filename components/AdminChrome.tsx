@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ArrowUpRight } from "lucide-react";
 import { logout } from "@/app/admin/actions";
 import { getSessionUser } from "@/lib/auth";
 import { getUserById } from "@/lib/users";
@@ -45,8 +46,8 @@ export default async function AdminChrome({
         <div className="admin-header-actions">
           <AdminNav isAdmin={user.role === "admin"} />
           <span className="admin-header-divider" aria-hidden />
-          <Link href="/" className="header-link" target="_blank">
-            Ver site ↗
+          <Link href="/" className="header-link" target="_blank" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+            Ver site <ArrowUpRight size={14} />
           </Link>
           <Link href="/conta" className="admin-user" title="Editar perfil">
             <span className="admin-user-avatar" aria-hidden>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Check, Lock, Play } from "lucide-react";
 import type { ChapterMeta, TrailMeta } from "@/lib/types";
 import type { HomeContent } from "@/lib/settings";
 import type { ReaderQuiz } from "@/lib/quizzes";
@@ -111,7 +112,9 @@ export default function HomeView({
                       className="chapter-card quiz-card locked"
                       title="Conclua os capítulos pré-requisito para liberar"
                     >
-                      <span className="quiz-card-badge">QUIZ 🔒</span>
+                      <span className="quiz-card-badge">
+                        QUIZ <Lock size={12} />
+                      </span>
                       <div className="chapter-card-title">{qz.title}</div>
                       <div className="chapter-card-desc">
                         Conclua os pré-requisitos para liberar.
@@ -126,7 +129,12 @@ export default function HomeView({
                     className={`chapter-card quiz-card${qz.passed ? " completed" : ""}`}
                   >
                     <span className="quiz-card-badge">
-                      QUIZ {qz.passed ? "✓" : "▶"}
+                      QUIZ{" "}
+                      {qz.passed ? (
+                        <Check size={12} strokeWidth={3} />
+                      ) : (
+                        <Play size={12} fill="currentColor" strokeWidth={0} />
+                      )}
                     </span>
                     <div className="chapter-card-title">{qz.title}</div>
                     <div className="chapter-card-desc">

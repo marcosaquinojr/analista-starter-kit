@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { Clock, Pin } from "lucide-react";
 import type { Metadata } from "next";
 import { getChapter, getChapters, getChapterSlugs } from "@/lib/chapters";
 import { getTrails } from "@/lib/trails";
@@ -65,8 +66,8 @@ export default async function ChapterPage({
         <h1 className="chapter-title">{chapter.title}</h1>
         <p className="chapter-desc">{chapter.description}</p>
         <div className="chapter-meta">
-          <span>⏱ {chapter.readTime}</span>
-          <span>📌 Atualizado em {chapter.updatedAt}</span>
+          <span><Clock size={13} /> {chapter.readTime}</span>
+          <span><Pin size={13} /> Atualizado em {chapter.updatedAt}</span>
         </div>
       </div>
 

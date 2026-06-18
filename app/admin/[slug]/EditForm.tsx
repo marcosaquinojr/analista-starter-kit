@@ -3,6 +3,14 @@
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import {
+  AlertTriangle,
+  Check,
+  Clock,
+  Eye,
+  Pin,
+  ScrollText,
+} from "lucide-react";
+import {
   saveChapter,
   deleteChapter,
   type ActionState,
@@ -176,7 +184,11 @@ export default function EditForm({
           </span>
         </div>
         <div className="editor-bar-right">
-          {state.ok && <span className="editor-saved">Publicado ✓</span>}
+          {state.ok && (
+            <span className="editor-saved">
+              <Check size={14} strokeWidth={3} /> Publicado
+            </span>
+          )}
           {state.error && <span className="admin-error">{state.error}</span>}
           <button
             type="button"
@@ -321,7 +333,7 @@ export default function EditForm({
           {/* Painel do Histórico de Versões */}
           <div className="editor-meta" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "14px", fontWeight: "700", color: "var(--ink)" }}>📜 Histórico de Versões</span>
+              <span style={{ fontSize: "14px", fontWeight: "700", color: "var(--ink)", display: "inline-flex", alignItems: "center", gap: "6px" }}><ScrollText size={15} /> Histórico de Versões</span>
               <span className="editor-updated">{versions.length} {versions.length === 1 ? "versão salva" : "versões salvas"}</span>
             </div>
             {versions.length === 0 ? (
@@ -349,10 +361,10 @@ export default function EditForm({
                           <button
                             type="button"
                             className="trail-btn"
-                            style={{ padding: "4px 8px", fontSize: "11px", height: "auto" }}
+                            style={{ padding: "4px 8px", fontSize: "11px", height: "auto", display: "inline-flex", alignItems: "center", gap: "4px" }}
                             onClick={() => setSelectedVersion(ver)}
                           >
-                            👁️ Ver & Restaurar
+                            <Eye size={12} /> Ver & Restaurar
                           </button>
                         </td>
                       </tr>
@@ -365,7 +377,7 @@ export default function EditForm({
 
           <div className="editor-danger">
             <div className="editor-danger-text">
-              <strong>⚠️ Excluir capítulo</strong>
+              <strong style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}><AlertTriangle size={15} /> Excluir capítulo</strong>
               <span>Remove este capítulo de vez. Esta ação não pode ser desfeita.</span>
             </div>
             <button
@@ -397,9 +409,9 @@ export default function EditForm({
                   </p>
                 )}
                 <div className="chapter-meta" style={{ display: "flex", gap: "16px", fontSize: "12px", color: "var(--text3)", marginTop: "12px" }}>
-                  {readTime && <span>⏱ {readTime}</span>}
-                  <span>
-                    📌{" "}
+                  {readTime && <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}><Clock size={13} /> {readTime}</span>}
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                    <Pin size={13} />{" "}
                     {areaSlugs.length === 0
                       ? "Rascunho (sem área)"
                       : allAreas

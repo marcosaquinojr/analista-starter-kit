@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
+import { ArrowDown, ArrowUp, Check } from "lucide-react";
 import {
   createTrail,
   updateTrail,
@@ -91,7 +92,7 @@ export default function TrailsManager({
                       disabled={idx === 0}
                       aria-label="Subir"
                     >
-                      ↑
+                      <ArrowUp size={15} />
                     </button>
                   </form>
                   <form action={moveTrail}>
@@ -103,7 +104,7 @@ export default function TrailsManager({
                       disabled={idx === trails.length - 1}
                       aria-label="Descer"
                     >
-                      ↓
+                      <ArrowDown size={15} />
                     </button>
                   </form>
                 </div>
@@ -172,7 +173,11 @@ export default function TrailsManager({
                   >
                     {editing ? "Salvando…" : "Salvar"}
                   </button>
-                  {editState.ok && <span className="editor-saved">Salvo ✓</span>}
+                  {editState.ok && (
+                    <span className="editor-saved">
+                      <Check size={14} strokeWidth={3} /> Salvo
+                    </span>
+                  )}
                   {editState.error && (
                     <span className="admin-error">{editState.error}</span>
                   )}

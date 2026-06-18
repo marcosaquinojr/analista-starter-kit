@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
+import { ArrowDown, ArrowUp, Check } from "lucide-react";
 import {
   createArea,
   updateArea,
@@ -87,7 +88,7 @@ export default function AreasManager({ areas }: { areas: AreaWithCount[] }) {
                       disabled={idx === 0}
                       aria-label="Subir"
                     >
-                      ↑
+                      <ArrowUp size={15} />
                     </button>
                   </form>
                   <form action={moveArea}>
@@ -99,7 +100,7 @@ export default function AreasManager({ areas }: { areas: AreaWithCount[] }) {
                       disabled={idx === areas.length - 1}
                       aria-label="Descer"
                     >
-                      ↓
+                      <ArrowDown size={15} />
                     </button>
                   </form>
                 </div>
@@ -169,7 +170,11 @@ export default function AreasManager({ areas }: { areas: AreaWithCount[] }) {
                   >
                     {editing ? "Salvando…" : "Salvar"}
                   </button>
-                  {editState.ok && <span className="editor-saved">Salvo ✓</span>}
+                  {editState.ok && (
+                    <span className="editor-saved">
+                      <Check size={14} strokeWidth={3} /> Salvo
+                    </span>
+                  )}
                   {editState.error && (
                     <span className="admin-error">{editState.error}</span>
                   )}

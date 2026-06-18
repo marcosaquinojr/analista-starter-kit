@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
+import { Check } from "lucide-react";
 import {
   createUserInvite,
   regenerateInvite,
@@ -48,8 +49,15 @@ function InviteLink({ url }: { url: string }) {
             setCopied(true);
             setTimeout(() => setCopied(false), 1800);
           }}
+          style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}
         >
-          {copied ? "Copiado ✓" : "Copiar"}
+          {copied ? (
+            <>
+              <Check size={13} strokeWidth={3} /> Copiado
+            </>
+          ) : (
+            "Copiar"
+          )}
         </button>
       </div>
     </div>

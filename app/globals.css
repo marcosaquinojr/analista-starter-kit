@@ -1387,7 +1387,9 @@ main.site-main {
   border-left: 4px solid var(--blue);
 }
 .quiz-card-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -2424,9 +2426,20 @@ main.site-main {
   gap: 14px;
 }
 .editor-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   color: var(--good);
   font-size: 13px;
   font-weight: 600;
+}
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 .editor-meta {
   display: flex;
@@ -2925,6 +2938,9 @@ main.site-main {
   gap: 2px;
 }
 .trail-move {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 26px;
   height: 22px;
   border: 1px solid var(--border2);

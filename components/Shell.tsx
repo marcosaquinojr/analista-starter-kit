@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { ChapterMeta, TrailMeta } from "@/lib/types";
 import { useCompletion } from "@/components/completion";
@@ -152,22 +153,28 @@ export default function Shell({
 
       <aside className="sidebar">
         <div style={{ padding: "12px 16px", borderBottom: "1px solid #f1f5f9", marginBottom: "12px" }}>
-          <input
-            type="text"
-            placeholder="🔍 Buscar capítulo..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "8px 12px",
-              borderRadius: "6px",
-              border: "1px solid #e2e8f0",
-              fontSize: "0.875rem",
-              outline: "none",
-              backgroundColor: "#f8fafc",
-              color: "#0f172a"
-            }}
-          />
+          <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+            <Search
+              size={15}
+              style={{ position: "absolute", left: "11px", color: "#94a3b8", pointerEvents: "none" }}
+            />
+            <input
+              type="text"
+              placeholder="Buscar capítulo..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px 12px 8px 34px",
+                borderRadius: "6px",
+                border: "1px solid #e2e8f0",
+                fontSize: "0.875rem",
+                outline: "none",
+                backgroundColor: "#f8fafc",
+                color: "#0f172a"
+              }}
+            />
+          </div>
         </div>
         {trails.map((trail) => {
           const items = byTrail(trail.slug);

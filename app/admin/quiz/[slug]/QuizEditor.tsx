@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
+import { AlertTriangle, Check } from "lucide-react";
 import { saveQuiz, deleteQuiz, type ActionState } from "@/app/admin/actions";
 import type { QuizFull } from "@/lib/quizzes";
 import type { TrailMeta, AreaMeta, ChapterMeta } from "@/lib/types";
@@ -114,7 +115,11 @@ export default function QuizEditor({
           </span>
         </div>
         <div className="editor-bar-right">
-          {state.ok && <span className="editor-saved">Salvo ✓</span>}
+          {state.ok && (
+            <span className="editor-saved">
+              <Check size={14} strokeWidth={3} /> Salvo
+            </span>
+          )}
           {state.error && <span className="admin-error">{state.error}</span>}
           <Link href="/admin" className="trail-btn">
             Cancelar
@@ -346,7 +351,7 @@ export default function QuizEditor({
 
       <div className="editor-danger" style={{ marginTop: "32px" }}>
         <div className="editor-danger-text">
-          <strong>⚠️ Excluir quiz</strong>
+          <strong style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}><AlertTriangle size={15} /> Excluir quiz</strong>
           <span>Remove o quiz e suas perguntas de vez. Não pode ser desfeito.</span>
         </div>
         <button

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useEffect } from "react";
+import { Check } from "lucide-react";
 import { saveHome, type ActionState } from "@/app/admin/actions";
 import type { HomeContent } from "@/lib/settings";
 import { toast } from "@/lib/toast-store";
@@ -77,7 +78,11 @@ export default function HomeEditor({ home }: { home: HomeContent }) {
           <button type="submit" className="btn-complete" disabled={saving}>
             {saving ? "Salvando…" : "Salvar"}
           </button>
-          {state.ok && <span className="editor-saved">Salvo ✓</span>}
+          {state.ok && (
+            <span className="editor-saved">
+              <Check size={14} strokeWidth={3} /> Salvo
+            </span>
+          )}
           {state.error && <span className="admin-error">{state.error}</span>}
         </div>
       </form>

@@ -2,6 +2,7 @@
 
 import { useEffect, useReducer, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
+import { Link2, LoaderCircle, Sparkles } from "lucide-react";
 import { buildExtensions } from "./extensions";
 import { generateAIContent } from "@/app/admin/actions";
 import { toast } from "@/lib/toast-store";
@@ -186,7 +187,7 @@ export default function RichEditor({
             <i>I</i>
           </Btn>
           <Btn title="Link" active={editor.isActive("link")} on={setLink}>
-            🔗
+            <Link2 size={15} />
           </Btn>
         </div>
 
@@ -267,7 +268,15 @@ export default function RichEditor({
               onClick={() => setAiMenuOpen(!aiMenuOpen)}
               disabled={aiLoading}
             >
-              {aiLoading ? "⏳ Processando..." : "✨ Assistente de IA"}
+              {aiLoading ? (
+                <>
+                  <LoaderCircle size={14} className="spin" /> Processando...
+                </>
+              ) : (
+                <>
+                  <Sparkles size={14} /> Assistente de IA
+                </>
+              )}
             </button>
             
             {aiMenuOpen && (

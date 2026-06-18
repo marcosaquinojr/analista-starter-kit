@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { FileText } from "lucide-react";
 import { deleteMediaFile, uploadMedia } from "@/app/admin/actions";
 import { toast } from "@/lib/toast-store";
 
@@ -165,7 +166,7 @@ export default function MediaManager({ initialBlobs }: { initialBlobs: BlobInfo[
                       }}
                     />
                   ) : (
-                    <span style={{ fontSize: "36px" }}>📄</span>
+                    <FileText size={36} style={{ color: "var(--text3)" }} />
                   )}
                 </div>
 

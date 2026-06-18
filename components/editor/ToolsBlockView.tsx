@@ -2,6 +2,7 @@
 
 import { useRef, useState, type MouseEvent } from "react";
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
+import { Check, Pencil } from "lucide-react";
 import { uploadToolIcon } from "@/app/admin/actions";
 
 export interface ToolItem {
@@ -102,9 +103,9 @@ export default function ToolsBlockView({
             type="button"
             className="hb-btn"
             onClick={openModal}
-            style={{ fontSize: "12px", padding: "4px 8px" }}
+            style={{ fontSize: "12px", padding: "4px 8px", display: "inline-flex", alignItems: "center", gap: "5px" }}
           >
-            ✏️ Editar Ferramentas
+            <Pencil size={12} /> Editar Ferramentas
           </button>
           <button
             type="button"
@@ -281,7 +282,7 @@ export default function ToolsBlockView({
                         />
                         {isUp && <span style={{ fontSize: "10px", color: "var(--text2)" }}>Enviando imagem…</span>}
                         {isErr && <span style={{ fontSize: "10px", color: "var(--bad)" }}>{errorAt.msg}</span>}
-                        {isDone && <span style={{ fontSize: "10px", color: "var(--good)" }}>Imagem carregada ✓</span>}
+                        {isDone && <span style={{ fontSize: "10px", color: "var(--good)", display: "inline-flex", alignItems: "center", gap: "3px" }}><Check size={11} /> Imagem carregada</span>}
                       </div>
 
                       <button

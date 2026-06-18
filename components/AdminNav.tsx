@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 /**
@@ -92,7 +93,7 @@ export default function AdminNav({ isAdmin }: { isAdmin: boolean }) {
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
         >
-          Conteúdo <span className="caret" aria-hidden>▾</span>
+          Conteúdo <ChevronDown className="caret" size={15} aria-hidden />
         </button>
         {open && (
           <div className="admin-nav-menu" role="menu">

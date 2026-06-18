@@ -2,6 +2,7 @@
 
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { useState, type MouseEvent } from "react";
+import { Pencil } from "lucide-react";
 
 export interface GlossItem {
   term: string;
@@ -67,9 +68,9 @@ export default function GlossaryBlockView({
             type="button"
             className="hb-btn"
             onClick={openModal}
-            style={{ fontSize: "12px", padding: "4px 8px" }}
+            style={{ fontSize: "12px", padding: "4px 8px", display: "inline-flex", alignItems: "center", gap: "5px" }}
           >
-            ✏️ Editar Termos
+            <Pencil size={12} /> Editar Termos
           </button>
           <button
             type="button"
