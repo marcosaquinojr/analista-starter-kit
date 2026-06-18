@@ -85,7 +85,7 @@ export default function GlossaryBlockView({
       <div className="gloss-preview" style={{ padding: "16px", background: "var(--bg)", display: "flex", flexDirection: "column", gap: "12px" }}>
         {items.length === 0 ? (
           <span style={{ color: "var(--text3)", fontStyle: "italic", fontSize: "13px" }}>
-            Nenhum termo cadastrado ainda. Clique em "Editar Termos" para adicionar.
+            Nenhum termo cadastrado ainda. Clique em &quot;Editar Termos&quot; para adicionar.
           </span>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>

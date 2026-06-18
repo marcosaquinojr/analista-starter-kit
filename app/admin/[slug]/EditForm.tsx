@@ -108,6 +108,7 @@ export default function EditForm({
           draft.bodyHtml !== chapter.bodyHtml;
 
         if (diff) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setHasDraft(true);
         } else {
           localStorage.removeItem(`draft-chapter-${chapter.slug}`);
@@ -486,7 +487,7 @@ export default function EditForm({
               Publicada por <strong>{selectedVersion.updatedBy}</strong> em <strong>{selectedVersion.updatedAt}</strong>.
               <br />
               <span style={{ fontStyle: "italic", color: "var(--text2)", display: "block", marginTop: "4px" }}>
-                Nota: "{selectedVersion.revisionNote}"
+                Nota: &quot;{selectedVersion.revisionNote}&quot;
               </span>
             </p>
 

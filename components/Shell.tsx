@@ -51,12 +51,14 @@ export default function Shell({
       window.innerWidth > 900 &&
       localStorage.getItem(SIDEBAR_KEY) === "true"
     ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCollapsed(true);
     }
   }, []);
 
   // fecha o menu mobile ao navegar
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileOpen(false);
   }, [pathname]);
 

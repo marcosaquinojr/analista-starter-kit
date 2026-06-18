@@ -120,7 +120,7 @@ export default function ToolsBlockView({
       <div className="tools-preview" style={{ padding: "16px", background: "var(--bg)", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
         {items.length === 0 ? (
           <span style={{ color: "var(--text3)", fontStyle: "italic", fontSize: "13px", gridColumn: "1 / -1" }}>
-            Nenhuma ferramenta cadastrada ainda. Clique em "Editar Ferramentas" para adicionar.
+            Nenhuma ferramenta cadastrada ainda. Clique em &quot;Editar Ferramentas&quot; para adicionar.
           </span>
         ) : (
           items.map((it, idx) => (

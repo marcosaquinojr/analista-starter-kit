@@ -23,8 +23,10 @@ const TILES = [
 ];
 
 // ── Som (Web Audio, sintetizado — sem assets) ──────────────────────────────
+let globalMuted = typeof window !== "undefined" ? localStorage.getItem("quiz-muted") === "true" : false;
 let actx: AudioContext | null = null;
 function tone(freq: number, durMs: number, type: OscillatorType = "sine", vol = 0.15) {
+  if (globalMuted) return;
   try {
     if (!actx)
       actx = new (window.AudioContext ||
@@ -74,6 +76,15 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
     passed: boolean;
     score: number;
   } | null>(null);
+  const [muted, setMuted] = useState(globalMuted);
+  const toggleMute = () => {
+    const nextVal = !muted;
+    globalMuted = nextVal;
+    setMuted(nextVal);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("quiz-muted", String(nextVal));
+    }
+  };
   const startRef = useRef(0);
   const answersRef = useRef<{ questionId: string; chosenIndex: number; msTaken: number }[]>([]);
   const correctRef = useRef(0);
@@ -257,6 +268,9 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
   return (
     <div className="quiz-stage playing">
       <div className="quiz-topbar">
+        <Link href="/" className="quiz-topbar-exit" title="Sair do quiz">
+          ✕
+        </Link>
         <span className="quiz-progress">
           {qi + 1}/{total}
         </span>
@@ -267,6 +281,9 @@ export default function QuizPlay({ quiz }: { quiz: Quiz }) {
           {score} XP
           {combo >= 2 && <span className="quiz-combo">🔥 {combo}</span>}
         </span>
+        <button className="quiz-topbar-mute" onClick={toggleMute} title={muted ? "Ativar som" : "Desativar som"}>
+          {muted ? "🔇" : "🔊"}
+        </button>
       </div>
 
       <div className="quiz-question">

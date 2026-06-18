@@ -4,8 +4,6 @@ import { db } from "@/lib/db";
 import { chapters, chapterVersions, chapterAreas } from "@/lib/db/schema";
 import type { Chapter, ChapterMeta, ChapterVersion } from "@/lib/types";
 
-const pad2 = (n: number) => String(n).padStart(2, "0");
-
 /**
  * Camada de acesso a capítulos — agora lê do Postgres (Neon) via Drizzle.
  * As páginas consomem só estas funções; trocamos o seed pelo banco aqui

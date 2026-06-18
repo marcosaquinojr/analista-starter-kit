@@ -12,6 +12,28 @@ type Props = {
   isAiEnabled?: boolean;
 };
 
+const Btn = ({
+  on,
+  active,
+  children,
+  title,
+}: {
+  on: () => void;
+  active?: boolean;
+  children: React.ReactNode;
+  title: string;
+}) => (
+  <button
+    type="button"
+    title={title}
+    className={`tb-btn${active ? " active" : ""}`}
+    onMouseDown={(e) => e.preventDefault()}
+    onClick={on}
+  >
+    {children}
+  </button>
+);
+
 export default function RichEditor({
   initialHtml,
   onChange,
@@ -80,28 +102,6 @@ export default function RichEditor({
   if (!editor) return <div className="editor-loading">Carregando editor…</div>;
 
   const inCallout = editor.isActive("callout");
-
-  const Btn = ({
-    on,
-    active,
-    children,
-    title,
-  }: {
-    on: () => void;
-    active?: boolean;
-    children: React.ReactNode;
-    title: string;
-  }) => (
-    <button
-      type="button"
-      title={title}
-      className={`tb-btn${active ? " active" : ""}`}
-      onMouseDown={(e) => e.preventDefault()}
-      onClick={on}
-    >
-      {children}
-    </button>
-  );
 
   const insertCallout = () =>
     editor
