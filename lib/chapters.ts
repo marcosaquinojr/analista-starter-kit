@@ -1,7 +1,7 @@
 import "server-only";
-import { asc, desc, eq, or } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { chapters, trails, chapterVersions } from "@/lib/db/schema";
+import { chapters, chapterVersions, chapterAreas } from "@/lib/db/schema";
 import type { Chapter, ChapterMeta, ChapterVersion } from "@/lib/types";
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
@@ -24,19 +24,18 @@ const metaColumns = {
   onboardingTrack: chapters.onboardingTrack,
 };
 
-export async function getChapters(track?: string): Promise<ChapterMeta[]> {
-  if (track) {
+export async function getChapters(area?: string): Promise<ChapterMeta[]> {
+  // Com área: só os capítulos vinculados àquela área (via chapter_areas).
+  // Capítulo sem nenhuma área não aparece pra ninguém (rascunho).
+  if (area) {
     return db
       .select(metaColumns)
       .from(chapters)
-      .where(
-        or(
-          eq(chapters.onboardingTrack, track),
-          eq(chapters.onboardingTrack, "ambos")
-        )
-      )
+      .innerJoin(chapterAreas, eq(chapterAreas.chapterSlug, chapters.slug))
+      .where(eq(chapterAreas.areaSlug, area))
       .orderBy(asc(chapters.sortOrder));
   }
+  // Sem área (visão admin): todos os capítulos.
   return db
     .select(metaColumns)
     .from(chapters)

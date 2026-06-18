@@ -165,28 +165,6 @@ export default function AdminChaptersList({
                             <span className="admin-row-title" style={{ color: "var(--ink)", fontWeight: "600", fontSize: "15px" }}>
                               {c.title}
                             </span>
-                            {/* Track Badge */}
-                            {(() => {
-                              const track = c.onboardingTrack ?? "negocios";
-                              const color = track === "negocios" ? "var(--blue)" : track === "desenvolvimento" ? "var(--good)" : "#6366f1";
-                              const bg = track === "negocios" ? "var(--blue-glow)" : track === "desenvolvimento" ? "var(--good-glow)" : "rgba(99, 102, 241, 0.1)";
-                              const label = track === "negocios" ? "Negócios" : track === "desenvolvimento" ? "Dev" : "Geral";
-                              return (
-                                <span style={{
-                                  fontSize: "9px",
-                                  fontWeight: "700",
-                                  color,
-                                  background: bg,
-                                  padding: "2px 6px",
-                                  borderRadius: "100px",
-                                  textTransform: "uppercase",
-                                  letterSpacing: "0.05em",
-                                  border: `1px solid ${track === "negocios" ? "rgba(20, 107, 250, 0.1)" : track === "desenvolvimento" ? "rgba(5, 150, 105, 0.1)" : "rgba(99, 102, 241, 0.1)"}`
-                                }}>
-                                  {label}
-                                </span>
-                              );
-                            })()}
                           </span>
                           <span className="admin-row-desc" style={{ display: "block", fontSize: "12px", color: "var(--text2)", marginTop: "4px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {c.description}

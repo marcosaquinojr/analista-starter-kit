@@ -8,19 +8,31 @@ import {
   type ActionState,
 } from "@/app/admin/actions";
 import RichEditor from "@/components/editor/RichEditor";
-import type { Chapter, TrailMeta, ChapterVersion } from "@/lib/types";
+import type {
+  Chapter,
+  TrailMeta,
+  ChapterVersion,
+  AreaMeta,
+} from "@/lib/types";
 import { toast } from "@/lib/toast-store";
 
 const initial: ActionState = {};
 
+// chave estável de um conjunto de áreas, p/ comparar (ordem não importa)
+const areaKey = (a: string[]) => [...a].sort().join(",");
+
 export default function EditForm({
   chapter,
   trails,
+  allAreas,
+  chapterAreas,
   versions = [],
   isAiEnabled = false,
 }: {
   chapter: Chapter;
   trails: TrailMeta[];
+  allAreas: AreaMeta[];
+  chapterAreas: string[];
   versions?: ChapterVersion[];
   isAiEnabled?: boolean;
 }) {
@@ -32,7 +44,7 @@ export default function EditForm({
   const [trailSlug, setTrailSlug] = useState(chapter.trailSlug);
   const [readTime, setReadTime] = useState(chapter.readTime);
   const [description, setDescription] = useState(chapter.description);
-  const [onboardingTrack, setOnboardingTrack] = useState(chapter.onboardingTrack ?? "negocios");
+  const [areaSlugs, setAreaSlugs] = useState<string[]>(chapterAreas);
   const [body, setBody] = useState(chapter.bodyHtml);
 
   const [showDelete, setShowDelete] = useState(false);
@@ -50,7 +62,7 @@ export default function EditForm({
     trailSlug !== chapter.trailSlug ||
     readTime !== chapter.readTime ||
     description !== chapter.description ||
-    onboardingTrack !== (chapter.onboardingTrack ?? "negocios") ||
+    areaKey(areaSlugs) !== areaKey(chapterAreas) ||
     body !== chapter.bodyHtml;
 
   // Helpers de rascunho
@@ -64,7 +76,7 @@ export default function EditForm({
       setTrailSlug(draft.trailSlug ?? "");
       setReadTime(draft.readTime ?? "");
       setDescription(draft.description ?? "");
-      setOnboardingTrack(draft.onboardingTrack ?? "negocios");
+      setAreaSlugs(Array.isArray(draft.areaSlugs) ? draft.areaSlugs : chapterAreas);
       setBody(draft.bodyHtml ?? "");
       toast.success("Rascunho restaurado!");
     } catch {
@@ -91,7 +103,8 @@ export default function EditForm({
           draft.trailSlug !== chapter.trailSlug ||
           draft.readTime !== chapter.readTime ||
           draft.description !== chapter.description ||
-          draft.onboardingTrack !== (chapter.onboardingTrack ?? "negocios") ||
+          (Array.isArray(draft.areaSlugs) ? areaKey(draft.areaSlugs) : "") !==
+            areaKey(chapterAreas) ||
           draft.bodyHtml !== chapter.bodyHtml;
 
         if (diff) {
@@ -116,7 +129,7 @@ export default function EditForm({
         trailSlug,
         readTime,
         description,
-        onboardingTrack,
+        areaSlugs,
         bodyHtml: body,
         updatedAt: Date.now(),
       };
@@ -124,7 +137,7 @@ export default function EditForm({
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [title, number, trailSlug, readTime, description, onboardingTrack, body, isDirty, chapter.slug]);
+  }, [title, number, trailSlug, readTime, description, areaSlugs, body, isDirty, chapter.slug]);
 
   // Alerta antes de descarregar a página
   useEffect(() => {
@@ -233,14 +246,46 @@ export default function EditForm({
                 ))}
               </select>
             </label>
-            <label className="field field-sm">
-              <span>Onboarding</span>
-              <select name="onboardingTrack" value={onboardingTrack} onChange={(e) => setOnboardingTrack(e.target.value)}>
-                <option value="negocios">Negócios</option>
-                <option value="desenvolvimento">Desenvolvimento</option>
-                <option value="ambos">Ambas (Geral)</option>
-              </select>
-            </label>
+            <div className="field field-full">
+              <span>Áreas</span>
+              {allAreas.length === 0 ? (
+                <span className="area-checks-empty">
+                  Nenhuma área criada ainda. Crie em Conteúdo → Áreas.
+                </span>
+              ) : (
+                <div className="area-checks">
+                  {allAreas.map((a) => {
+                    const checked = areaSlugs.includes(a.slug);
+                    return (
+                      <label
+                        key={a.slug}
+                        className={`area-check${checked ? " on" : ""}`}
+                      >
+                        <input
+                          type="checkbox"
+                          name="areas"
+                          value={a.slug}
+                          checked={checked}
+                          onChange={(e) =>
+                            setAreaSlugs((prev) =>
+                              e.target.checked
+                                ? [...prev, a.slug]
+                                : prev.filter((s) => s !== a.slug),
+                            )
+                          }
+                        />
+                        {a.name}
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+              {allAreas.length > 0 && areaSlugs.length === 0 && (
+                <span className="area-checks-hint">
+                  Sem área = rascunho (não aparece pro leitor).
+                </span>
+              )}
+            </div>
             <label className="field">
               <span>Tempo de leitura</span>
               <input name="readTime" value={readTime} onChange={(e) => setReadTime(e.target.value)} />
@@ -352,7 +397,15 @@ export default function EditForm({
                 )}
                 <div className="chapter-meta" style={{ display: "flex", gap: "16px", fontSize: "12px", color: "var(--text3)", marginTop: "12px" }}>
                   {readTime && <span>⏱ {readTime}</span>}
-                  <span>📌 Trilha: {onboardingTrack === "ambos" ? "Ambas" : onboardingTrack === "negocios" ? "Negócios" : "Desenvolvimento"}</span>
+                  <span>
+                    📌{" "}
+                    {areaSlugs.length === 0
+                      ? "Rascunho (sem área)"
+                      : allAreas
+                          .filter((a) => areaSlugs.includes(a.slug))
+                          .map((a) => a.name)
+                          .join(", ")}
+                  </span>
                 </div>
               </div>
               <div

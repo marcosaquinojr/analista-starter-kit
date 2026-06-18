@@ -694,6 +694,50 @@ main.site-main {
   color: var(--text3);
 }
 
+/* Checkboxes de áreas no editor de capítulo */
+.area-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.area-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border: 1px solid var(--border2);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+}
+.area-check:hover {
+  border-color: var(--blue);
+}
+.area-check.on {
+  border-color: var(--blue);
+  background: var(--blue-50);
+  color: var(--blue);
+}
+.area-check input {
+  accent-color: var(--blue);
+  margin: 0;
+}
+.area-checks-empty {
+  font-size: 13px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+.area-checks-hint {
+  font-size: 12px;
+  color: var(--warn);
+  margin-top: 6px;
+}
+
 /* ── HOME · hub pessoal (leitor logado) ── */
 .home-hub {
   position: relative;

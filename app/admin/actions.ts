@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chapters, trails, chapterVersions, areas, chapterAreas } from "@/lib/db/schema";
 import {
@@ -189,7 +189,7 @@ export async function saveChapter(
   const trailSlug = String(formData.get("trail") ?? "").trim();
   const number = String(formData.get("number") ?? "").trim();
   const bodyHtml = String(formData.get("bodyHtml") ?? "");
-  const onboardingTrack = String(formData.get("onboardingTrack") ?? "negocios").trim();
+  const areaSlugs = formData.getAll("areas").map(String).filter(Boolean);
   const revisionNote = String(formData.get("revisionNote") ?? "").trim();
 
   if (!slug) return { error: "Capítulo inválido." };
@@ -211,9 +211,25 @@ export async function saveChapter(
       bodyHtml,
       updatedAt: updateTime,
       updatedBy: author,
-      onboardingTrack,
     })
     .where(eq(chapters.slug, slug));
+
+  // Áreas do capítulo (muitos-para-muitos): substitui o conjunto. Filtra
+  // contra as áreas existentes (defesa; os checkboxes já vêm das válidas).
+  const validAreas = areaSlugs.length
+    ? (
+        await db
+          .select({ slug: areas.slug })
+          .from(areas)
+          .where(inArray(areas.slug, areaSlugs))
+      ).map((r) => r.slug)
+    : [];
+  await db.delete(chapterAreas).where(eq(chapterAreas.chapterSlug, slug));
+  if (validAreas.length) {
+    await db
+      .insert(chapterAreas)
+      .values(validAreas.map((a) => ({ chapterSlug: slug, areaSlug: a })));
+  }
 
   // Salva no histórico de versões
   await db.insert(chapterVersions).values({

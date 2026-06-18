@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import type { UserProgress } from "@/lib/progress";
-import type { ChapterMeta } from "@/lib/types";
+import type { AreaWithCount } from "@/lib/areas";
 
 const ROLE_LABEL: Record<string, string> = {
   admin: "Admin",
@@ -21,65 +21,44 @@ function formatDate(iso: string | null): string {
 
 interface ProgressDashboardProps {
   overview: UserProgress[];
-  chapters: ChapterMeta[];
+  areas: AreaWithCount[];
 }
 
-export default function ProgressDashboard({ overview, chapters }: ProgressDashboardProps) {
-  const [trackFilter, setTrackFilter] = useState<"all" | "negocios" | "desenvolvimento">("all");
+export default function ProgressDashboard({
+  overview,
+  areas,
+}: ProgressDashboardProps) {
+  const [areaFilter, setAreaFilter] = useState<string>("all");
 
-  // Calculate totals for each track
-  const negociosTotal = chapters.filter(
-    (c) => c.onboardingTrack === "negocios" || c.onboardingTrack === "ambos"
-  ).length;
+  const areaName = (slug: string) =>
+    areas.find((a) => a.slug === slug)?.name ?? slug;
+  const areaTotal = (slug: string) =>
+    areas.find((a) => a.slug === slug)?.chapterCount ?? 0;
 
-  const devTotal = chapters.filter(
-    (c) => c.onboardingTrack === "desenvolvimento" || c.onboardingTrack === "ambos"
-  ).length;
-
-  const generalTotal = chapters.length;
-
-  // Filter and compute active user statistics
-  const getStats = (track: "all" | "negocios" | "desenvolvimento") => {
-    const trackUsers = overview.filter((u) => {
-      if (track === "all") return true;
-      return u.onboardingTrack === track;
+  // Estatísticas de um escopo (uma área, ou "all"). A conclusão média é por
+  // usuário, relativa ao total de capítulos da ÁREA dele.
+  const statsFor = (scope: string) => {
+    const inScope = overview.filter((u) =>
+      scope === "all" ? true : u.onboardingTrack === scope,
+    );
+    const active = inScope.filter((u) => u.status === "active");
+    const pcts = active.map((u) => {
+      const total = areaTotal(u.onboardingTrack);
+      return total ? Math.min(u.doneCount, total) / total : 0;
     });
-
-    const activeUsers = trackUsers.filter((u) => u.status === "active");
-
-    const totalChaptersForTrack =
-      track === "negocios"
-        ? negociosTotal
-        : track === "desenvolvimento"
-        ? devTotal
-        : generalTotal;
-
-    const avgPct =
-      activeUsers.length && totalChaptersForTrack
-        ? Math.round(
-            (activeUsers.reduce((s, r) => s + Math.min(r.doneCount, totalChaptersForTrack), 0) /
-              (activeUsers.length * totalChaptersForTrack)) *
-              100
-          )
-        : 0;
-
-    return {
-      totalCount: trackUsers.length,
-      activeCount: activeUsers.length,
-      avgPct,
-    };
+    const avgPct = pcts.length
+      ? Math.round((pcts.reduce((s, p) => s + p, 0) / pcts.length) * 100)
+      : 0;
+    return { totalCount: inScope.length, activeCount: active.length, avgPct };
   };
 
-  const allStats = getStats("all");
-  const negociosStats = getStats("negocios");
-  const devStats = getStats("desenvolvimento");
+  const cards = [
+    { key: "all", label: "Visão geral", s: statsFor("all") },
+    ...areas.map((a) => ({ key: a.slug, label: a.name, s: statsFor(a.slug) })),
+  ];
 
-  // Filter users based on selected track
-  const filteredUsers = [...overview]
-    .filter((u) => {
-      if (trackFilter === "all") return true;
-      return u.onboardingTrack === trackFilter;
-    })
+  const filtered = [...overview]
+    .filter((u) => (areaFilter === "all" ? true : u.onboardingTrack === areaFilter))
     .sort((a, b) => b.doneCount - a.doneCount || a.email.localeCompare(b.email));
 
   return (
@@ -89,19 +68,13 @@ export default function ProgressDashboard({ overview, chapters }: ProgressDashbo
           ← Capítulos
         </Link>
         <h1>Progresso</h1>
-        <p>
-          Quanto cada pessoa já concluiu do manual.
-        </p>
+        <p>Quanto cada pessoa já concluiu do manual, por área.</p>
       </div>
 
-      {/* Cards de estatísticas por trilha */}
+      {/* Cards de estatísticas por área */}
       <div className="stat-card-grid">
-        {[
-          { label: "Visão geral", s: allStats },
-          { label: "Negócios / Analista", s: negociosStats },
-          { label: "Desenvolvimento / Dev", s: devStats },
-        ].map((c) => (
-          <div className="stat-card" key={c.label}>
+        {cards.map((c) => (
+          <div className="stat-card" key={c.key}>
             <span className="stat-card-label">{c.label}</span>
             <div className="stat-card-duo">
               <div>
@@ -120,45 +93,41 @@ export default function ProgressDashboard({ overview, chapters }: ProgressDashbo
         ))}
       </div>
 
-      {/* Filtros de Trilha */}
-      <div className="admin-nav-tabs" style={{ marginBottom: "20px", width: "fit-content" }}>
+      {/* Filtros de área */}
+      <div
+        className="admin-nav-tabs"
+        style={{ marginBottom: "20px", width: "fit-content" }}
+      >
         <button
           type="button"
-          className={`admin-nav-tab${trackFilter === "all" ? " active" : ""}`}
-          onClick={() => setTrackFilter("all")}
+          className={`admin-nav-tab${areaFilter === "all" ? " active" : ""}`}
+          onClick={() => setAreaFilter("all")}
         >
           Todos ({overview.length})
         </button>
-        <button
-          type="button"
-          className={`admin-nav-tab${trackFilter === "negocios" ? " active" : ""}`}
-          onClick={() => setTrackFilter("negocios")}
-        >
-          Negócios / Analista ({overview.filter(u => u.onboardingTrack === "negocios").length})
-        </button>
-        <button
-          type="button"
-          className={`admin-nav-tab${trackFilter === "desenvolvimento" ? " active" : ""}`}
-          onClick={() => setTrackFilter("desenvolvimento")}
-        >
-          Desenvolvimento / Dev ({overview.filter(u => u.onboardingTrack === "desenvolvimento").length})
-        </button>
+        {areas.map((a) => (
+          <button
+            key={a.slug}
+            type="button"
+            className={`admin-nav-tab${areaFilter === a.slug ? " active" : ""}`}
+            onClick={() => setAreaFilter(a.slug)}
+          >
+            {a.name} (
+            {overview.filter((u) => u.onboardingTrack === a.slug).length})
+          </button>
+        ))}
       </div>
 
       {/* Lista de progresso */}
-      {filteredUsers.length === 0 ? (
-        <p className="admin-trail-empty">Nenhum usuário nesta trilha.</p>
+      {filtered.length === 0 ? (
+        <p className="admin-trail-empty">Nenhum usuário nesta área.</p>
       ) : (
         <div className="progress-list">
-          {filteredUsers.map((u) => {
-            const userTrackTotal =
-              u.onboardingTrack === "negocios"
-                ? negociosTotal
-                : u.onboardingTrack === "desenvolvimento"
-                ? devTotal
-                : generalTotal;
-
-            const pct = userTrackTotal ? Math.round((Math.min(u.doneCount, userTrackTotal) / userTrackTotal) * 100) : 0;
+          {filtered.map((u) => {
+            const total = areaTotal(u.onboardingTrack);
+            const pct = total
+              ? Math.round((Math.min(u.doneCount, total) / total) * 100)
+              : 0;
             return (
               <div className="progress-row" key={u.id}>
                 <div className="progress-row-id">
@@ -170,18 +139,15 @@ export default function ProgressDashboard({ overview, chapters }: ProgressDashbo
                     {ROLE_LABEL[u.role] ?? u.role}
                   </span>
                   <span className="track-badge">
-                    {u.onboardingTrack === "negocios" ? "Negócios" : "Dev"}
+                    {areaName(u.onboardingTrack)}
                   </span>
                 </div>
                 <div className="progress-bar-wrap">
                   <div className="progress-bar">
-                    <div
-                      className="progress-fill"
-                      style={{ width: `${pct}%` }}
-                    />
+                    <div className="progress-fill" style={{ width: `${pct}%` }} />
                   </div>
                   <span className="progress-count">
-                    {Math.min(u.doneCount, userTrackTotal)}/{userTrackTotal}
+                    {Math.min(u.doneCount, total)}/{total}
                   </span>
                 </div>
                 <span className="progress-last">

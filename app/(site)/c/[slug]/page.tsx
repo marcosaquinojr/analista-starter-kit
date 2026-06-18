@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getChapter, getChapters, getChapterSlugs } from "@/lib/chapters";
 import { getTrails } from "@/lib/trails";
+import { getChapterAreaSlugs } from "@/lib/areas";
 import ChapterComplete from "@/components/ChapterComplete";
 import { getSessionUser } from "@/lib/auth";
 import { getUserById } from "@/lib/users";
@@ -41,8 +42,10 @@ export default async function ChapterPage({
   const chapter = await getChapter(slug);
   if (!chapter) notFound();
 
-  // Bloqueia acesso a capítulos de outra trilha
-  if (chapter.onboardingTrack !== "ambos" && chapter.onboardingTrack !== track) {
+  // Só acessa o capítulo quem é da área dele (via chapter_areas). Capítulo sem
+  // área (rascunho) não é acessível por ninguém no leitor.
+  const chapterAreaSlugs = await getChapterAreaSlugs(slug);
+  if (!chapterAreaSlugs.includes(track)) {
     notFound();
   }
 

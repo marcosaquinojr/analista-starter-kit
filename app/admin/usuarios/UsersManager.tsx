@@ -11,6 +11,7 @@ import {
   type ActionState,
 } from "@/app/admin/actions";
 import { toast } from "@/lib/toast-store";
+import type { AreaMeta } from "@/lib/types";
 
 const initial: ActionState = {};
 
@@ -58,21 +59,26 @@ function InviteLink({ url }: { url: string }) {
 export default function UsersManager({
   users,
   currentUserId,
+  areas,
 }: {
   users: UserView[];
   currentUserId: string;
+  areas: AreaMeta[];
 }) {
   const [createState, createAction, creating] = useActionState(
     createUserInvite,
     initial,
   );
   const [regenState, regenAction] = useActionState(regenerateInvite, initial);
-  const [trackFilter, setTrackFilter] = useState<"all" | "negocios" | "desenvolvimento">("all");
+  const [trackFilter, setTrackFilter] = useState<string>("all");
 
   const filteredUsers = users.filter((u) => {
     if (trackFilter === "all") return true;
     return u.onboardingTrack === trackFilter;
   });
+
+  const areaName = (slug: string) =>
+    areas.find((a) => a.slug === slug)?.name ?? slug;
 
   useEffect(() => {
     if (createState.ok) toast.success("Convite criado.");
@@ -123,10 +129,13 @@ export default function UsersManager({
             </select>
           </label>
           <label className="field field-sm">
-            <span>Trilha</span>
-            <select name="onboardingTrack" defaultValue="negocios">
-              <option value="negocios">Negócios</option>
-              <option value="desenvolvimento">Desenvolvimento</option>
+            <span>Área</span>
+            <select name="onboardingTrack" defaultValue={areas[0]?.slug ?? ""}>
+              {areas.map((a) => (
+                <option key={a.slug} value={a.slug}>
+                  {a.name}
+                </option>
+              ))}
             </select>
           </label>
           <button type="submit" className="btn-complete" disabled={creating}>
@@ -146,7 +155,7 @@ export default function UsersManager({
       )}
       {regenState.error && <p className="admin-error">{regenState.error}</p>}
 
-      {/* Filtros de Trilha */}
+      {/* Filtros de área */}
       <div className="admin-nav-tabs" style={{ marginBottom: "20px", width: "fit-content" }}>
         <button
           type="button"
@@ -155,26 +164,23 @@ export default function UsersManager({
         >
           Todos ({users.length})
         </button>
-        <button
-          type="button"
-          className={`admin-nav-tab${trackFilter === "negocios" ? " active" : ""}`}
-          onClick={() => setTrackFilter("negocios")}
-        >
-          Negócios / Analista ({users.filter(u => u.onboardingTrack === "negocios").length})
-        </button>
-        <button
-          type="button"
-          className={`admin-nav-tab${trackFilter === "desenvolvimento" ? " active" : ""}`}
-          onClick={() => setTrackFilter("desenvolvimento")}
-        >
-          Desenvolvimento / Dev ({users.filter(u => u.onboardingTrack === "desenvolvimento").length})
-        </button>
+        {areas.map((a) => (
+          <button
+            key={a.slug}
+            type="button"
+            className={`admin-nav-tab${trackFilter === a.slug ? " active" : ""}`}
+            onClick={() => setTrackFilter(a.slug)}
+          >
+            {a.name} (
+            {users.filter((u) => u.onboardingTrack === a.slug).length})
+          </button>
+        ))}
       </div>
 
       {/* Lista */}
       <div className="trail-admin-list">
         {filteredUsers.length === 0 ? (
-          <p className="admin-trail-empty" style={{ padding: "20px 8px" }}>Nenhum usuário nesta trilha.</p>
+          <p className="admin-trail-empty" style={{ padding: "20px 8px" }}>Nenhum usuário nesta área.</p>
         ) : (
           filteredUsers.map((u) => {
             const isSelf = u.id === currentUserId;
@@ -195,7 +201,7 @@ export default function UsersManager({
                         {ROLE_LABEL[u.role] ?? u.role}
                       </span>
                       <span className="track-badge">
-                        {u.onboardingTrack === "negocios" ? "Negócios" : "Dev"}
+                        {areaName(u.onboardingTrack)}
                       </span>
                     </div>
                   ) : (
@@ -220,11 +226,14 @@ export default function UsersManager({
                           name="onboardingTrack"
                           defaultValue={u.onboardingTrack}
                           className="track-select"
-                          title="Mudar trilha"
+                          title="Mudar área"
                           onChange={(e) => e.currentTarget.form?.requestSubmit()}
                         >
-                          <option value="negocios">Negócios</option>
-                          <option value="desenvolvimento">Dev</option>
+                          {areas.map((a) => (
+                            <option key={a.slug} value={a.slug}>
+                              {a.name}
+                            </option>
+                          ))}
                         </select>
                       </form>
                     </div>
