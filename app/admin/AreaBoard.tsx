@@ -33,7 +33,10 @@ export default function AreaBoard({
 }) {
   const [chapters, setChapters] = useState(initialChapters);
   const [draggedSlug, setDraggedSlug] = useState<string | null>(null);
-  const [addOpen, setAddOpen] = useState(false);
+  // popover de adicionar em 2 passos: fechado → escolhe tipo → escolhe trilha
+  const [addStep, setAddStep] = useState<null | "type" | "capitulo" | "quiz">(
+    null,
+  );
   const [pendingRemove, setPendingRemove] = useState<ChapterMeta | null>(null);
   const [, startTransition] = useTransition();
   const addRef = useRef<HTMLDivElement>(null);
@@ -41,7 +44,7 @@ export default function AreaBoard({
   useEffect(() => {
     function onClick(e: MouseEvent) {
       if (addRef.current && !addRef.current.contains(e.target as Node))
-        setAddOpen(false);
+        setAddStep(null);
     }
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
@@ -164,26 +167,44 @@ export default function AreaBoard({
             type="button"
             className="btn-complete"
             aria-haspopup="menu"
-            aria-expanded={addOpen}
-            onClick={() => setAddOpen((v) => !v)}
+            aria-expanded={addStep !== null}
+            onClick={() => setAddStep((s) => (s === null ? "type" : null))}
           >
             <Plus size={15} /> Adicionar
           </button>
-          {addOpen && (
+          {addStep === "type" && (
             <div className="admin-add-menu" role="menu">
-              <div className="admin-add-group">Capítulo em…</div>
+              <div className="admin-add-group">O que adicionar?</div>
+              <button
+                type="button"
+                className="admin-add-item"
+                onClick={() => setAddStep("capitulo")}
+              >
+                Capítulo →
+              </button>
+              <button
+                type="button"
+                className="admin-add-item"
+                onClick={() => setAddStep("quiz")}
+              >
+                Quiz →
+              </button>
+            </div>
+          )}
+          {(addStep === "capitulo" || addStep === "quiz") && (
+            <div className="admin-add-menu" role="menu">
+              <button
+                type="button"
+                className="admin-add-back"
+                onClick={() => setAddStep("type")}
+              >
+                ← {addStep === "capitulo" ? "Capítulo" : "Quiz"} em qual trilha?
+              </button>
               {trails.map((t) => (
-                <form action={createChapter} key={`c-${t.slug}`}>
-                  <input type="hidden" name="area" value={area.slug} />
-                  <input type="hidden" name="trail" value={t.slug} />
-                  <button type="submit" className="admin-add-item">
-                    {t.title}
-                  </button>
-                </form>
-              ))}
-              <div className="admin-add-group">Quiz em…</div>
-              {trails.map((t) => (
-                <form action={createQuiz} key={`q-${t.slug}`}>
+                <form
+                  action={addStep === "capitulo" ? createChapter : createQuiz}
+                  key={t.slug}
+                >
                   <input type="hidden" name="area" value={area.slug} />
                   <input type="hidden" name="trail" value={t.slug} />
                   <button type="submit" className="admin-add-item">

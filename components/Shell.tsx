@@ -128,7 +128,7 @@ export default function Shell({
             </span>
             <div className="brand-text">
               <span className="brand-title">Citiesoft Academy</span>
-              <span className="brand-sub">Onboarding de analistas</span>
+              <span className="brand-sub">Onboarding para novos membros</span>
             </div>
           </Link>
         </div>
@@ -141,7 +141,6 @@ export default function Shell({
               {doneCount} / {total} capítulos
             </span>
           </div>
-          <span className="tag-alpha">Alpha v0.1</span>
         </div>
       </header>
 
