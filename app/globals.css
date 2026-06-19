@@ -2394,6 +2394,113 @@ main.site-main {
   white-space: nowrap;
 }
 
+/* ── /admin organizado por área ───────────────────────────────────────────── */
+.admin-area {
+  margin-bottom: 28px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg2);
+}
+.admin-area-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.admin-area-title {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--ink);
+}
+.admin-area-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.admin-area-add form,
+.admin-draft-assign {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.admin-area-trail-select {
+  padding: 7px 10px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.admin-area-trail {
+  margin-top: 14px;
+}
+.admin-area-trail-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+.admin-area-empty,
+.admin-area-hint {
+  font-size: 13px;
+  color: var(--text3);
+}
+.admin-area-empty {
+  border: 2px dashed var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  text-align: center;
+  margin-top: 8px;
+}
+.admin-area-drafts {
+  border-style: dashed;
+  background: transparent;
+}
+.admin-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 12px;
+  flex-shrink: 0;
+}
+.admin-reuse-chip {
+  font-size: 11px;
+  color: var(--text3);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+.admin-area-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.admin-area-remove:hover {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+.admin-draft-assign {
+  padding-right: 12px;
+  flex-shrink: 0;
+}
+
 /* EDITOR */
 .editor {
   display: flex;
@@ -4315,18 +4422,44 @@ main.site-main {
 
 /* ── PREMIUM ADMIN CHAPTER CARDS ── */
 .admin-chapter-card {
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .admin-chapter-card:hover {
   transform: translateY(-2px);
-  border-color: var(--blue-soft) !important;
-  box-shadow: var(--shadow-md) !important;
+  border-color: var(--blue-soft);
+  box-shadow: var(--shadow-md);
 }
-.admin-chapter-card svg {
-  transition: color 0.2s;
+/* link interno: plano dentro do card (sem a borda/sombra do .admin-row solto) */
+.admin-chapter-card .admin-row {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  padding: 14px 16px;
 }
-.admin-chapter-card:hover svg {
-  color: var(--blue) !important;
+.admin-chapter-card .admin-row:hover {
+  border: none;
+  box-shadow: none;
+  transform: none;
+}
+.admin-chapter-card .admin-row-desc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-chapter-grip {
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  color: var(--text3);
+  cursor: grab;
 }
 
 @keyframes pulse {

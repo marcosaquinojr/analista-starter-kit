@@ -1,7 +1,7 @@
 import "server-only";
 import { asc, count, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { areas, chapterAreas } from "@/lib/db/schema";
+import { areas, chapterAreas, quizAreas } from "@/lib/db/schema";
 import type { AreaMeta } from "@/lib/types";
 
 /**
@@ -45,4 +45,33 @@ export async function getChapterAreaSlugs(chapterSlug: string): Promise<string[]
     .from(chapterAreas)
     .where(eq(chapterAreas.chapterSlug, chapterSlug));
   return rows.map((r) => r.areaSlug);
+}
+
+/**
+ * Mapa capítulo→áreas numa só query (evita N+1). Usado pelo /admin organizado
+ * por área. Capítulo ausente do mapa = sem área (rascunho).
+ */
+export async function getChapterAreaMap(): Promise<Record<string, string[]>> {
+  const rows = await db
+    .select({
+      chapterSlug: chapterAreas.chapterSlug,
+      areaSlug: chapterAreas.areaSlug,
+    })
+    .from(chapterAreas);
+  const map: Record<string, string[]> = {};
+  for (const r of rows) (map[r.chapterSlug] ??= []).push(r.areaSlug);
+  return map;
+}
+
+/** Mapa quiz→áreas numa só query (como getChapterAreaMap). */
+export async function getQuizAreaMap(): Promise<Record<string, string[]>> {
+  const rows = await db
+    .select({
+      quizSlug: quizAreas.quizSlug,
+      areaSlug: quizAreas.areaSlug,
+    })
+    .from(quizAreas);
+  const map: Record<string, string[]> = {};
+  for (const r of rows) (map[r.quizSlug] ??= []).push(r.areaSlug);
+  return map;
 }

@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { asc, eq, inArray } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   chapters,
@@ -595,6 +595,7 @@ export async function createQuiz(formData: FormData) {
   if (!me) return;
   const trailSlug = String(formData.get("trail") ?? "").trim();
   if (!(await trailExists(trailSlug))) return;
+  const areaSlug = String(formData.get("area") ?? "").trim();
 
   const base = "novo-quiz";
   let slug = base;
@@ -615,6 +616,12 @@ export async function createQuiz(formData: FormData) {
     updatedAt: now(),
     updatedBy: me.name || me.email,
   });
+  if (areaSlug && (await areaExists(areaSlug))) {
+    await db
+      .insert(quizAreas)
+      .values({ quizSlug: slug, areaSlug })
+      .onConflictDoNothing();
+  }
   await logAction("quiz.create", "Novo quiz", `/admin/quiz/${slug}`);
   revalidatePath("/admin");
   redirect(`/admin/quiz/${slug}`);
@@ -818,6 +825,10 @@ export async function createChapter(formData: FormData) {
   const trailSlug = String(formData.get("trail") ?? "").trim();
   if (!(await trailExists(trailSlug))) return;
 
+  // área opcional: se vier (e existir), o capítulo já nasce vinculado a ela;
+  // sem área, mantém o comportamento antigo (nasce rascunho).
+  const areaSlug = String(formData.get("area") ?? "").trim();
+
   // slug único: novo-capitulo, novo-capitulo-2, ...
   const base = "novo-capitulo";
   let slug = base;
@@ -849,12 +860,59 @@ export async function createChapter(formData: FormData) {
     onboardingTrack: "negocios",
   });
 
+  if (areaSlug && (await areaExists(areaSlug))) {
+    await db
+      .insert(chapterAreas)
+      .values({ chapterSlug: slug, areaSlug })
+      .onConflictDoNothing();
+  }
+
   await logAction("chapter.create", "Novo capítulo", `/c/${slug}`);
 
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/trilhas");
   redirect(`/admin/${slug}`);
+}
+
+/**
+ * Vincula um capítulo a uma área (chapter_areas). Usado no /admin organizado
+ * por área: "Adicionar à área" num rascunho ou reúso do mesmo capítulo.
+ */
+export async function assignChapterArea(formData: FormData) {
+  if (!(await canEdit())) return;
+  const chapterSlug = String(formData.get("slug") ?? "").trim();
+  const areaSlug = String(formData.get("area") ?? "").trim();
+  if (!chapterSlug || !areaSlug) return;
+  if (!(await chapterExists(chapterSlug)) || !(await areaExists(areaSlug))) return;
+
+  await db
+    .insert(chapterAreas)
+    .values({ chapterSlug, areaSlug })
+    .onConflictDoNothing();
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+}
+
+/** Desvincula um capítulo de uma área (remove só a ligação, não o capítulo). */
+export async function removeChapterArea(formData: FormData) {
+  if (!(await canEdit())) return;
+  const chapterSlug = String(formData.get("slug") ?? "").trim();
+  const areaSlug = String(formData.get("area") ?? "").trim();
+  if (!chapterSlug || !areaSlug) return;
+
+  await db
+    .delete(chapterAreas)
+    .where(
+      and(
+        eq(chapterAreas.chapterSlug, chapterSlug),
+        eq(chapterAreas.areaSlug, areaSlug),
+      ),
+    );
+
+  revalidatePath("/");
+  revalidatePath("/admin");
 }
 
 /** Exclui um capítulo de vez e volta pra lista. */
