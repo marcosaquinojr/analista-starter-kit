@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, Check } from "lucide-react";
 import {
   createArea,
@@ -12,6 +12,7 @@ import {
 } from "@/app/admin/actions";
 import type { AreaWithCount } from "@/lib/areas";
 import { toast } from "@/lib/toast-store";
+import ConfirmModal from "@/components/ConfirmModal";
 
 const initial: ActionState = {};
 
@@ -22,6 +23,8 @@ export default function AreasManager({ areas }: { areas: AreaWithCount[] }) {
   );
   const [editState, editAction, editing] = useActionState(updateArea, initial);
   const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<AreaWithCount | null>(null);
+  const [, startTransition] = useTransition();
 
   useEffect(() => {
     if (createState.ok) toast.success("Área criada.");
@@ -128,27 +131,19 @@ export default function AreasManager({ areas }: { areas: AreaWithCount[] }) {
                   >
                     {isOpen ? "Fechar" : "Editar"}
                   </button>
-                  <form
-                    action={deleteArea}
-                    onSubmit={(e) => {
-                      if (!confirm(`Excluir a área "${a.name}"?`))
-                        e.preventDefault();
-                    }}
+                  <button
+                    type="button"
+                    className="trail-btn trail-btn-danger"
+                    disabled={blocked}
+                    onClick={() => setPendingDelete(a)}
+                    title={
+                      blocked
+                        ? "Tem capítulos vinculados — desmarque-os desta área antes de excluir"
+                        : "Excluir área"
+                    }
                   >
-                    <input type="hidden" name="slug" value={a.slug} />
-                    <button
-                      type="submit"
-                      className="trail-btn trail-btn-danger"
-                      disabled={blocked}
-                      title={
-                        blocked
-                          ? "Tem capítulos vinculados — desmarque-os desta área antes de excluir"
-                          : "Excluir área"
-                      }
-                    >
-                      Excluir
-                    </button>
-                  </form>
+                    Excluir
+                  </button>
                 </div>
               </div>
 
@@ -184,6 +179,29 @@ export default function AreasManager({ areas }: { areas: AreaWithCount[] }) {
           );
         })}
       </div>
+
+      <ConfirmModal
+        open={pendingDelete !== null}
+        title="Excluir área"
+        message={
+          <>
+            Excluir a área <strong>{pendingDelete?.name}</strong>? Esta ação não
+            pode ser desfeita.
+          </>
+        }
+        confirmLabel="Excluir"
+        danger
+        onConfirm={() => {
+          const a = pendingDelete;
+          if (!a) return;
+          startTransition(() => {
+            const fd = new FormData();
+            fd.set("slug", a.slug);
+            deleteArea(fd);
+          });
+        }}
+        onClose={() => setPendingDelete(null)}
+      />
     </>
   );
 }

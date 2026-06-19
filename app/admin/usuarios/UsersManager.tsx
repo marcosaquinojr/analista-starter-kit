@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { Check } from "lucide-react";
 import {
   createUserInvite,
@@ -13,6 +13,7 @@ import {
 } from "@/app/admin/actions";
 import { toast } from "@/lib/toast-store";
 import type { AreaMeta } from "@/lib/types";
+import ConfirmModal from "@/components/ConfirmModal";
 
 const initial: ActionState = {};
 
@@ -79,6 +80,8 @@ export default function UsersManager({
   );
   const [regenState, regenAction] = useActionState(regenerateInvite, initial);
   const [trackFilter, setTrackFilter] = useState<string>("all");
+  const [pendingDelete, setPendingDelete] = useState<UserView | null>(null);
+  const [, startTransition] = useTransition();
 
   const filteredUsers = users.filter((u) => {
     if (trackFilter === "all") return true;
@@ -263,27 +266,19 @@ export default function UsersManager({
                         </button>
                       </form>
                     )}
-                    <form
-                      action={deleteUserAction}
-                      onSubmit={(e) => {
-                        if (!confirm(`Remover o acesso de "${u.email}"?`))
-                          e.preventDefault();
-                      }}
+                    <button
+                      type="button"
+                      className="trail-btn trail-btn-danger"
+                      disabled={isSelf}
+                      onClick={() => setPendingDelete(u)}
+                      title={
+                        isSelf
+                          ? "Você não pode remover o próprio acesso"
+                          : "Remover acesso"
+                      }
                     >
-                      <input type="hidden" name="id" value={u.id} />
-                      <button
-                        type="submit"
-                        className="trail-btn trail-btn-danger"
-                        disabled={isSelf}
-                        title={
-                          isSelf
-                            ? "Você não pode remover o próprio acesso"
-                            : "Remover acesso"
-                        }
-                      >
-                        Remover
-                      </button>
-                    </form>
+                      Remover
+                    </button>
                   </div>
                 </div>
               </div>
@@ -291,6 +286,29 @@ export default function UsersManager({
           })
         )}
       </div>
+
+      <ConfirmModal
+        open={pendingDelete !== null}
+        title="Remover acesso"
+        message={
+          <>
+            Remover o acesso de <strong>{pendingDelete?.email}</strong>? A pessoa
+            perde o login; o histórico de progresso é apagado.
+          </>
+        }
+        confirmLabel="Remover"
+        danger
+        onConfirm={() => {
+          const u = pendingDelete;
+          if (!u) return;
+          startTransition(() => {
+            const fd = new FormData();
+            fd.set("id", u.id);
+            deleteUserAction(fd);
+          });
+        }}
+        onClose={() => setPendingDelete(null)}
+      />
     </>
   );
 }

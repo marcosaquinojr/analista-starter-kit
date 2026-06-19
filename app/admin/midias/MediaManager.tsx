@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { FileText } from "lucide-react";
 import { deleteMediaFile, uploadMedia } from "@/app/admin/actions";
 import { toast } from "@/lib/toast-store";
+import ConfirmModal from "@/components/ConfirmModal";
 
 const ACCEPT = "image/png,image/jpeg,image/svg+xml,image/webp,image/gif,application/pdf";
 
@@ -17,6 +18,7 @@ type BlobInfo = {
 export default function MediaManager({ initialBlobs }: { initialBlobs: BlobInfo[] }) {
   const [blobs, setBlobs] = useState<BlobInfo[]>(initialBlobs);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -49,7 +51,6 @@ export default function MediaManager({ initialBlobs }: { initialBlobs: BlobInfo[
   };
 
   const handleDelete = async (url: string) => {
-    if (!confirm("Tem certeza que deseja excluir esta mídia definitivamente?")) return;
     setDeleting(url);
     try {
       const res = await deleteMediaFile(url);
@@ -239,7 +240,7 @@ export default function MediaManager({ initialBlobs }: { initialBlobs: BlobInfo[
                   <button
                     type="button"
                     disabled={deleting === blob.url}
-                    onClick={() => handleDelete(blob.url)}
+                    onClick={() => setPendingDelete(blob.url)}
                     style={{
                       border: "none",
                       background: "none",
@@ -260,6 +261,18 @@ export default function MediaManager({ initialBlobs }: { initialBlobs: BlobInfo[
           })}
         </div>
       )}
+
+      <ConfirmModal
+        open={pendingDelete !== null}
+        title="Excluir mídia"
+        message="Excluir esta mídia definitivamente? Quem usa o link dela vai perder a imagem/arquivo."
+        confirmLabel="Excluir"
+        danger
+        onConfirm={() => {
+          if (pendingDelete) handleDelete(pendingDelete);
+        }}
+        onClose={() => setPendingDelete(null)}
+      />
     </div>
   );
 }

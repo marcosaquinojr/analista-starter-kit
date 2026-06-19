@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, Check } from "lucide-react";
 import {
   createTrail,
@@ -12,6 +12,7 @@ import {
 } from "@/app/admin/actions";
 import type { TrailWithCount } from "@/lib/trails";
 import { toast } from "@/lib/toast-store";
+import ConfirmModal from "@/components/ConfirmModal";
 
 const initial: ActionState = {};
 
@@ -26,6 +27,8 @@ export default function TrailsManager({
   );
   const [editState, editAction, editing] = useActionState(updateTrail, initial);
   const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<TrailWithCount | null>(null);
+  const [, startTransition] = useTransition();
 
   useEffect(() => {
     if (createState.ok) toast.success("Trilha criada.");
@@ -131,27 +134,19 @@ export default function TrailsManager({
                   >
                     {isOpen ? "Fechar" : "Editar"}
                   </button>
-                  <form
-                    action={deleteTrail}
-                    onSubmit={(e) => {
-                      if (!confirm(`Excluir a trilha "${t.title}"?`))
-                        e.preventDefault();
-                    }}
+                  <button
+                    type="button"
+                    className="trail-btn trail-btn-danger"
+                    disabled={blocked}
+                    onClick={() => setPendingDelete(t)}
+                    title={
+                      blocked
+                        ? "Tem capítulos — mova-os para outra trilha antes de excluir"
+                        : "Excluir trilha"
+                    }
                   >
-                    <input type="hidden" name="slug" value={t.slug} />
-                    <button
-                      type="submit"
-                      className="trail-btn trail-btn-danger"
-                      disabled={blocked}
-                      title={
-                        blocked
-                          ? "Tem capítulos — mova-os para outra trilha antes de excluir"
-                          : "Excluir trilha"
-                      }
-                    >
-                      Excluir
-                    </button>
-                  </form>
+                    Excluir
+                  </button>
                 </div>
               </div>
 
@@ -187,6 +182,29 @@ export default function TrailsManager({
           );
         })}
       </div>
+
+      <ConfirmModal
+        open={pendingDelete !== null}
+        title="Excluir trilha"
+        message={
+          <>
+            Excluir a trilha <strong>{pendingDelete?.title}</strong>? Esta ação
+            não pode ser desfeita.
+          </>
+        }
+        confirmLabel="Excluir"
+        danger
+        onConfirm={() => {
+          const t = pendingDelete;
+          if (!t) return;
+          startTransition(() => {
+            const fd = new FormData();
+            fd.set("slug", t.slug);
+            deleteTrail(fd);
+          });
+        }}
+        onClose={() => setPendingDelete(null)}
+      />
     </>
   );
 }

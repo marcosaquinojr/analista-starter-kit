@@ -6,10 +6,10 @@ import { ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Navegação do /admin. A parte de edição de conteúdo (Capítulos, Trilhas,
- * Página inicial, Mídias) fica agrupada num único item "Conteúdo" com submenu;
- * as ferramentas de gestão (Progresso, Usuários, Log) ficam soltas e só
- * aparecem para admin.
+ * Navegação do /admin. A parte de edição de conteúdo (Áreas, Trilhas, Página
+ * inicial, Mídias) fica agrupada num único item "Conteúdo" com submenu; as
+ * ferramentas de gestão (Progresso, Usuários, Log) ficam soltas e só aparecem
+ * para admin. "Áreas" é a entrada do board por área (índice → detalhe).
  */
 export default function AdminNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
@@ -26,11 +26,11 @@ export default function AdminNav({ isAdmin }: { isAdmin: boolean }) {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  // Prefixos das outras seções — usados para decidir o que é "Capítulos"
-  // (que cobre /admin e o editor de capítulo /admin/[slug]).
-  const nonChapter = [
+  // Prefixos das outras seções — o resto (índice /admin, detalhe /admin/area/*,
+  // CRUD /admin/areas, e os editores /admin/[slug] e /admin/quiz/*) conta como
+  // "Áreas", a entrada do board por área.
+  const nonAreas = [
     "/admin/trilhas",
-    "/admin/areas",
     "/admin/inicio",
     "/admin/midias",
     "/admin/progresso",
@@ -38,21 +38,16 @@ export default function AdminNav({ isAdmin }: { isAdmin: boolean }) {
     "/admin/log",
     "/admin/login",
   ];
-  const isCapitulos =
+  const isAreas =
     p === "/admin" ||
-    (p.startsWith("/admin/") && !nonChapter.some((x) => p.startsWith(x)));
+    (p.startsWith("/admin/") && !nonAreas.some((x) => p.startsWith(x)));
 
   const content = [
-    { href: "/admin", label: "Capítulos", active: isCapitulos },
+    { href: "/admin", label: "Áreas", active: isAreas },
     {
       href: "/admin/trilhas",
       label: "Trilhas",
       active: p.startsWith("/admin/trilhas"),
-    },
-    {
-      href: "/admin/areas",
-      label: "Áreas",
-      active: p.startsWith("/admin/areas"),
     },
     {
       href: "/admin/inicio",

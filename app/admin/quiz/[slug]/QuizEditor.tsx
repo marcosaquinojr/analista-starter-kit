@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { AlertTriangle, Check } from "lucide-react";
 import { saveQuiz, deleteQuiz, type ActionState } from "@/app/admin/actions";
 import type { QuizFull } from "@/lib/quizzes";
 import type { TrailMeta, AreaMeta, ChapterMeta } from "@/lib/types";
 import { toast } from "@/lib/toast-store";
+import ConfirmModal from "@/components/ConfirmModal";
 
 const initial: ActionState = {};
 
@@ -25,6 +26,8 @@ export default function QuizEditor({
   allChapters: ChapterMeta[];
 }) {
   const [state, action, pending] = useActionState(saveQuiz, initial);
+  const [showDelete, setShowDelete] = useState(false);
+  const [, startTransition] = useTransition();
 
   const [title, setTitle] = useState(quiz.title);
   const [description, setDescription] = useState(quiz.description);
@@ -65,6 +68,8 @@ export default function QuizEditor({
             options: [
               { text: "", correct: true },
               { text: "", correct: false },
+              { text: "", correct: false },
+              { text: "", correct: false },
             ],
           },
     ]);
@@ -86,21 +91,6 @@ export default function QuizEditor({
       ...q,
       options: q.options.map((o, j) => (j === oi ? { ...o, text } : o)),
     }));
-
-  const addOption = (i: number) =>
-    update(i, (q) =>
-      q.options.length < 4
-        ? { ...q, options: [...q.options, { text: "", correct: false }] }
-        : q,
-    );
-
-  const removeOption = (i: number, oi: number) =>
-    update(i, (q) => {
-      if (q.options.length <= 2) return q;
-      const options = q.options.filter((_, j) => j !== oi);
-      if (!options.some((o) => o.correct)) options[0].correct = true;
-      return { ...q, options };
-    });
 
   const tile = ["tile-red", "tile-blue", "tile-gold", "tile-green"];
 
@@ -321,27 +311,8 @@ export default function QuizEditor({
                     disabled={q.type === "tf"}
                     onChange={(e) => setOptText(i, oi, e.target.value)}
                   />
-                  {q.type === "mc" && q.options.length > 2 && (
-                    <button
-                      type="button"
-                      className="quiz-opt-x"
-                      onClick={() => removeOption(i, oi)}
-                      aria-label="Remover opção"
-                    >
-                      ×
-                    </button>
-                  )}
                 </div>
               ))}
-              {q.type === "mc" && q.options.length < 4 && (
-                <button
-                  type="button"
-                  className="trail-btn"
-                  onClick={() => addOption(i)}
-                >
-                  + Opção
-                </button>
-              )}
             </div>
           </div>
         ))}
@@ -355,16 +326,34 @@ export default function QuizEditor({
           <span>Remove o quiz e suas perguntas de vez. Não pode ser desfeito.</span>
         </div>
         <button
-          type="submit"
-          formAction={deleteQuiz}
+          type="button"
           className="trail-btn trail-btn-danger"
-          onClick={(e) => {
-            if (!confirm(`Excluir o quiz "${title}"?`)) e.preventDefault();
-          }}
+          onClick={() => setShowDelete(true)}
         >
           Excluir quiz
         </button>
       </div>
+
+      <ConfirmModal
+        open={showDelete}
+        title="Excluir quiz"
+        message={
+          <>
+            Excluir o quiz <strong>{title}</strong> e todas as perguntas dele?
+            Esta ação não pode ser desfeita.
+          </>
+        }
+        confirmLabel="Excluir quiz"
+        danger
+        onConfirm={() => {
+          startTransition(() => {
+            const fd = new FormData();
+            fd.set("slug", quiz.slug);
+            deleteQuiz(fd);
+          });
+        }}
+        onClose={() => setShowDelete(false)}
+      />
     </form>
   );
 }

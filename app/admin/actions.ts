@@ -669,11 +669,17 @@ export async function saveQuiz(
           .map((o) => ({ text: String(o.text ?? "").trim(), correct: Boolean(o.correct) }))
           .filter((o) => o.text)
       : [];
-    if (!text || options.length < 2 || !options.some((o) => o.correct)) continue;
+    // múltipla escolha exige 4 opções preenchidas; verdadeiro/falso exige 2.
+    const required = type === "tf" ? 2 : 4;
+    if (!text || options.length < required || !options.some((o) => o.correct))
+      continue;
     cleanQuestions.push({ type, text, options });
   }
   if (cleanQuestions.length === 0) {
-    return { error: "Adicione ao menos uma pergunta válida (enunciado, 2+ opções e uma correta)." };
+    return {
+      error:
+        "Adicione ao menos uma pergunta válida (enunciado, uma correta, e 4 opções na múltipla escolha / 2 no verdadeiro-falso).",
+    };
   }
 
   await db

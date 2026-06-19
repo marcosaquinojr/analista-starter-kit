@@ -2501,6 +2501,115 @@ main.site-main {
   flex-shrink: 0;
 }
 
+/* ── /admin · índice de áreas (drill-down) ────────────────────────────────── */
+.admin-area-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.admin-area-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.admin-area-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.18s ease;
+}
+.admin-area-card:hover {
+  border-color: var(--blue);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.admin-area-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.admin-area-card-title {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-size: 19px;
+  color: var(--ink);
+}
+.admin-area-card-desc {
+  font-size: 13px;
+  color: var(--text2);
+}
+.admin-area-card-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--blue);
+  margin-top: 2px;
+}
+.admin-area-card-arrow {
+  color: var(--text3);
+  flex-shrink: 0;
+}
+.admin-area-card:hover .admin-area-card-arrow {
+  color: var(--blue);
+}
+
+/* popover "+ Adicionar" no detalhe da área */
+.admin-add {
+  position: relative;
+  flex-shrink: 0;
+}
+.admin-add-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  padding: 6px;
+  z-index: 50;
+  animation: fadeUp 0.14s ease both;
+}
+.admin-add-group {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 8px 10px 4px;
+}
+.admin-add-menu form {
+  margin: 0;
+}
+.admin-add-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+.admin-add-item:hover {
+  background: var(--blue-50);
+  color: var(--blue);
+}
+
 /* EDITOR */
 .editor {
   display: flex;
