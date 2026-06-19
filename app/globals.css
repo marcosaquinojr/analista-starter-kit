@@ -923,7 +923,7 @@ main.site-main {
   font-family: var(--font-body), "Inter", sans-serif;
 }
 .quiz-stage.playing {
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 16px;
 }
 .quiz-lobby {
@@ -1021,12 +1021,32 @@ main.site-main {
   align-items: center;
   gap: 16px;
   padding: 8px 0;
+  flex-shrink: 0;
 }
-.quiz-topbar-exit {
-  font-size: 20px;
-  font-weight: 800;
-  color: rgba(255, 255, 255, 0.6);
+.quiz-topbar-exit-btn {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+}
+.quiz-topbar-exit-btn:hover {
+  color: #fff;
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+.quiz-topbar-mute {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.7);
   background: none;
   border: none;
   cursor: pointer;
@@ -1038,25 +1058,8 @@ main.site-main {
   height: 32px;
   border-radius: 50%;
 }
-.quiz-topbar-exit:hover {
-  color: #fff;
-  transform: scale(1.1);
-  background: rgba(255, 255, 255, 0.1);
-}
-.quiz-topbar-mute {
-  font-size: 18px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.15s, background-color 0.15s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
 .quiz-topbar-mute:hover {
+  color: #fff;
   transform: scale(1.1);
   background: rgba(255, 255, 255, 0.1);
 }
@@ -1077,6 +1080,14 @@ main.site-main {
   background: linear-gradient(90deg, #34d399, #fbbf24, #ef4444);
   border-radius: 999px;
   transition: width 0.08s linear;
+}
+.quiz-timer-text {
+  font-weight: 800;
+  font-size: 14px;
+  color: #fbbf24;
+  min-width: 28px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 .quiz-score {
   font-weight: 800;
@@ -1100,6 +1111,7 @@ main.site-main {
 }
 .quiz-question {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1138,6 +1150,7 @@ main.site-main {
   grid-template-columns: 1fr 1fr;
   gap: 14px;
   padding-bottom: 8px;
+  flex-shrink: 0;
 }
 @media (min-width: 601px) {
   .quiz-grid.n-3 .quiz-tile:nth-child(3) {

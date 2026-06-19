@@ -82,7 +82,7 @@ export const chapters = pgTable("chapters", {
  */
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
-  email: text("email").notNull().unique(),
+  email: text("email").notNull().unique("users_email_key"),
   name: text("name").notNull().default(""),
   avatarUrl: text("avatar_url").notNull().default(""),
   role: text("role").notNull(),
