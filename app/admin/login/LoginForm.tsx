@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { login, type ActionState } from "@/app/admin/actions";
 
 const initial: ActionState = {};
@@ -34,7 +33,6 @@ export default function LoginForm() {
   const [remember, setRemember] = useState(true);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
 
   // Prefill com o último e-mail salvo e foca a senha (Keychain/autofill cuidam dela).
   useEffect(() => {
@@ -67,22 +65,23 @@ export default function LoginForm() {
       // ignora
     }
 
-    const go = () => router.push(target);
+    // Navegação REAL (não SPA): é o que faz o Safari/Chrome oferecerem
+    // "Salvar senha?" após o envio do formulário — e depois o Keychain
+    // preenche com Touch ID. router.push (SPA) não dispara esse comportamento.
+    const go = () => window.location.assign(target);
 
-    // Credential Management API (Chromium): salva a senha → habilita o autofill
-    // com Touch ID no próximo login. Em navegadores sem suporte, só navega.
+    // Chromium também aceita salvar explicitamente via Credential Management API.
     const w = window as unknown as { PasswordCredential?: PasswordCredentialCtor };
     if (email && password && w.PasswordCredential && navigator.credentials?.store) {
       try {
         const cred = new w.PasswordCredential({ id: email, password, name: email });
-        // Dispara o save; o prompt do Chrome persiste mesmo após navegar.
         void navigator.credentials.store(cred);
       } catch {
         // sem suporte / bloqueado — segue o fluxo
       }
     }
     go();
-  }, [state, remember, router]);
+  }, [state, remember]);
 
   return (
     <>
