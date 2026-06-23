@@ -6,6 +6,7 @@ import type { ChapterMeta, TrailMeta } from "@/lib/types";
 import type { HomeContent } from "@/lib/settings";
 import type { ReaderQuiz } from "@/lib/quizzes";
 import { useCompletion } from "@/components/completion";
+import CitieMascot from "@/components/CitieMascot";
 
 export default function HomeView({
   chapters,
@@ -31,6 +32,16 @@ export default function HomeView({
   const next = chapters.find((c) => !isDone(c.slug));
   const allDone = total > 0 && doneCount === total;
 
+  const citieBubble = (() => {
+    if (total === 0) return "Ainda não há capítulos por aqui. Em breve! 👀";
+    if (allDone) return `Uau, ${firstName}! Você concluiu tudo. Você é um(a) verdadeiro(a) Citier! 🎉`;
+    if (doneCount === 0) return `Oi, ${firstName}! Pronto(a) para começar? Vamos nessa! 🚀`;
+    if (pct >= 75) return `Quase lá, ${firstName}! Faltam só ${total - doneCount} capítulo(s). Não para agora! 💪`;
+    if (pct >= 50) return `Você já passou da metade, ${firstName}! Continue assim 🔥`;
+    if (pct >= 25) return `Bom ritmo, ${firstName}! ${doneCount} de ${total} concluídos. Tá indo bem 📚`;
+    return `Continue de onde parou, ${firstName}! Cada capítulo conta 😉`;
+  })();
+
   const byTrail = (trailSlug: string) =>
     chapters.filter((c) => c.trailSlug === trailSlug);
   const quizzesByTrail = (trailSlug: string) =>
@@ -38,46 +49,52 @@ export default function HomeView({
 
   return (
     <>
+      {/* Citiezinho — mascote interativo */}
+      <CitieMascot introMessage={citieBubble} />
+
       <div className="home-hub">
         <div className="hero-grid" />
         <div className="hero-glow" />
-        <h1 className="home-hub-greeting">
-          {firstName ? `Olá, ${firstName}` : "Olá"}
-        </h1>
-        <p className="home-hub-sub">
-          {allDone
-            ? "Você concluiu todo o manual de onboarding."
-            : doneCount === 0
-              ? "Comece sua trilha de onboarding."
-              : "Continue sua trilha de onboarding."}
-        </p>
 
-        {total > 0 && (
-          <div className="home-hub-progress">
-            <div className="home-hub-bar">
-              <div className="home-hub-fill" style={{ width: `${pct}%` }} />
+        <div className="home-hub-main">
+          <h1 className="home-hub-greeting">
+            {firstName ? `Olá, ${firstName}` : "Olá"}
+          </h1>
+          <p className="home-hub-sub">
+            {allDone
+              ? "Você concluiu todo o manual de onboarding."
+              : doneCount === 0
+                ? "Comece sua trilha de onboarding."
+                : "Continue sua trilha de onboarding."}
+          </p>
+
+          {total > 0 && (
+            <div className="home-hub-progress">
+              <div className="home-hub-bar">
+                <div className="home-hub-fill" style={{ width: `${pct}%` }} />
+              </div>
+              <span className="home-hub-count">
+                {doneCount} de {total} concluídos
+              </span>
             </div>
-            <span className="home-hub-count">
-              {doneCount} de {total} concluídos
-            </span>
-          </div>
-        )}
+          )}
 
-        {next ? (
-          <Link href={`/c/${next.slug}`} className="home-hub-cta">
-            {doneCount === 0 ? "Começar pelo início" : "Continuar de onde parei"}
-            <span aria-hidden>&nbsp;→</span>
-          </Link>
-        ) : (
-          total > 0 && (
-            <Link
-              href={`/c/${chapters[0].slug}`}
-              className="home-hub-cta secondary"
-            >
-              Revisar o manual<span aria-hidden>&nbsp;→</span>
+          {next ? (
+            <Link href={`/c/${next.slug}`} className="home-hub-cta">
+              {doneCount === 0 ? "Começar pelo início" : "Continuar de onde parei"}
+              <span aria-hidden>&nbsp;→</span>
             </Link>
-          )
-        )}
+          ) : (
+            total > 0 && (
+              <Link
+                href={`/c/${chapters[0].slug}`}
+                className="home-hub-cta secondary"
+              >
+                Revisar o manual<span aria-hidden>&nbsp;→</span>
+              </Link>
+            )
+          )}
+        </div>
       </div>
 
       {trails.map((trail) => {

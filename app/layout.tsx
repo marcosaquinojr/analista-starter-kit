@@ -5,13 +5,13 @@ import "./globals.css";
 const display = Red_Hat_Display({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["500", "700", "800", "900"],
+  weight: ["400", "500", "700", "800", "900"],
 });
 
 const body = Inter({
   variable: "--font-body",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {

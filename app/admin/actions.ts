@@ -45,7 +45,12 @@ import { put, list, del } from "@vercel/blob";
 import { randomUUID } from "node:crypto";
 import { slugify } from "@/lib/slug";
 
-export type ActionState = { error?: string; ok?: boolean; inviteUrl?: string };
+export type ActionState = {
+  error?: string;
+  ok?: boolean;
+  inviteUrl?: string;
+  redirectTo?: string;
+};
 
 const ROLES: Role[] = ["admin", "editor", "leitor"];
 
@@ -133,7 +138,9 @@ export async function login(
     email: user.email,
     role: user.role as Role,
   });
-  redirect(user.role === "leitor" ? "/" : "/admin");
+  // Não redireciona no servidor: devolve sucesso para o cliente salvar a
+  // credencial (Credential Management API → autofill/Touch ID) e então navegar.
+  return { ok: true, redirectTo: "/inicio?welcome=1" };
 }
 
 export async function logout() {
@@ -333,7 +340,8 @@ const ICON_TYPES = [
   "image/webp",
   "image/gif",
 ];
-const ICON_MAX = 512 * 1024; // 512 KB
+const ICON_MAX = 512 * 1024; // 512 KB (ícones de ferramenta)
+const AVATAR_MAX = 5 * 1024 * 1024; // 5 MB (foto de perfil)
 
 export async function uploadToolIcon(
   formData: FormData,
@@ -371,7 +379,8 @@ export async function uploadAvatar(
     return { error: "Selecione uma imagem." };
   if (!ICON_TYPES.includes(file.type))
     return { error: "Formato inválido (use PNG, JPG, WEBP ou GIF)." };
-  if (file.size > ICON_MAX) return { error: "Imagem muito grande (máx. 512 KB)." };
+  if (file.size > AVATAR_MAX)
+    return { error: "Imagem muito grande (máx. 5 MB)." };
 
   const ext = (file.name.split(".").pop() || "png").toLowerCase().slice(0, 5);
   try {
@@ -1062,7 +1071,7 @@ export async function acceptInviteAction(
   if (!user) return { error: "Convite inválido ou expirado." };
 
   await setSession({ uid: user.id, email: user.email, role: user.role as Role });
-  redirect(user.role === "leitor" ? "/" : "/admin");
+  redirect("/inicio?welcome=1");
 }
 
 export async function moveTrail(formData: FormData) {

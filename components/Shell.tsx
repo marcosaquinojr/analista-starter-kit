@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search } from "lucide-react";
+import { Home, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { ChapterMeta, TrailMeta } from "@/lib/types";
 import { useCompletion } from "@/components/completion";
@@ -43,7 +43,7 @@ export default function Shell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { completed, ready, isDone } = useCompletion();
+  const { ready, isDone } = useCompletion();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -79,9 +79,12 @@ export default function Shell({
     });
   };
 
-  const total = chapters.length;
-  const doneCount = ready ? completed.size : 0;
-  const pct = total ? (doneCount / total) * 100 : 0;
+  const roleLabel =
+    user.role === "admin"
+      ? "Administrador"
+      : user.role === "editor"
+        ? "Editor"
+        : "Leitor";
 
   const currentSlug = pathname?.startsWith("/c/")
     ? pathname.split("/")[2]
@@ -133,14 +136,22 @@ export default function Shell({
           </Link>
         </div>
         <div className="header-meta">
-          <div className="header-progress">
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${pct}%` }} />
-            </div>
-            <span className="progress-text">
-              {doneCount} / {total} capítulos
+          <Link href="/conta" className="header-profile" title="Editar perfil">
+            <span className="header-profile-info">
+              <span className="header-profile-name">
+                {user.name?.trim() || "Defina seu nome"}
+              </span>
+              <span className="header-profile-role">{roleLabel}</span>
             </span>
-          </div>
+            <span className="header-profile-avatar" aria-hidden>
+              {user.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.avatarUrl} alt="" />
+              ) : (
+                initials(user.name, user.email)
+              )}
+            </span>
+          </Link>
         </div>
       </header>
 
@@ -175,6 +186,20 @@ export default function Shell({
             />
           </div>
         </div>
+        <ul className="sidebar-nav sidebar-nav--top">
+          <li>
+            <Link
+              href="/inicio"
+              className={pathname === "/inicio" ? "active" : ""}
+            >
+              <span className="num">
+                <Home size={15} />
+              </span>
+              <span className="label">Início</span>
+            </Link>
+          </li>
+        </ul>
+
         {trails.map((trail) => {
           const items = byTrail(trail.slug);
           if (items.length === 0) return null;
@@ -211,22 +236,6 @@ export default function Shell({
         })}
 
         <div className="sidebar-footer">
-          <Link href="/conta" className="sidebar-user" title="Editar perfil">
-            <span className="sidebar-avatar" aria-hidden>
-              {user.avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={user.avatarUrl} alt="" />
-              ) : (
-                initials(user.name, user.email)
-              )}
-            </span>
-            <span className="sidebar-user-id">
-              <span className="sidebar-user-name">
-                {user.name?.trim() || "Defina seu nome"}
-              </span>
-              <span className="sidebar-user-email">{user.email}</span>
-            </span>
-          </Link>
           <div className="sidebar-user-actions">
             {(user.role === "admin" || user.role === "editor") && (
               <Link href="/admin" className="sidebar-admin-link">

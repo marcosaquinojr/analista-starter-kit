@@ -46,7 +46,7 @@ export default async function AdminChrome({
         <div className="admin-header-actions">
           <AdminNav isAdmin={user.role === "admin"} />
           <span className="admin-header-divider" aria-hidden />
-          <Link href="/" className="header-link" target="_blank" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+          <Link href="/inicio" className="header-link" target="_blank" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
             Ver site <ArrowUpRight size={14} />
           </Link>
           <Link href="/conta" className="admin-user" title="Editar perfil">
