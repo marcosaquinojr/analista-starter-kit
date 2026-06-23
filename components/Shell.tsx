@@ -33,13 +33,11 @@ export default function Shell({
   chapters,
   trails,
   user,
-  lastUpdated,
   children,
 }: {
   chapters: ChapterMeta[];
   trails: TrailMeta[];
   user: { email: string; name: string; role: string; avatarUrl: string; onboardingTrack: string };
-  lastUpdated: string | null;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -88,6 +86,11 @@ export default function Shell({
 
   const currentSlug = pathname?.startsWith("/c/")
     ? pathname.split("/")[2]
+    : null;
+
+  // Rodapé "última atualização" é por página: usa a data do capítulo aberto.
+  const currentChapter = currentSlug
+    ? chapters.find((c) => c.slug === currentSlug)
     : null;
 
   const shellClass = [
@@ -254,8 +257,8 @@ export default function Shell({
       <main className="site-main">
         {children}
         <footer className="site-footer">
-          {lastUpdated
-            ? `Última atualização em ${lastUpdated}`
+          {currentChapter
+            ? `Última atualização em ${currentChapter.updatedAt}`
             : "Citiesoft Onboard"}
         </footer>
       </main>

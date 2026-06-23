@@ -3,7 +3,7 @@ import { CompletionProvider } from "@/components/completion";
 import Shell from "@/components/Shell";
 import Toaster from "@/components/Toaster";
 import { getSessionUser } from "@/lib/auth";
-import { getChapters, getLastUpdated } from "@/lib/chapters";
+import { getChapters } from "@/lib/chapters";
 import { getTrails } from "@/lib/trails";
 import { getUserProgress } from "@/lib/progress";
 import { getUserById } from "@/lib/users";
@@ -28,11 +28,10 @@ export default async function SiteLayout({
   const row = await getUserById(user.uid);
   const track = row?.onboardingTrack ?? "negocios";
 
-  const [chapters, trails, completed, lastUpdated] = await Promise.all([
+  const [chapters, trails, completed] = await Promise.all([
     getChapters(track),
     getTrails(),
     getUserProgress(user.uid),
-    getLastUpdated(),
   ]);
 
   return (
@@ -47,7 +46,6 @@ export default async function SiteLayout({
           avatarUrl: row?.avatarUrl ?? "",
           onboardingTrack: track,
         }}
-        lastUpdated={lastUpdated}
       >
         {children}
       </Shell>
