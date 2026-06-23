@@ -34,21 +34,57 @@ export default function LoginForm() {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  // Prefill com o último e-mail salvo e foca a senha (Keychain/autofill cuidam dela).
+  // Pré-preenchimento ao abrir o login.
   useEffect(() => {
-    let saved: string | null = null;
-    try {
-      saved = localStorage.getItem(LAST_EMAIL_KEY);
-    } catch {
-      // ignora storage indisponível
+    let cancelled = false;
+
+    function fallbackEmail() {
+      if (cancelled) return;
+      let saved: string | null = null;
+      try {
+        saved = localStorage.getItem(LAST_EMAIL_KEY);
+      } catch {
+        // ignora storage indisponível
+      }
+      if (saved && emailRef.current) {
+        emailRef.current.value = saved;
+        setRemember(true);
+        passwordRef.current?.focus();
+      } else {
+        emailRef.current?.focus();
+      }
     }
-    if (saved && emailRef.current) {
-      emailRef.current.value = saved;
-      setRemember(true);
-      passwordRef.current?.focus();
-    } else {
-      emailRef.current?.focus();
+
+    async function prefill() {
+      // 1) Chromium: puxa a credencial salva e preenche e-mail E senha.
+      //    mediation "optional" → silencioso quando permitido; senão devolve null.
+      try {
+        if ("PasswordCredential" in window && navigator.credentials?.get) {
+          const cred = (await navigator.credentials.get({
+            password: true,
+            mediation: "optional",
+          } as CredentialRequestOptions)) as
+            | (Credential & { id?: string; password?: string })
+            | null;
+          if (!cancelled && cred && cred.type === "password") {
+            if (cred.id && emailRef.current) emailRef.current.value = cred.id;
+            if (cred.password && passwordRef.current)
+              passwordRef.current.value = cred.password;
+            setRemember(true);
+            return;
+          }
+        }
+      } catch {
+        // sem suporte / bloqueado → segue pro fallback
+      }
+      // 2) Safari e demais: só o e-mail (o autofill nativo cuida da senha no foco).
+      fallbackEmail();
     }
+
+    prefill();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // No sucesso: salva o e-mail, registra a credencial (Touch ID/autofill) e navega.
