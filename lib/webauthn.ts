@@ -10,7 +10,7 @@ import { webauthnCredentials } from "@/lib/db/schema";
  * e credenciais "discoverable" (resident keys) → login sem precisar do e-mail.
  */
 
-export const RP_NAME = "Citiesoft Academy";
+export const RP_NAME = "Citiesoft Onboard";
 const CHALLENGE_COOKIE = "ck_wa_chal";
 
 /** Deriva rpID + origin do host da requisição (vale em localhost e em prod). */

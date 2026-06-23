@@ -23,7 +23,7 @@ export async function generateMetadata({
   const chapter = await getChapter(slug);
   if (!chapter) return { title: "Capítulo não encontrado" };
   return {
-    title: `${chapter.number} ${chapter.title} — Citiesoft Academy`,
+    title: `${chapter.number} ${chapter.title} — Citiesoft Onboard`,
     description: chapter.description,
   };
 }

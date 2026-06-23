@@ -130,7 +130,7 @@ export default function Shell({
               <CtMark size={30} />
             </span>
             <div className="brand-text">
-              <span className="brand-title">Citiesoft Academy</span>
+              <span className="brand-title">Citiesoft Onboard</span>
               <span className="brand-sub">Onboarding para novos membros</span>
             </div>
           </Link>
@@ -256,7 +256,7 @@ export default function Shell({
         <footer className="site-footer">
           {lastUpdated
             ? `Última atualização em ${lastUpdated}`
-            : "Citiesoft Academy"}
+            : "Citiesoft Onboard"}
         </footer>
       </main>
     </div>

@@ -15,9 +15,9 @@ const body = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Citiesoft Academy",
+  title: "Citiesoft Onboard",
   description:
-    "Plataforma de onboarding para novos analistas de negócio da Citiesoft.",
+    "Plataforma de onboarding para novos membros da Citiesoft.",
 };
 
 export default function RootLayout({

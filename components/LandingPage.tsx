@@ -123,7 +123,7 @@ export default function LandingPage() {
               color: "#3c3c3c",
             }}
           >
-            Citiesoft Academy
+            Citiesoft Onboard
           </span>
         </div>
       </nav>

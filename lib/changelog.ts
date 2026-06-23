@@ -34,7 +34,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   },
   {
     date: "16/06/2026",
-    title: "Citiesoft Academy — base",
+    title: "Citiesoft Onboard — base",
     items: [
       "Sistema de acessos próprio (papéis, convites por link)",
       "Editor de capítulos (Tiptap), trilhas e progresso por usuário",

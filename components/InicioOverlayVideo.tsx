@@ -22,7 +22,7 @@ export default function InicioOverlayVideo({ userName }: { userName: string }) {
     <div className="vboot" aria-hidden>
       <div className="vboot-inner">
         <span className="vboot-greeting">
-          {firstName ? `Olá, ${firstName}` : "Citiesoft Academy"}
+          {firstName ? `Olá, ${firstName}` : "Citiesoft Onboard"}
         </span>
 
         <div className="vboot-stage">

@@ -7,6 +7,7 @@ import { getSessionUser } from "@/lib/auth";
 import { getUserById } from "@/lib/users";
 import { listUserCredentials } from "@/lib/webauthn";
 import { passkeyRemove } from "@/app/admin/webauthn-actions";
+import { PASSKEY_ENABLED } from "@/lib/flags";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export default async function AccountPage() {
   const user = await getUserById(session.uid);
   if (!user) redirect("/admin/login");
 
-  const passkeys = await listUserCredentials(user.id);
+  const passkeys = PASSKEY_ENABLED ? await listUserCredentials(user.id) : [];
 
   return (
     <div className="account">
@@ -34,6 +35,7 @@ export default async function AccountPage() {
         avatarUrl={user.avatarUrl}
       />
 
+      {PASSKEY_ENABLED && (
       <section className="account-passkeys">
         <h2 className="account-section-title">
           <Fingerprint size={18} /> Login com Touch ID
@@ -74,6 +76,7 @@ export default async function AccountPage() {
 
         <PasskeyManager />
       </section>
+      )}
     </div>
   );
 }

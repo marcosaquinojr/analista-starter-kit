@@ -14,7 +14,7 @@ export default function InicioOverlay({ userName }: { userName: string }) {
       window.history.replaceState(null, "", url.pathname + url.search);
     }
   }, []);
-  const greeting = firstName ? `Olá, ${firstName}` : "Citiesoft Academy";
+  const greeting = firstName ? `Olá, ${firstName}` : "Citiesoft Onboard";
 
   return (
     <div className="boot-overlay" aria-hidden>

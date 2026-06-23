@@ -26,7 +26,7 @@ export default async function InvitePage({
           <h1 className="landing-title">Definir sua senha</h1>
           <p className="landing-sub">
             Olá{user.name ? `, ${user.name}` : ""}! Crie uma senha para acessar a
-            Citiesoft Academy com <strong>{user.email}</strong>.
+            Citiesoft Onboard com <strong>{user.email}</strong>.
           </p>
           <AcceptForm token={token} />
         </>
