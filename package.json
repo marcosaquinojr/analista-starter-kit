@@ -24,6 +24,8 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
+    "@simplewebauthn/browser": "^13.3.0",
+    "@simplewebauthn/server": "^13.3.1",
     "@tiptap/extension-link": "^3.24.0",
     "@tiptap/extension-table": "^3.24.0",
     "@tiptap/extension-table-cell": "^3.24.0",

@@ -1,5 +1,6 @@
 import AuthShell from "@/components/AuthShell";
 import LoginForm from "./LoginForm";
+import PasskeyLoginButton from "@/components/PasskeyLoginButton";
 import { CtMark } from "@/components/Logo";
 
 export default function LoginPage() {
@@ -13,6 +14,7 @@ export default function LoginPage() {
         Entre com a conta que você recebeu por convite.
       </p>
       <LoginForm />
+      <PasskeyLoginButton />
     </AuthShell>
   );
 }

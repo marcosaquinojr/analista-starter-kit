@@ -95,6 +95,24 @@ export const users = pgTable("users", {
 });
 
 /**
+ * Credenciais WebAuthn (passkeys) por usuário. Permite login com o desbloqueio
+ * do dispositivo (Touch ID / senha do Mac) sem senha. Uma linha = um dispositivo
+ * cadastrado. `id` é o credentialID (base64url); `publicKey` é a chave pública
+ * (base64url); `counter` previne replay.
+ */
+export const webauthnCredentials = pgTable("webauthn_credentials", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  publicKey: text("public_key").notNull(),
+  counter: integer("counter").notNull().default(0),
+  transports: text("transports").notNull().default(""),
+  deviceName: text("device_name").notNull().default(""),
+  createdAt: text("created_at").notNull(),
+});
+
+/**
  * Progresso de leitura por pessoa. Uma linha = um capítulo concluído por um
  * usuário (presença da linha = concluído). Cascade: some junto com o usuário
  * ou com o capítulo. Substitui o antigo localStorage por dado durável no banco.

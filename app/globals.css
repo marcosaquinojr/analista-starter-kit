@@ -4037,6 +4037,138 @@ main.site-main {
   align-items: center;
   line-height: 1.2;
 }
+
+/* ── Login com Touch ID (passkey) ────────────────────────────────────────── */
+.passkey-login {
+  margin-top: 18px;
+}
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px;
+  color: var(--text3);
+  font-size: 12px;
+}
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border2);
+}
+.passkey-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body), sans-serif;
+  color: var(--blue);
+  background: var(--bg);
+  border: 1.5px solid var(--blue);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.05s;
+}
+.passkey-btn:hover:not(:disabled) {
+  background: var(--blue-50);
+  box-shadow: 0 0 0 3px var(--blue-glow);
+}
+.passkey-btn:active {
+  transform: translateY(1px);
+}
+.passkey-btn:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+/* ── Gerenciar passkeys na conta ─────────────────────────────────────────── */
+.account-passkeys {
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+.account-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.account-section-title svg {
+  color: var(--blue);
+}
+.passkey-list {
+  list-style: none;
+  margin: 16px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.passkey-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+.passkey-item-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--blue);
+  min-width: 0;
+}
+.passkey-item-info > span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.passkey-item-info strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.passkey-item-info small {
+  font-size: 12px;
+  color: var(--text3);
+}
+.passkey-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text2);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.passkey-remove:hover {
+  color: var(--bad);
+  border-color: var(--bad);
+  background: var(--bg2);
+}
+.passkey-manager {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
 .landing-footer {
   position: absolute;
   z-index: 2;
