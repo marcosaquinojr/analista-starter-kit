@@ -43,7 +43,7 @@ export const seedChapters: Chapter[] = [
   <li>Pergunte o motivo antes de criticar (<em>"O que te levou a propor isso?"</em>).</li>
   <li>Apresente sua leitura com evidência, não com tom.</li>
   <li>Proponha uma alternativa, não só um veto.</li>
-  <li>Se persiste o desacordo, escalonem juntos pra um terceiro.</li>
+  <li>Se o desacordo persistir, escale o caso para um terceiro.</li>
 </ol>
 <h2>O que NÃO acontece aqui</h2>
 <p>Algumas práticas comuns em outros lugares são <strong>explicitamente evitadas</strong>:</p>
@@ -284,16 +284,16 @@ export const seedChapters: Chapter[] = [
     trailSlug: "rotina",
     title: "Ferramentas",
     description:
-      "Azure DevOps, Teams, Confluence — pra que serve cada uma na prática.",
+      "Azure DevOps, Teams, SharePoint — pra que serve cada uma na prática.",
     readTime: "6 min de leitura",
     updatedAt: "19/05/2026",
     bodyHtml: `
 <h2>Stack do analista</h2>
 <p>Você vai viver em ~4 ferramentas. Cada uma tem um propósito claro — usar a errada vira retrabalho.</p>
 <div class="cards">
-  <div class="card"><div class="card-title">Azure DevOps</div><div class="card-desc">Onde os PBIs vivem. Onde devs lêem o que você escreve. Onde o sprint roda.</div></div>
+  <div class="card"><div class="card-title">Azure DevOps</div><div class="card-desc">Onde os PBIs vivem. Onde devs leem o que você escreve. Onde o sprint roda.</div></div>
   <div class="card"><div class="card-title">Microsoft Teams</div><div class="card-desc">Reuniões, chat de squad, comunicação rápida com cliente quando autorizado.</div></div>
-  <div class="card"><div class="card-title">Sharepoint / OneDrive</div><div class="card-desc">Documentos formais. Atas, BRDs longos, materiais de cliente.</div></div>
+  <div class="card"><div class="card-title">SharePoint / OneDrive</div><div class="card-desc">Documentos formais. Atas, BRDs longos, materiais de cliente.</div></div>
   <div class="card"><div class="card-title">Lucid / Miro</div><div class="card-desc">Diagramas BPMN, jornadas, mapas mentais durante discovery.</div></div>
 </div>
 <h2>Azure DevOps na prática</h2>
@@ -321,8 +321,8 @@ export const seedChapters: Chapter[] = [
   <li><strong>Canal do cliente</strong>: quando autorizado pelo gestor da conta. Comunicação formal.</li>
   <li><strong>Reuniões</strong>: pause a gravação automática pra discovery sensível (LGPD).</li>
 </ul>
-<div class="callout"><div class="callout-label">Regra de ouro</div>Decisão tomada no Teams precisa virar resumo escrito no Azure DevOps ou no Sharepoint. Se não virar, é como se não existisse.</div>
-<h2>Sharepoint / OneDrive</h2>
+<div class="callout"><div class="callout-label">Regra de ouro</div>Decisão tomada no Teams precisa virar resumo escrito no Azure DevOps ou no SharePoint. Se não virar, é como se não existisse.</div>
+<h2>SharePoint / OneDrive</h2>
 <p>Pra documentos que precisam <strong>durar</strong>. Ata de kick-off, BRD entregue, especificações longas, materiais que o cliente precisa anexar a um processo formal.</p>
 <h3>Organização padrão</h3>
 <ul>
@@ -335,7 +335,7 @@ export const seedChapters: Chapter[] = [
 <p>Você lida com dado pessoal de cliente, servidor e cidadão. Quatro hábitos inegociáveis:</p>
 <ul>
   <li>Não compartilhe dado pessoal de cliente ou colega sem autorização.</li>
-  <li>Guarde documento com dado pessoal só em sistema seguro e autorizado — o Sharepoint do cliente, não o seu desktop.</li>
+  <li>Guarde documento com dado pessoal só em sistema seguro e autorizado — o SharePoint do cliente, não o seu desktop.</li>
   <li>Suspeita de vazamento? Comunique o RH na hora.</li>
   <li>Pause a gravação do Teams em discovery sensível e registre "pausado por LGPD".</li>
 </ul>
@@ -367,7 +367,7 @@ export const seedChapters: Chapter[] = [
   <div class="card"><div class="card-title">Casos de uso</div><div class="card-desc">Sistema com fluxos múltiplos. Padrão UML simplificado.</div></div>
   <div class="card"><div class="card-title">BPMN do processo</div><div class="card-desc">Quando o processo é o produto. Notação BPMN 2.0 padrão.</div></div>
   <div class="card"><div class="card-title">Matriz de stakeholders</div><div class="card-desc">Pra projetos com mais de 5 atores envolvidos. Quem decide × quem influencia.</div></div>
-  <div class="card"><div class="card-title">Ata de reunião</div><div class="card-desc">Decisões + responsáveis + prazos. Curta. Vai no Sharepoint do cliente.</div></div>
+  <div class="card"><div class="card-title">Ata de reunião</div><div class="card-desc">Decisões + responsáveis + prazos. Curta. Vai no SharePoint do cliente.</div></div>
 </div>
 <h2>Qual template escolher?</h2>
 <table>
@@ -379,8 +379,7 @@ export const seedChapters: Chapter[] = [
   <tr><td>Projeto com muitos atores políticos</td><td>Matriz de stakeholders + BRD</td></tr>
 </table>
 <h2>Como acessar os templates</h2>
-<p>Os templates moram em <em>Sharepoint &gt; Citiesoft &gt; templates-analista</em>. Copie a versão mais recente, salve no Sharepoint do cliente, depois preencha. Não edite o template-mãe.</p>
-<div class="callout"><div class="callout-label">Localização exata</div>A definir após resposta do form (Q3 — onde mora hoje o conhecimento). Pode ser que migremos pra Confluence se o time pedir.</div>
+<p>Os templates moram em <em>SharePoint &gt; Citiesoft &gt; templates-analista</em>. Copie a versão mais recente, salve no SharePoint do cliente, depois preencha. Não edite o template-mãe.</p>
 <h2>Quando o template não cabe</h2>
 <p>Se a demanda é tão específica que nenhum template encaixa, <strong>fale com seu mentor antes de criar do zero</strong>. Provavelmente:</p>
 <ul>
@@ -467,9 +466,8 @@ export const seedChapters: Chapter[] = [
     readTime: "Consulta livre",
     updatedAt: "19/05/2026",
     bodyHtml: `
-<div class="callout"><div class="callout-label">Esqueleto</div>Perguntas iniciais baseadas em padrões comuns. Serão complementadas com a Q5 do form (tipo de pergunta nas 2 primeiras semanas).</div>
 <h2>Trabalho diário</h2>
-<div class="faq-item"><div class="q">Onde encontro a documentação do cliente X?</div><div class="a">Sharepoint do cliente em <em>/clientes/[nome]/01-contrato</em>. Se não tem permissão, peça ao gestor da conta. Não tente conseguir por jeitinhos.</div></div>
+<div class="faq-item"><div class="q">Onde encontro a documentação do cliente X?</div><div class="a">SharePoint do cliente em <em>/clientes/[nome]/01-contrato</em>. Se não tem permissão, peça ao gestor da conta. Não tente conseguir por jeitinhos.</div></div>
 <div class="faq-item"><div class="q">Como eu sei quando minha entrega está "pronta"?</div><div class="a">Critério: o decisor mapeado no briefing aceita sem ajustes substantivos. Pequenos ajustes de redação são esperados. Mais de 3 ajustes substantivos = briefing falhou (Cap. 05).</div></div>
 <div class="faq-item"><div class="q">Com quem falo se eu travar?</div><div class="a">Mentor pareado (primeiros 60 dias). Depois: outro analista do squad. Em último caso: PO. Veja o mapa "Pra cada coisa, fala com…" no Cap. 02.</div></div>
 <div class="faq-item"><div class="q">É normal demorar 2 semanas pra entender o que o cliente quer?</div><div class="a">Sim. Discovery bem-feita ganha tempo lá na frente. Se passar de 3 semanas sem progresso, alinhe com o mentor — pode ser briefing inicial mal feito.</div></div>
@@ -481,7 +479,7 @@ export const seedChapters: Chapter[] = [
 <h2>Cultura e pessoas</h2>
 <div class="faq-item"><div class="q">É normal eu não entender metade das siglas nas primeiras semanas?</div><div class="a">Sim. Use o Cap. 03 (Glossário) e pergunte sem culpa. Sigla que você não entendeu provavelmente outro também não — perguntar ajuda o time todo.</div></div>
 <div class="faq-item"><div class="q">Posso discordar publicamente da decisão do PO?</div><div class="a">Sim, antes da decisão estar fechada. Use o padrão do Cap. 01 (Como discordar bem). Depois de fechada, sustente o combinado.</div></div>
-<div class="faq-item"><div class="q">Qual a diferença entre este kit e o Manual de Conduta?</div><div class="a">O kit é o guia prático do seu trabalho de analista. O Manual de Conduta (RH) é a regra oficial, com peso legal, que vale pra toda a empresa. Conduta, jornada, LGPD e direitos: o resumo prático está no Cap. 04; a versão oficial, no Manual. Em conflito, vale o Manual.</div></div>
+<div class="faq-item"><div class="q">Qual a diferença entre este guia e o Manual de Conduta?</div><div class="a">O Citiesoft Onboard é o guia prático do seu trabalho de analista. O Manual de Conduta (RH) é a regra oficial, com peso legal, que vale pra toda a empresa. Conduta, jornada, LGPD e direitos: o resumo prático está no Cap. 04; a versão oficial, no Manual. Em conflito, vale o Manual.</div></div>
 <div class="faq-item"><div class="q">Quantas horas devo trabalhar?</div><div class="a">As do contrato. Hora extra eventual acontece, hora extra recorrente é sinal de processo quebrado — leve pro mentor. Aqui ninguém ganha ponto por queimar fim de semana.</div></div>
 `,
   },
@@ -495,7 +493,7 @@ export const seedChapters: Chapter[] = [
     readTime: "6 min de leitura",
     updatedAt: "19/05/2026",
     bodyHtml: `
-<div class="callout"><div class="callout-label">Esqueleto</div>Lista será refinada com base na Q6 do form (erro que se repete nos 3 primeiros meses). Abaixo, as hipóteses iniciais — todas observadas em mais de um contrato.</div>
+<div class="callout"><div class="callout-label">Como ler este capítulo</div>Os erros abaixo se repetem nos primeiros meses e foram observados em mais de um contrato. Reconhecer o sintoma cedo evita o retrabalho.</div>
 <h2>1. Escopo mal entendido</h2>
 <p><strong>Sintoma</strong>: cliente devolve o artefato com "isso não é o que pedi".</p>
 <p><strong>Causa raiz</strong>: briefing pulou a etapa de confirmação. O analista anotou o que ouviu mas não repetiu pro cliente pra confirmar.</p>
@@ -539,7 +537,7 @@ export const seedChapters: Chapter[] = [
   <li>Você produz um PBI bom sem precisar do mentor revisar antes</li>
   <li>Sabe quando comprimir e quando alongar a etapa de discovery</li>
   <li>Identifica o decisor real sem ter que perguntar 3 vezes</li>
-  <li>Outro analista te pede ajuda — isso significa que viraste referência em algo</li>
+  <li>Outro analista te pede ajuda — isso significa que você virou referência em algo</li>
 </ul>
 <p>Tipicamente acontece entre 4 e 8 meses de casa. Depois disso, você escolhe uma direção pra aprofundar.</p>
 <h2>Trilhas de aprofundamento</h2>
@@ -566,7 +564,7 @@ export const seedChapters: Chapter[] = [
 <h3>Comunidades</h3>
 <ul>
   <li><strong>IIBA Brasil</strong>: encontros locais e online.</li>
-  <li><strong>Slack / Discord de Analistas</strong>: comunidades informais, alta-velocidade.</li>
+  <li><strong>Slack / Discord de Analistas</strong>: comunidades informais e de alta velocidade.</li>
 </ul>
 <h2>Marcos da carreira aqui</h2>
 <table>

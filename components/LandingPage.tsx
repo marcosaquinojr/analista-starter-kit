@@ -241,7 +241,7 @@ export default function LandingPage() {
             gap: "5px",
           }}
         >
-          Desenvolvido pelo <span style={{ color: "#146bfa" }}>Citiesoft</span>
+          Desenvolvido pela <span style={{ color: "#146bfa" }}>Citiesoft</span>
         </span>
       </footer>
     </div>
