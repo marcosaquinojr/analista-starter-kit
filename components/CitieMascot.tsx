@@ -3,24 +3,35 @@
 import { useEffect, useRef, useState } from "react";
 
 const MOTIVACIONAIS = [
-  "Cada capítulo te deixa mais Citier! 💙",
-  "Foco no progresso, não na perfeição. 🚀",
-  "Você tá indo muito bem. Bora pra próxima? 🔥",
-  "Conhecimento é o melhor investimento. 📚",
-  "Um passo de cada vez chega longe. 👣",
-  "Bora aprender algo novo hoje? ✨",
-  "Confia no processo — você consegue! 💪",
-  "Tamo junto nessa jornada! 🤝",
-];
+  { text: "Cada capítulo te deixa mais Citier! 💙", pose: "heart" },
+  { text: "Foco no progresso, não na perfeição. 🚀", pose: "star_idea" },
+  { text: "Você tá indo muito bem. Bora pra próxima? 🔥", pose: "celebrating_fists" },
+  { text: "Conhecimento é o melhor investimento. 📚", pose: "clipboard" },
+  { text: "Um passo de cada vez chega longe. 👣", pose: "dancing" },
+  { text: "Bora aprender algo novo hoje? ✨", pose: "laptop" },
+  { text: "Confia no processo — você consegue! 💪", pose: "flexing" },
+  { text: "Tamo junto nessa jornada! 🤝", pose: "peace_sign" },
+] as const;
+
+const INTRO_POSE = "waving";
+const IDLE_POSE = "thumbs_up";
+
+function citiePose(pose: string) {
+  return `/citiezinho/${pose}.png`;
+}
 
 export default function CitieMascot({ introMessage }: { introMessage: string }) {
   const [phase, setPhase] = useState<"intro" | "idle" | "talking">("intro");
   const [message, setMessage] = useState(introMessage);
+  const [pose, setPose] = useState<string>(INTRO_POSE);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Após alguns segundos falando a saudação, colapsa para a versão 2D.
   useEffect(() => {
-    const t = setTimeout(() => setPhase("idle"), 6500);
+    const t = setTimeout(() => {
+      setPhase("idle");
+      setPose(IDLE_POSE);
+    }, 6500);
     return () => clearTimeout(t);
   }, []);
 
@@ -32,12 +43,16 @@ export default function CitieMascot({ introMessage }: { introMessage: string }) 
   );
 
   function speak() {
-    const phrase =
+    const pick =
       MOTIVACIONAIS[Math.floor(Math.random() * MOTIVACIONAIS.length)];
-    setMessage(phrase);
+    setMessage(pick.text);
+    setPose(pick.pose);
     setPhase("talking");
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setPhase("idle"), 5500);
+    timer.current = setTimeout(() => {
+      setPhase("idle");
+      setPose(IDLE_POSE);
+    }, 5500);
   }
 
   const isIntro = phase === "intro";
@@ -60,7 +75,7 @@ export default function CitieMascot({ introMessage }: { introMessage: string }) 
         {isIntro ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src="/citiezinho.png"
+            src={citiePose(pose)}
             alt=""
             width={64}
             height={64}
@@ -70,7 +85,12 @@ export default function CitieMascot({ introMessage }: { introMessage: string }) 
           <span className="citie-chip">
             <span className="citie-chip-face">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/citiezinho.png" alt="" className="citie-chip-img" />
+              <img
+                src={citiePose(pose)}
+                alt=""
+                key={pose}
+                className="citie-chip-img"
+              />
             </span>
             <span className="citie-chip-dot" aria-hidden />
           </span>
