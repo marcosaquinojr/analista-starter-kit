@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import HomeView from "@/components/HomeView";
 import InicioOverlay from "@/components/InicioOverlay";
 import InicioOverlayVideo from "@/components/InicioOverlayVideo";
@@ -10,11 +11,12 @@ import { getReaderQuizzes } from "@/lib/quizzes";
 import { getSessionUser } from "@/lib/auth";
 import { getUserById } from "@/lib/users";
 import { getAreas } from "@/lib/areas";
+import { PREVIEW_AREA_COOKIE } from "@/lib/session-cookie";
 
 export default async function InicioPage({
   searchParams,
 }: {
-  searchParams: Promise<{ area?: string; welcome?: string; boot?: string }>;
+  searchParams: Promise<{ welcome?: string; boot?: string }>;
 }) {
   const user = await getSessionUser();
   if (!user) redirect("/admin/login");
@@ -24,17 +26,26 @@ export default async function InicioPage({
   const isPrivileged = user.role === "admin" || user.role === "editor";
 
   const sp = await searchParams;
-  const viewingArea = isPrivileged && sp.area ? sp.area : ownTrack;
   const showWelcome = sp.welcome === "1";
   // ?boot=glitch mostra o boot glitch; padrão (ou ?boot=video) usa o vídeo.
   const bootStyle = sp.boot === "glitch" ? "glitch" : "video";
 
-  const [chapters, trails, home, quizzes, areas] = await Promise.all([
+  // Preview de área via cookie (mesma fonte que o layout/sidebar usa).
+  const areas = isPrivileged ? await getAreas() : [];
+  const cookieStore = await cookies();
+  const previewSlug = isPrivileged
+    ? cookieStore.get(PREVIEW_AREA_COOKIE)?.value
+    : undefined;
+  const viewingArea =
+    previewSlug && areas.some((a) => a.slug === previewSlug)
+      ? previewSlug
+      : ownTrack;
+
+  const [chapters, trails, home, quizzes] = await Promise.all([
     getChapters(viewingArea),
     getTrails(),
     getHomeContent(),
     getReaderQuizzes(viewingArea, user.uid),
-    isPrivileged ? getAreas() : Promise.resolve([]),
   ]);
 
   const userName = row?.name ?? "";

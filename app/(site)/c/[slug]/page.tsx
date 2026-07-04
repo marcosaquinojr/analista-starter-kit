@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { Clock, Pin } from "lucide-react";
 import type { Metadata } from "next";
 import { getChapter, getChapters, getChapterSlugs } from "@/lib/chapters";
@@ -8,6 +9,7 @@ import { getChapterAreaSlugs } from "@/lib/areas";
 import ChapterComplete from "@/components/ChapterComplete";
 import { getSessionUser } from "@/lib/auth";
 import { getUserById } from "@/lib/users";
+import { PREVIEW_AREA_COOKIE } from "@/lib/session-cookie";
 
 export async function generateStaticParams() {
   const slugs = await getChapterSlugs();
@@ -43,14 +45,29 @@ export default async function ChapterPage({
   const chapter = await getChapter(slug);
   if (!chapter) notFound();
 
-  // Só acessa o capítulo quem é da área dele (via chapter_areas). Capítulo sem
-  // área (rascunho) não é acessível por ninguém no leitor.
+  // Só acessa o capítulo quem é da área dele (via chapter_areas). Admin/editor
+  // pode abrir capítulo publicado de qualquer área (preview do "Visualizando
+  // como"). Capítulo sem área (rascunho) segue oculto no leitor pra todos.
   const chapterAreaSlugs = await getChapterAreaSlugs(slug);
-  if (!chapterAreaSlugs.includes(track)) {
+  const isPrivileged = user.role === "admin" || user.role === "editor";
+  const inOwnArea = chapterAreaSlugs.includes(track);
+  if (!inOwnArea && (!isPrivileged || chapterAreaSlugs.length === 0)) {
     notFound();
   }
 
-  const [all, trails] = await Promise.all([getChapters(track), getTrails()]);
+  // Anterior/próximo seguem a área em visualização: se há preview ativo
+  // (cookie) e o capítulo pertence a ela, navega nela; senão, a própria área
+  // da pessoa ou a primeira área do capítulo (preview sem cookie casado).
+  const previewSlug = isPrivileged
+    ? (await cookies()).get(PREVIEW_AREA_COOKIE)?.value
+    : undefined;
+  const listArea =
+    previewSlug && chapterAreaSlugs.includes(previewSlug)
+      ? previewSlug
+      : inOwnArea
+        ? track
+        : chapterAreaSlugs[0];
+  const [all, trails] = await Promise.all([getChapters(listArea), getTrails()]);
   const idx = all.findIndex((c) => c.slug === slug);
   const prev = idx > 0 ? all[idx - 1] : null;
   const next = idx < all.length - 1 ? all[idx + 1] : null;

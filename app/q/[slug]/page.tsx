@@ -22,11 +22,15 @@ export default async function QuizPlayPage({
   const row = await getUserById(user.uid);
   const area = row?.onboardingTrack ?? "negocios";
 
-  // Acesso: o quiz precisa ser da área da pessoa…
-  if (quiz.areaSlugs.length > 0 && !quiz.areaSlugs.includes(area)) notFound();
-  // …e todos os pré-requisitos concluídos (defesa; o card já bloqueia).
-  const done = new Set(await getUserProgress(user.uid));
-  if (quiz.prereqSlugs.some((s) => !done.has(s))) notFound();
+  // Acesso: o quiz precisa ser da área da pessoa e ter os pré-requisitos
+  // concluídos (defesa; o card já bloqueia). Admin/editor pula as duas
+  // travas pra poder testar o quiz de qualquer área.
+  const isPrivileged = user.role === "admin" || user.role === "editor";
+  if (!isPrivileged) {
+    if (quiz.areaSlugs.length > 0 && !quiz.areaSlugs.includes(area)) notFound();
+    const done = new Set(await getUserProgress(user.uid));
+    if (quiz.prereqSlugs.some((s) => !done.has(s))) notFound();
+  }
 
   return (
     <QuizPlay

@@ -1,7 +1,9 @@
 "use client";
 
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import type { AreaMeta } from "@/lib/types";
+import { setPreviewArea } from "@/app/admin/actions";
 
 export default function AreaSwitcher({
   areas,
@@ -11,13 +13,15 @@ export default function AreaSwitcher({
   currentArea: string;
 }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [pending, startTransition] = useTransition();
 
+  // Preview via cookie (server action) em vez de ?area=: assim a sidebar
+  // (montada no layout, sem acesso a searchParams) acompanha a troca.
   function switchArea(slug: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("area", slug);
-    router.push(`${pathname}?${params.toString()}`);
+    startTransition(async () => {
+      await setPreviewArea(slug);
+      router.refresh();
+    });
   }
 
   return (
@@ -30,6 +34,7 @@ export default function AreaSwitcher({
             type="button"
             className={`area-pill${a.slug === currentArea ? " area-pill--active" : ""}`}
             onClick={() => switchArea(a.slug)}
+            disabled={pending}
             title={a.description || a.name}
           >
             {a.name}

@@ -1,6 +1,7 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { PREVIEW_AREA_COOKIE } from "@/lib/session-cookie";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { and, asc, eq, inArray } from "drizzle-orm";
@@ -56,6 +57,41 @@ const ROLES: Role[] = ["admin", "editor", "leitor"];
 
 /** Quem pode editar conteúdo (capítulos e trilhas). */
 const canEdit = () => requireRole("admin", "editor");
+
+/**
+ * Liga/desliga o "Visualizando como" (preview de área) do admin/editor.
+ * Grava a área num cookie pra sidebar (layout), home e capítulos seguirem
+ * juntos. Slug vazio ou igual à própria área do usuário = sai do preview.
+ */
+export async function setPreviewArea(areaSlug: string): Promise<void> {
+  const session = await getSessionUser();
+  if (!session || (session.role !== "admin" && session.role !== "editor")) return;
+  const store = await cookies();
+
+  let clear = !areaSlug;
+  if (!clear) {
+    const [row] = await db
+      .select({ slug: areas.slug })
+      .from(areas)
+      .where(eq(areas.slug, areaSlug))
+      .limit(1);
+    if (!row) clear = true; // área inexistente: melhor sair do preview
+    const user = await getUserById(session.uid);
+    if (user && user.onboardingTrack === areaSlug) clear = true;
+  }
+
+  if (clear) {
+    store.delete(PREVIEW_AREA_COOKIE);
+  } else {
+    store.set(PREVIEW_AREA_COOKIE, areaSlug, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 4, // preview não deve "grudar" — expira em 4h
+    });
+  }
+}
 
 async function origin(): Promise<string> {
   const h = await headers();

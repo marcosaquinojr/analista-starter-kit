@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search } from "lucide-react";
+import { Eye, Home, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { ChapterMeta, TrailMeta } from "@/lib/types";
 import { useCompletion } from "@/components/completion";
@@ -33,11 +33,13 @@ export default function Shell({
   chapters,
   trails,
   user,
+  previewArea,
   children,
 }: {
   chapters: ChapterMeta[];
   trails: TrailMeta[];
   user: { email: string; name: string; role: string; avatarUrl: string; onboardingTrack: string };
+  previewArea?: string | null;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -189,6 +191,12 @@ export default function Shell({
             />
           </div>
         </div>
+        {previewArea && (
+          <div className="sidebar-preview" title="Você está visualizando a trilha de outra área">
+            <Eye size={13} aria-hidden />
+            <span>Visualizando: {previewArea}</span>
+          </div>
+        )}
         <ul className="sidebar-nav sidebar-nav--top">
           <li>
             <Link
