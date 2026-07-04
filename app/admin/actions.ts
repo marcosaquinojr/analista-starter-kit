@@ -21,6 +21,7 @@ import {
 import { quizExists } from "@/lib/quizzes";
 import {
   verifyPassword,
+  hashPassword,
   setSession,
   clearSession,
   getSessionUser,
@@ -36,6 +37,7 @@ import {
   deleteUser,
   setUserRole,
   setUserProfile,
+  setUserPassword,
   countAdmins,
   setUserTrack,
 } from "@/lib/users";
@@ -362,6 +364,35 @@ export async function updateOwnProfile(
   await logAction("profile.update", name);
   revalidatePath("/");
   revalidatePath("/conta");
+  return { ok: true };
+}
+
+/** A própria pessoa troca a senha — exige a atual, já logada. */
+export async function changeOwnPassword(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await getSessionUser();
+  if (!session) return { error: "Sessão expirada. Faça login de novo." };
+
+  const currentPassword = String(formData.get("currentPassword") ?? "");
+  const newPassword = String(formData.get("newPassword") ?? "");
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
+
+  const user = await getUserById(session.uid);
+  if (!user) return { error: "Sessão expirada. Faça login de novo." };
+  if (!verifyPassword(currentPassword, user.passwordHash))
+    return { error: "Senha atual incorreta." };
+
+  if (newPassword.length < 8)
+    return { error: "A nova senha precisa ter ao menos 8 caracteres." };
+  if (newPassword !== confirmPassword)
+    return { error: "As senhas não conferem." };
+  if (newPassword === currentPassword)
+    return { error: "A nova senha precisa ser diferente da atual." };
+
+  await setUserPassword(session.uid, hashPassword(newPassword));
+  await logAction("profile.password_change");
   return { ok: true };
 }
 

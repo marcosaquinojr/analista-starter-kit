@@ -129,6 +129,11 @@ export async function setUserProfile(
     .where(eq(users.id, id));
 }
 
+/** A própria pessoa troca a senha, já logada (confere a atual antes). */
+export async function setUserPassword(id: string, passwordHash: string): Promise<void> {
+  await db.update(users).set({ passwordHash }).where(eq(users.id, id));
+}
+
 export async function deleteUser(id: string): Promise<void> {
   await db.delete(users).where(eq(users.id, id));
 }

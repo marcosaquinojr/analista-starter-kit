@@ -4106,6 +4106,13 @@ main.site-main {
   cursor: default;
 }
 
+/* ── Trocar senha na conta ───────────────────────────────────────────────── */
+.account-password {
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
 /* ── Gerenciar passkeys na conta ─────────────────────────────────────────── */
 .account-passkeys {
   margin-top: 32px;

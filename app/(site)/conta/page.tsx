@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Fingerprint, Trash2 } from "lucide-react";
 import ProfileForm from "./ProfileForm";
+import PasswordForm from "./PasswordForm";
 import PasskeyManager from "@/components/PasskeyManager";
 import { getSessionUser } from "@/lib/auth";
 import { getUserById } from "@/lib/users";
@@ -34,6 +35,11 @@ export default async function AccountPage() {
         email={user.email}
         avatarUrl={user.avatarUrl}
       />
+
+      <section className="account-password">
+        <h2 className="account-section-title">Trocar senha</h2>
+        <PasswordForm />
+      </section>
 
       {PASSKEY_ENABLED && (
       <section className="account-passkeys">
